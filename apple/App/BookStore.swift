@@ -16,6 +16,20 @@ final class BookStore {
     private(set) var currentPage: String
     private(set) var currentSection: String = ""
     private(set) var currentTitle: String = "CODEX_LMS"
+    /// False until the book has loaded once; the reader stays hidden until then (no blank flash).
+    private(set) var pageReady = false
+    private(set) var canGoBack = false
+    private(set) var canGoForward = false
+
+    /// Page zoom for the book (1 = 100%), saved between launches.
+    var textZoom: Double {
+        didSet {
+            UserDefaults.standard.set(textZoom, forKey: Self.zoomKey)
+            web.webView.pageZoom = textZoom
+        }
+    }
+    static let zoomRange = 0.7...2.0
+    private static let zoomKey = "textZoom"
 
     @ObservationIgnored private var rawState: String
     @ObservationIgnored private let stateURL: URL
@@ -40,10 +54,18 @@ final class BookStore {
         state = saved
         currentPage = page
         currentTitle = toc.title(of: page) ?? "CODEX_LMS"
+        let zoom = UserDefaults.standard.double(forKey: Self.zoomKey)
+        textZoom = Self.zoomRange.contains(zoom) ? zoom : 1
+        web.webView.pageZoom = textZoom
 
         web.stateProvider = { [unowned self] in self.rawState }
         web.onSave = { [unowned self] json in self.save(json) }
         web.onRoute = { [unowned self] id, sec, title in self.didRoute(id: id, section: sec, title: title) }
+        web.onLoaded = { [unowned self] in self.pageReady = true }
+        web.onHistoryChange = { [unowned self] back, forward in
+            self.canGoBack = back
+            self.canGoForward = forward
+        }
     }
 
     func start() {
@@ -79,6 +101,19 @@ final class BookStore {
         currentPage = id
         currentSection = section
         currentTitle = toc.title(of: id) ?? Inline.plain(title)
+    }
+
+    // MARK: text size
+
+    func zoomIn() { setZoom(textZoom + 0.1) }
+    func zoomOut() { setZoom(textZoom - 0.1) }
+    func resetZoom() { textZoom = 1 }
+    var canZoomIn: Bool { textZoom < Self.zoomRange.upperBound - 0.001 }
+    var canZoomOut: Bool { textZoom > Self.zoomRange.lowerBound + 0.001 }
+
+    private func setZoom(_ z: Double) {
+        // Round to whole tens of percent so repeated steps don't drift (0.7999...).
+        textZoom = min(max((z * 10).rounded() / 10, Self.zoomRange.lowerBound), Self.zoomRange.upperBound)
     }
 
     // MARK: state

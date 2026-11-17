@@ -433,3 +433,12 @@ table{font:13.5px/1.45 var(--font-ui)}th{font-size:11px}th,td{padding:6px 11px}
 .cb .o,.cb.compact .o{white-space:pre!important;overflow-x:auto}
 /* a symbol glyph pinned to one monospace column (see gridLock in engine.js) */
 .g{display:inline-block;width:1ch;text-align:center;overflow:visible}.g2{width:2ch}
+/* practice terminal: same monospace size as code blocks; output keeps its columns and scrolls sideways
+   instead of breaking file names mid-word; the screen shrinks on short (landscape phone) viewports */
+.term-ui{font:12.75px/1.5 var(--font-mono)}
+.term-ui .scr{height:clamp(200px,45vh,340px);white-space:pre;word-break:normal;overflow:auto;overscroll-behavior:contain}
+.term-ui .scr>div{width:max-content;min-width:100%}
+.term-ui .in{align-items:baseline}.term-ui .in span{flex:none;white-space:nowrap}
+.term-ui:focus-within{border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+/* touch screens: iOS zooms the page into any text field under 16px, so give them 16px */
+@media (pointer:coarse){input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=button]),select,textarea{font-size:max(16px,1em)!important}}

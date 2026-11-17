@@ -438,9 +438,21 @@ table{font:13.5px/1.45 var(--font-ui)}th{font-size:11px}th,td{padding:6px 11px}
 .cb .o,.cb.compact .o{white-space:pre!important;overflow-x:auto}
 /* a symbol glyph pinned to one monospace column (see gridLock in engine.js) */
 .g{display:inline-block;width:1ch;text-align:center;overflow:visible}.g2{width:2ch}
+/* practice terminal: same monospace size as code blocks; output keeps its columns and scrolls sideways
+   instead of breaking file names mid-word; the screen shrinks on short (landscape phone) viewports */
+.term-ui{font:12.75px/1.5 var(--font-mono)}
+.term-ui .scr{height:clamp(200px,45vh,340px);white-space:pre;word-break:normal;overflow:auto;overscroll-behavior:contain}
+.term-ui .scr>div{width:max-content;min-width:100%}
+.term-ui .in{align-items:baseline}.term-ui .in span{flex:none;white-space:nowrap}
+.term-ui:focus-within{border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+/* touch screens: iOS zooms the page into any text field under 16px, so give them 16px */
+@media (pointer:coarse){input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=button]),select,textarea{font-size:max(16px,1em)!important}}
 /* Native Apple app (apple/): the host draws its own sidebar, search and toolbar. */
 body.app #side,body.app #top,body.app #menu,body.app #scrim,body.app .skip{display:none}
 body.app #app{grid-template-columns:minmax(0,1fr)}
+/* no sticky web toolbar inside the app, so anchors need only a small offset */
+html:has(body.app){scroll-padding-top:12px}
+body.app #page{padding-top:20px}
 /* ===== Interactive labs (generated views live in packages/labs; styles use the book's tokens) ===== */
 .lb-card{--dom:var(--mute)}
 .lb{display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
@@ -3224,7 +3236,7 @@ window.__SBSRC="/* Node-compatible value formatting (a port of the parts of util
     var scr = $('.scr', root), inp = $('input', root), pr = $('.pr', root);
     function prompt() { var d = sh.cwd === SIM.HOME ? '~' : sh.cwd.split('/').pop() || '/'; return 'learner@macbook ' + d + ' %'; }
     function setPrompt() { pr.textContent = prompt(); }
-    function print(s, cls) { if (s === '') return; var d = h('div', { class: cls || '', text: s.replace(/\n$/, '') }); d.style.whiteSpace = 'pre-wrap'; scr.appendChild(d); scr.scrollTop = scr.scrollHeight; }
+    function print(s, cls) { if (s === '') return; var d = h('div', { class: cls || '', text: s.replace(/\n$/, '') }); scr.appendChild(d); scr.scrollTop = scr.scrollHeight; }
     function banner() { scr.innerHTML = ''; print('Lab shell ready. Try: ls, cat README.txt, head -3 access.log', 'd'); }
     banner(); setPrompt();
     function checkMissions() {

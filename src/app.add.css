@@ -1,3 +1,6 @@
 /* Native Apple app (apple/): the host draws its own sidebar, search and toolbar. */
 body.app #side,body.app #top,body.app #menu,body.app #scrim,body.app .skip{display:none}
 body.app #app{grid-template-columns:minmax(0,1fr)}
+/* no sticky web toolbar inside the app, so anchors need only a small offset */
+html:has(body.app){scroll-padding-top:12px}
+body.app #page{padding-top:20px}

@@ -16,12 +16,24 @@ struct CodexApp: App {
             CommandGroup(after: .toolbar) {
                 Button("Reload Page") { store.web.reload() }
                     .keyboardShortcut("r", modifiers: .command)
+                Divider()
+                Button("Actual Size") { store.resetZoom() }
+                    .keyboardShortcut("0", modifiers: .command)
+                    .disabled(store.textZoom == 1)
+                Button("Zoom In") { store.zoomIn() }
+                    .keyboardShortcut("+", modifiers: .command)
+                    .disabled(!store.canZoomIn)
+                Button("Zoom Out") { store.zoomOut() }
+                    .keyboardShortcut("-", modifiers: .command)
+                    .disabled(!store.canZoomOut)
             }
             CommandMenu("Go") {
                 Button("Back") { store.web.goBack() }
                     .keyboardShortcut("[", modifiers: .command)
+                    .disabled(!store.canGoBack)
                 Button("Forward") { store.web.goForward() }
                     .keyboardShortcut("]", modifiers: .command)
+                    .disabled(!store.canGoForward)
                 Divider()
                 Button("Welcome") { store.open("welcome") }
                 Button("Command Atlas") { store.open("atlas") }
