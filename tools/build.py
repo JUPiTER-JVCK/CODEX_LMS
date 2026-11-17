@@ -14,11 +14,13 @@ Inputs (all under the project root):
 
 Outputs:
   dist/index.html   full document for local testing (python3 -m http.server in dist/)
+  dist/toc.json     table of contents, sections, command cards and practice item ids for the
+                    native Apple app (apple/)
   pub.html          the same page without doctype/html/head/body, for the artifact host
 
 Usage: python3 tools/build.py [--check-identical]
 """
-import json, os, sys, glob
+import json, os, re, sys, glob
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -32,6 +34,51 @@ def js_json(obj):
     # Same encoding the original build used: compact, UTF-8, every '<' escaped so no
     # string can close the <script> element.
     return json.dumps(obj, separators=(',', ':'), ensure_ascii=False).replace('<', '\\u003c')
+
+
+# Same order and labels as PARTS in src/engine.js.
+PARTS = [['start', 'Start here'], ['found', 'Foundations'], ['zsh', 'The shell (zsh)'], ['net', 'Networking'],
+         ['py', 'Python'], ['web', 'Web development'], ['srv', 'Servers, APIs & Cloud'], ['proj', 'Projects'],
+         ['ref', 'Reference']]
+# Same as EXTRA in src/engine.js: pages the engine generates rather than chapters.
+SPECIAL = [{'id': 'atlas', 'title': 'Command Atlas', 'sub': 'Every command in the book, searchable'},
+           {'id': 'practice', 'title': 'Practice Hub', 'sub': 'Exercises, checkpoints, projects and the practice terminal'},
+           {'id': 'glossary', 'title': 'Glossary', 'sub': 'Every term, one line each'},
+           {'id': 'values', 'title': 'My Values', 'sub': 'Fill the yellow placeholders once'}]
+
+
+def item_ids(c):
+    # Mirrors itemIds() in src/engine.js: the ids progress is stored under in state.done.
+    ids = []
+    for b in c['blocks']:
+        if b['t'] in ('exercise', 'checkpoint'):
+            ids.append(b['id'])
+        elif b['t'] == 'project':
+            n = sum(1 for x in b['blocks'] if x['t'] == 'h' and x.get('level') == 3)
+            ids.extend('%s#%d' % (b['id'], i) for i in range(n))
+    return ids
+
+
+def toc(book):
+    # Chapter numbers follow the engine: sorted by source file name, numbered from 0.
+    chs = sorted(book['chapters'], key=lambda c: c.get('file') or '')
+    out = []
+    for i, c in enumerate(chs):
+        out.append({
+            'id': c['id'], 'num': i, 'title': c['title'], 'sub': c.get('sub', ''), 'part': c.get('part', 'found'),
+            'time': c.get('time') or 0, 'level': c.get('level', ''),
+            'sections': [{'id': b['id'], 'text': b['text'], 'level': b['level']}
+                         for b in c['blocks'] if b['t'] == 'h' and b.get('level') == 2],
+            'cards': [{'id': 'cmd-' + (b['id'] if b.get('id') else slug(b['name'])), 'name': b['name'],
+                       'sum': b.get('sum', ''), 'cat': b.get('cat', '')}
+                      for b in c['blocks'] if b['t'] == 'cmd'],
+            'items': item_ids(c),
+        })
+    return {'version': 1, 'parts': [{'id': p, 'title': t} for p, t in PARTS], 'chapters': out, 'special': SPECIAL}
+
+
+def slug(s):
+    return re.sub(r'^-|-$', '', re.sub(r'[^a-z0-9]+', '-', str(s).lower()))
 
 
 def build(check_identical=False):
@@ -74,6 +121,9 @@ def build(check_identical=False):
             + pub + '\n</body></html>')
     with open(os.path.join(ROOT, 'dist/index.html'), 'w', encoding='utf-8') as f:
         f.write(full)
+    with open(os.path.join(ROOT, 'dist/toc.json'), 'w', encoding='utf-8') as f:
+        json.dump(toc(book), f, ensure_ascii=False, indent=1)
+        f.write('\n')
     n = len(book['chapters'])
     print('built: %d KB, %d chapters (%d new), %d command cards' % (
         len(pub.encode('utf-8')) // 1024, n, len(new),

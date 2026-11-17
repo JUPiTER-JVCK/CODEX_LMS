@@ -17,6 +17,22 @@ with automatic checks, quizzes and projects.
 Then open http://localhost:8765/index.html. Opening `index.html` by double-clicking works for reading, but the
 in-page Python needs to be served over HTTP.
 
+## Apple app (macOS, iPadOS, iOS)
+
+`apple/` holds a native SwiftUI app with the same book. It has a native sidebar with progress per chapter,
+native search over chapters, sections and all command cards, back/forward, a section menu and an appearance
+setting. The pages show in a web view, so in-page Python, JavaScript playgrounds, labs and the practice terminal
+all work offline. Progress is saved by the app (Application Support), not by the browser.
+
+Needs Xcode 16 or later and [XcodeGen](https://github.com/yonaskolb/XcodeGen):
+
+    python3 tools/chapters.py && python3 tools/build.py   # the app bundles dist/
+    brew install xcodegen
+    cd apple && xcodegen && open CODEX_LMS.xcodeproj
+
+Pick the CODEX_LMS scheme and run on My Mac, an iPad or an iPhone. `swift test --package-path apple` runs the
+tests for `CodexCore` (table of contents, saved progress, search) on macOS or Linux.
+
 ## Project layout
 
 | Path | What it is |
@@ -30,14 +46,18 @@ in-page Python needs to be served over HTTP.
 | `src/style.css`, `src/head.html` | styles and page head |
 | `tools/chapters.py`, `tools/build.py` | build chapter JSON, then assemble the single-file page |
 | `test/blocks.py` | runs every code block and exercise of the given chapters inside the real page |
-| `dist/` | the built site: `index.html` plus the Python runtime in `py/` |
+| `dist/` | the built site: `index.html`, `toc.json` (contents for the Apple app) and the Python runtime in `py/` |
+| `src/app.add.css` | hides the page's own sidebar and toolbar when it runs inside the Apple app |
+| `apple/project.yml` | XcodeGen spec for the multiplatform app |
+| `apple/Sources/CodexCore/` | Swift models for `toc.json` and saved progress, and search; tests in `apple/Tests/` |
+| `apple/App/` | SwiftUI app: sidebar, search, web view, `codex://` scheme handler and the page bridge |
 
 ## Build and test
 
 Needs Python 3 and Playwright, pinned to the version CI uses (`python3 -m pip install playwright==1.63.0 && python3 -m playwright install chromium`).
 
     python3 tools/chapters.py      # chapters/*.py -> data/new/*.json
-    python3 tools/build.py         # -> dist/index.html (and pub.html for the Claude artifact host)
+    python3 tools/build.py         # -> dist/index.html, dist/toc.json (and pub.html for the Claude artifact host)
     (cd dist && python3 -m http.server 8765 &)
     python3 test/blocks.py servers apis crypto cloud
 

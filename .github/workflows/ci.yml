@@ -17,9 +17,24 @@ jobs:
           python tools/chapters.py
           python tools/build.py
       - name: dist is up to date
-        run: git diff --exit-code -- dist/index.html
+        run: git diff --exit-code -- dist/index.html dist/toc.json
       - name: Test
         run: |
           (cd dist && python -m http.server 8765 &) 
           sleep 2
           python test/blocks.py servers apis crypto cloud
+
+  apple-app:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: CodexCore tests
+        run: swift test --package-path apple
+      - name: Generate Xcode project
+        run: |
+          brew install xcodegen
+          cd apple && xcodegen
+      - name: Build for macOS
+        run: xcodebuild -project apple/CODEX_LMS.xcodeproj -scheme CODEX_LMS -destination 'generic/platform=macOS' CODE_SIGNING_ALLOWED=NO build
+      - name: Build for iOS Simulator
+        run: xcodebuild -project apple/CODEX_LMS.xcodeproj -scheme CODEX_LMS -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
