@@ -4,7 +4,7 @@ on:
     branches: [main]
   pull_request:
 jobs:
-  build-and-test:
+  classic-site:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,10 +16,26 @@ jobs:
         run: |
           python tools/chapters.py
           python tools/build.py
-      - name: dist is up to date
-        run: git diff --exit-code -- dist/index.html
+          python tools/export_outline.py
+      - name: dist and content are up to date
+        run: git diff --exit-code -- dist/index.html content
       - name: Test
         run: |
-          (cd dist && python -m http.server 8765 &) 
+          (cd dist && python -m http.server 8765 &)
           sleep 2
           python test/blocks.py servers apis crypto cloud
+  apps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Widget engine tests
+        run: npm test
+      - name: TUI type-check
+        run: npx tsc --noEmit -p apps/tui
+      - name: GUI type-check and build
+        run: npm run gui:build

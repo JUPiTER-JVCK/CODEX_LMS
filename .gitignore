@@ -3,3 +3,7 @@ pub.html
 data/new/
 __pycache__/
 .DS_Store
+node_modules/
+apps/*/dist/
+apps/gui/src-tauri/target/
+*.tsbuildinfo
