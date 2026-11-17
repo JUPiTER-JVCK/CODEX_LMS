@@ -4,34 +4,58 @@ on:
     branches: [main]
   pull_request:
 jobs:
-  build-and-test:
+  classic-site:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - run: python -m pip install playwright==1.63.0 && python -m playwright install --with-deps chromium
+      - name: Labs are placed in their chapters
+        run: python tools/add_labs.py --check
       - name: Build
         run: |
           python tools/chapters.py
           python tools/build.py
       - name: dist is up to date
         run: git diff --exit-code -- dist/index.html dist/toc.json
+      - name: ASCII diagrams are aligned
+        run: python tools/lint_ascii.py --quiet
       - name: Display filters match tshark
         run: |
           sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y tshark
           python test/pcapfilters.py
-      - name: Test
+      - name: Browser tests
         run: |
-          (cd dist && python -m http.server 8765 &) 
+          (cd dist && python -m http.server 8765 &)
           sleep 2
           python test/blocks.py servers apis crypto cloud wireshark defend
+          python test/labs.py
+          python test/ascii.py
+          python test/theme.py
+  labs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Lab logic tests
+        run: npm test
+      - name: Type-check the lab views
+        run: npx tsc --noEmit -p packages/labs
+      - name: src/ws-labs.js is up to date
+        run: |
+          npm run labs
+          git diff --exit-code -- src/ws-labs.js
 
   apple-app:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: CodexCore tests
         run: swift test --package-path apple
       - name: Generate Xcode project
@@ -54,7 +78,7 @@ jobs:
           test -f "$APP/Contents/Resources/dist/py/pyodide.asm.wasm"
           mkdir -p out && ditto -c -k --keepParent "$APP" out/CODEX_LMS-mac.zip
       - name: Upload Mac app
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: CODEX_LMS-mac
           path: out/CODEX_LMS-mac.zip

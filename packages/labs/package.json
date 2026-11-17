@@ -1,0 +1,13 @@
+{
+  "name": "@codex/labs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "DOM views for the interactive labs. Bundled into src/ws-labs.js, which tools/build.py inlines into the book.",
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": { "@codex/widgets": "*" },
+  "devDependencies": { "esbuild": "^0.25.0", "typescript": "^5.6.0" }
+}

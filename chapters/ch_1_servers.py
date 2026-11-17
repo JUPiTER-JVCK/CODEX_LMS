@@ -76,7 +76,7 @@ blocks = [
                                                   bind()     claim 0.0.0.0:8080
                                                   listen()   start the accept queue
       connect() ── SYN ───────────────────────▶   ┐
-                ◀────────────────── SYN,ACK ──   │ kernel finishes the TCP handshake
+                ◀────────────────── SYN,ACK ──    │ kernel finishes the TCP handshake
                 ── ACK ───────────────────────▶   ┘
                                                   accept()   take one connection
       send("GET /health …") ──────────────────▶   recv()     read the request
@@ -541,8 +541,8 @@ blocks = [
     ASCII('''
                        ⟪c:internet⟫                     ⟪w:one server⟫
       browser ──https──▶ :443 ⟪b:nginx⟫ ──┬── /api/*     ──http──▶ 127.0.0.1:8000  ⟪y:Python app⟫
-      curl    ──https──▶       TLS     ├── /static/*  ──────────▶ /srv/www        ⟪d:files on disk⟫
-      phone   ──https──▶       limits  └── /          ──http──▶ 127.0.0.1:3000  ⟪y:Node front end⟫
+      curl    ──https──▶       TLS    ├── /static/*   ──────────▶ /srv/www        ⟪d:files on disk⟫
+      phone   ──https──▶       limits └── /           ──http──▶ 127.0.0.1:3000  ⟪y:Node front end⟫
                                         only :443 is open; the apps listen on loopback
     '''),
     P('A small but complete site configuration looks like this. It lives in `/etc/nginx/sites-available/` on Debian and Ubuntu (linked into `sites-enabled/`), or in `/etc/nginx/conf.d/*.conf` elsewhere:'),

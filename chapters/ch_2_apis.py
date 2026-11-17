@@ -237,6 +237,7 @@ blocks = [
     '''),
     P('''Anyone could have written that token: decoding it proves nothing. The encryption chapter shows how the signature is made with
     an HMAC or a key pair, and the exercise there has you verify one.'''),
+    WIDGET('jwt'),
     ASCII('''
       ⟪w:OAuth 2.0 authorization code flow with PKCE⟫ ("Sign in with GitHub")
 

@@ -6,9 +6,12 @@ A hands-on, book-style course for learning on a Mac: macOS Terminal (zsh), netwo
 self-contained web page with runnable Python and JavaScript, a simulated terminal, interactive labs, exercises
 with automatic checks, quizzes and projects.
 
-- 49 chapters in 10 parts, 787 command cards
+- 49 chapters in 10 parts, 787 command cards, 270 exercises
 - Python runs in the browser (Pyodide); JavaScript runs in a sandbox with a built-in practice REST API
-- Dark and light themes, works on phones
+- Light, dark and system themes; works on phones
+- 19 interactive labs placed inside the sections they teach (bit switches, logic gates, packet dissector, cron explainer and more)
+
+![A chapter in dark mode](docs/screenshots/chapter-dark.png)
 
 ## Read it locally
 
@@ -17,6 +20,51 @@ with automatic checks, quizzes and projects.
 
 Then open http://localhost:8765/index.html. Opening `index.html` by double-clicking works for reading, but the
 in-page Python needs to be served over HTTP.
+
+## Look and feel
+
+- **Theme:** the button in the top bar cycles **System, Light, Dark**. System follows your operating system live.
+  The choice is saved with your progress.
+- **Palette:** neutral greys, black and white with a single accent colour. Code keeps desaturated syntax colours so it stays readable.
+- **Layout:** a compact 15px reading column with Inter and JetBrains Mono.
+- **Diagrams and command output** sit on a strict monospace grid. `tools/lint_ascii.py` and `test/ascii.py` fail the build if a box
+  border drifts or if anything meant to line up falls back to a proportional font.
+
+| Light | Dark |
+|---|---|
+| ![](docs/screenshots/chapter-light.png) | ![](docs/screenshots/chapter-dark.png) |
+
+## Interactive labs
+
+Each lab sits next to the explanation it belongs to, not in a separate gallery. They are keyboard-operable, work on phones, and
+respect reduced-motion settings.
+
+| Lab | Where you find it | What it shows |
+|---|---|---|
+| Bit switches | How Computers Work, bits | flip bits; decimal, hex, two's complement, overflow |
+| Text to bytes | How Computers Work, UTF-8 | code points and the 1 to 4 bytes UTF-8 uses |
+| Bit mask lab | How Computers Work, bit operations; Python Basics, operators | AND, OR, XOR, clear; TCP flag byte; masking an IP address |
+| Logic gates and adders | How Computers Work, the machine | gate symbols, truth tables, full adder, 4-bit ripple adder |
+| Latency ladder | How Computers Work, the machine | cache, RAM, SSD, network scaled to human time |
+| PATH lookup | How Computers Work, PATH; Python Modules, import | first match wins; shadowing (`python3`, a local `random.py`) |
+| Search and sort racer | Thinking Like a Programmer | linear vs binary search; bubble, insertion and merge sort |
+| Cron explainer | Shell Scripting, scheduling | plain-English meaning and the next five run times |
+| Signals and process states | System, signals | STOP, CONT, TERM, KILL; zombies and `wait()` |
+| ssh config builder | Remote Access with SSH | a `Host` block and the long command it replaces |
+| HTML to DOM tree | HTML, the parser | what the browser builds from broken markup |
+| Predict the result | JavaScript Fundamentals, operators | 14 coercion puzzles with explanations |
+| Request waterfall | DevTools, Network | DNS, connect, TLS, TTFB, download; `curl -w` output |
+| Semver ranges | Node.js, npm | which versions `^`, `~` and comparators allow |
+| TTL and traceroute | Reachability, Latency and Path | why each hop answers |
+| Take a packet apart | Packet Capture | hex dump of a TCP SYN and a DNS query, field by field |
+| Avalanche effect | Encryption, hashes | one changed character flips about half the SHA-256 bits |
+| How long to guess it? | Encryption, passwords | entropy vs fast and slow hashes |
+| Decode, forge, verify a JWT | APIs | the payload is readable; editing it breaks the signature |
+
+<table><tr>
+<td><img src="docs/screenshots/lab-bitmask-dark.png" alt="Bit mask lab"></td>
+<td><img src="docs/screenshots/lab-gates-light.png" alt="Logic gates lab"></td>
+</tr></table>
 
 ## Apple app (macOS, iPadOS, iOS)
 
@@ -47,13 +95,19 @@ tests for `CodexCore` (table of contents, saved progress, search) on macOS or Li
 | `chapters/ch_*.py` | chapters 38-41 (Servers, APIs & Cloud) and 42-43 (Security), written with the helpers in `chapters/lib.py` |
 | `data/outcache.json` | real outputs of every runnable block in chapters 38-43 |
 | `src/engine.js` | page engine: rendering, navigation, search, progress, runners, earlier widgets |
-| `src/ws-*.js`, `src/*.add.css` | labs for chapters 38-43; `ws-5-pcap.js` is the packet engine (encoder, dissector, display-filter engine) behind the Wireshark lab |
+| `src/ws-1..4-*.js`, `src/srv.add.css` | labs for chapters 38-41 |
+| `src/ws-5-pcap.js`, `ws-6-pcapcols.js`, `ws-7-pktlab.js`, `ws-8-triage.js`, `src/sec.add.css` | the Wireshark packet lab and the log-triage drill for chapters 42-43; `ws-5-pcap.js` is the packet engine (encoder, dissector, display-filter engine) |
+| `src/ws-labs.js`, `src/labs.add.css` | the 19 newer labs (**generated** from `packages/labs`) and their styles |
 | `tools/pcapgen.js`, `tools/pcapcols.py` | write the lab captures as real `.pcap` files, and bake Wireshark's own column text into `src/ws-6-pcapcols.js` |
 | `src/sim.js`, `src/sbsrc.js` | simulated zsh, and the sandbox injected into every JavaScript playground |
-| `src/style.css`, `src/head.html` | styles and page head |
+| `src/style.css`, `src/head.html` | design tokens, layout and page head |
+| `packages/widgets/` | the logic behind the newer labs, as pure TypeScript with unit tests |
+| `packages/labs/` | the DOM views for those labs; `npm run labs` bundles them into `src/ws-labs.js` |
 | `tools/chapters.py`, `tools/build.py` | build chapter JSON, then assemble the single-file page |
-| `test/blocks.py` | runs every code block and exercise of the given chapters inside the real page |
-| `test/pcapfilters.py` | checks the lab's display-filter engine against real `tshark` on the same captures |
+| `tools/add_labs.py` | places each lab block inside its chapter in `data/book.json` (idempotent) |
+| `tools/lint_ascii.py`, `tools/fix_ascii.py` | find, and safely re-align, drifting box diagrams |
+| `test/blocks.py`, `test/labs.py`, `test/ascii.py`, `test/theme.py` | browser tests: runnable blocks and exercises, every lab, diagram rendering, theme switch |
+| `test/pcapfilters.py` | checks the Wireshark lab's display-filter engine against real `tshark` on the same captures |
 | `dist/` | the built site: `index.html`, `toc.json` (contents for the Apple app) and the Python runtime in `py/` |
 | `src/app.add.css` | hides the page's own sidebar and toolbar when it runs inside the Apple app |
 | `apple/project.yml` | XcodeGen spec for the multiplatform app |
@@ -62,17 +116,41 @@ tests for `CodexCore` (table of contents, saved progress, search) on macOS or Li
 
 ## Build and test
 
-Needs Python 3 and Playwright, pinned to the version CI uses (`python3 -m pip install playwright==1.63.0 && python3 -m playwright install chromium`).
+Needs Python 3 and Playwright, pinned to the version CI uses (`python3 -m pip install playwright==1.63.0 && python3 -m playwright install chromium`),
+and Node 20.19+ for the labs.
 
     python3 tools/chapters.py      # chapters/*.py -> data/new/*.json
     python3 tools/build.py         # -> dist/index.html, dist/toc.json (and pub.html for the Claude artifact host)
     (cd dist && python3 -m http.server 8765 &)
     python3 test/blocks.py servers apis crypto cloud wireshark defend
+    python3 test/labs.py           # every lab: placement, interaction, no console errors
+    python3 test/ascii.py          # diagrams and command output on a monospace grid (--hinting mimics a Linux CI renderer)
+    python3 test/theme.py          # System / Light / Dark button, persistence, live OS changes
+    python3 tools/lint_ascii.py    # box borders that do not line up
     python3 test/pcapfilters.py    # needs node and tshark (apt install tshark, or brew install wireshark)
+
+    npm install
+    npm test                       # logic behind the labs
+    npm run labs                   # rebuild src/ws-labs.js after editing packages/labs or packages/widgets
 
 Add `--update` to `test/blocks.py` after changing code in a chapter to record its new real output. After changing a
 capture scenario in `src/ws-5-pcap.js`, run `python3 tools/pcapcols.py` (needs `tshark`) to refresh the column text,
 then `test/pcapfilters.py`.
+`test/blocks.py` on the full book reports 21 known mismatches in blocks that deliberately raise errors; they are identical on
+the version before the redesign and are not part of the CI set.
+
+### Adding a lab
+
+1. Put the logic in `packages/widgets/src/<name>.ts` with tests in `packages/widgets/test/`.
+2. Write the view in `packages/labs/src/<name>.ts` (`register("name", ...)`) and import it from `packages/labs/src/index.ts`.
+3. Add an entry to `LABS` in `tools/add_labs.py` naming the chapter and the text it should follow, then run it.
+4. `npm run labs`, `python3 tools/build.py`, and add a case to `test/labs.py`.
+
+## Parked: React/Tauri and Ink prototypes
+
+An earlier round built a React + Tauri desktop app and an Ink terminal app on the same widget logic. They were removed from the
+tree when the focus moved to the classic site, and remain in the history of draft PR #3 (commit `bf04bb1`). `packages/widgets` is
+kept so a desktop wrapper or a terminal version can reuse the same logic later.
 
 ## License
 
