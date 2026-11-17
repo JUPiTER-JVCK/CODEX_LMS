@@ -1,0 +1,25 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install playwright==1.63.0 && python -m playwright install --with-deps chromium
+      - name: Build
+        run: |
+          python tools/chapters.py
+          python tools/build.py
+      - name: dist is up to date
+        run: git diff --exit-code -- dist/index.html
+      - name: Test
+        run: |
+          (cd dist && python -m http.server 8765 &) 
+          sleep 2
+          python test/blocks.py servers apis crypto cloud
