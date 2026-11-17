@@ -1,6 +1,7 @@
-name: Publish Mac app
-# Builds the universal Mac app and attaches CODEX_LMS-mac.zip to a GitHub Release.
-# Runs when a release is published, or by hand (Actions > Publish Mac app > Run workflow) for an existing tag.
+name: Publish release files
+# Builds the universal Mac app, the single file CODEX_LMS.html (page + terminal app + Mac app + Python) and a
+# ready-to-use CODEX_LMS-all.zip (app, html, double-click launcher) and attaches them to a GitHub Release.
+# Runs when a release is published, or by hand (Actions > Publish release files > Run workflow) for an existing tag.
 on:
   release:
     types: [published]
@@ -38,7 +39,25 @@ jobs:
           test -f "$APP/Contents/Resources/dist/index.html"
           mkdir -p out && ditto -c -k --keepParent "$APP" out/CODEX_LMS-mac.zip
           shasum -a 256 out/CODEX_LMS-mac.zip | tee out/CODEX_LMS-mac.zip.sha256
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - name: Build the single file and the all-in-one package
+        run: |
+          npm ci
+          npm run tui:build
+          python3 tools/bundle.py --app out/CODEX_LMS-mac.zip --out out/CODEX_LMS.html
+          rm -rf pkg && mkdir -p pkg/CODEX_LMS
+          ditto -x -k out/CODEX_LMS-mac.zip pkg/CODEX_LMS
+          cp out/CODEX_LMS.html pkg/CODEX_LMS/
+          cp "tools/package/Start CODEX_LMS.command" tools/package/README.txt pkg/CODEX_LMS/
+          chmod +x "pkg/CODEX_LMS/Start CODEX_LMS.command"
+          (cd pkg && ditto -c -k --keepParent CODEX_LMS ../out/CODEX_LMS-all.zip)
+          cp apps/tui/dist/codex-tui.mjs out/
+          (cd out && shasum -a 256 CODEX_LMS-all.zip CODEX_LMS.html codex-tui.mjs > SHA256SUMS.txt)
+          ls -la out
       - name: Attach to the release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "$TAG" out/CODEX_LMS-mac.zip out/CODEX_LMS-mac.zip.sha256 --clobber --repo "$GITHUB_REPOSITORY"
+        run: gh release upload "$TAG" out/CODEX_LMS-all.zip out/CODEX_LMS.html out/CODEX_LMS-mac.zip out/codex-tui.mjs out/SHA256SUMS.txt out/CODEX_LMS-mac.zip.sha256 --clobber --repo "$GITHUB_REPOSITORY"
