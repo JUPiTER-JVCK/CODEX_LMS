@@ -1,0 +1,5 @@
+# build outputs that tools/ regenerate
+pub.html
+data/new/
+__pycache__/
+.DS_Store
