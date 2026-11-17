@@ -122,7 +122,7 @@ A release carries **`CODEX_LMS-all.zip`**: unzip it and double-click **Start COD
 
 ## Terminal app
 
-`node apps/tui/dist/codex-tui.mjs` (after `npm run tui:build`) or `npm run tui`. It reads the book from `dist/index.html`, shares your progress with the Mac app, supports mouse and keyboard, and has terminal versions of seven labs inside the sections that teach them (bit switches, logic gates, bit mask and mask-an-address, text to bytes, cron, latency ladder, subnet calculator). Labs the terminal does not have yet show a card pointing to the page or the Mac app. `?` shows the keys.
+`node apps/tui/dist/codex-tui.mjs` (after `npm run tui:build`) or `npm run tui`. It reads the book from `dist/index.html`, shares your progress with the Mac app, supports mouse and keyboard, and has terminal versions of nineteen labs inside the sections that teach them (bit switches, logic gates, bit mask, text to bytes, cron, latency ladder, subnet, PATH lookup, semver, password cracking, avalanche, TTL trace, request waterfall, signals, JS coercion quiz, algorithm racer, ssh config, JWT, packet dissector). The remaining interactive widgets (the simulated practice terminal, playgrounds, diagram widgets) show a card pointing to the page or the Mac app. `?` shows the keys.
 
 ## One file: page, terminal app and Mac app
 

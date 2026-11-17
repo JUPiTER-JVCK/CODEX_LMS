@@ -287,7 +287,7 @@ test("the splash dismisses on any key, and is skipped when asked", () => {
 });
 
 test("every lab the book places that has a terminal version draws, takes keys and clicks, and stays inside its box", () => {
-  const names = ["bitswitches", "gates", "bitmask", "utf8", "cron", "latencyladder", "subnet"];
+  const names = ["bitswitches", "gates", "bitmask", "utf8", "cron", "latencyladder", "subnet", "pathlookup", "semver", "crackcalc", "avalanche", "ttltrace", "netwaterfall", "procsim", "jswat", "algoracer", "sshconfig", "jwt", "dissect"];
   const found = new Set<string>();
   for (const c of book.chapters) {
     const ws = c.blocks.filter((b) => b.t === "widget" && names.includes(b.name));
@@ -301,7 +301,7 @@ test("every lab the book places that has a terminal version draws, takes keys an
       app.scroll = Math.max(0, line - 2);
       const s = app.render();
       assert.ok(s.bg.every((v) => v >= 0));
-      for (const k of ["\r", "1", "+", "<", "a", "\t", "x", "\x7f", "\x1b"]) { send(k); app.render(); }
+      for (const k of ["\r", "1", "+", "<", "a", "\t", "x", "\x7f", "t", "j", "s", "r", "-", "\x1b"]) { send(k); app.render(); }
     }
   }
   assert.deepEqual([...found].sort(), names.slice().sort(), "every lab is placed somewhere in the book");
@@ -329,4 +329,20 @@ test("subnet lab calculates as you type", () => {
   app.render();
   send("\r");
   assert.match(screen(), /192\.168\.1\.128/); // network of 192.168.1.130/26
+});
+
+test("no lab draws past its bottom border", async () => {
+  const { LABS } = await import("../src/labs.ts");
+  for (const name of Object.keys(LABS)) {
+    const c = book.chapters.find((c) => c.blocks.some((b) => b.t === "widget" && b.name === name));
+    if (!c) continue;
+    const { app } = mk({ cols: 120, rows: 40 });
+    (app as any).sbOpen = false; app.go(c.id);
+    const line = app.doc.lines.findIndex((l) => l.widget?.name === name);
+    const w = app.doc.lines[line].widget!;
+    app.scroll = Math.max(0, line - 1);
+    const rows = app.render().toText().split("\n");
+    const bottom = rows[line - app.scroll + 1 + w.rows - 1] ?? "";
+    assert.match(bottom, /^\s*╰─+.*─╯/, `${name}: its last row is the bottom border`);
+  }
 });

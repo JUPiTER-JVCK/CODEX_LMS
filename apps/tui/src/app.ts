@@ -5,6 +5,7 @@ import { layoutChapter, newUi, type Doc, type UiState } from "./blocks.ts";
 import type { InputEvent, KeyEvent, MouseEvent } from "./input.ts";
 import { LABS, type LabCtx } from "./labs.ts";
 import "./lablib.ts";
+import "./lablib2.ts";
 import { A_BOLD, A_INV, A_UNDER, Screen } from "./screen.ts";
 import { buildSpecial, SPECIAL_IDS, SPECIAL_TITLES } from "./specials.ts";
 import { drawSplash, SPLASH_MS } from "./splash.ts";
