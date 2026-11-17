@@ -16,7 +16,7 @@ import { A_UNDER } from "./screen.ts";
 type Ctl = { relayout(): void; toast(m: string): void };
 
 /** The lab's box; returns the inside. */
-function frame(c: LabCtx, title: string, hint: string): Rect {
+export function frame(c: LabCtx, title: string, hint: string): Rect {
   const { p, r } = c;
   p.box(r, { fg: c.focus ? "accent" : "line", bg: "panel" }, "panel");
   p.text(r.x + 2, r.y, ` ${title} `, { fg: "accent", bg: "panel", b: true });
@@ -26,7 +26,7 @@ function frame(c: LabCtx, title: string, hint: string): Rect {
 }
 
 /** A clickable chip. Returns the x after it. */
-function chip(c: LabCtx, x: number, y: number, label: string, id: string, on: () => void, st: Style = {}): number {
+export function chip(c: LabCtx, x: number, y: number, label: string, id: string, on: () => void, st: Style = {}): number {
   const t = ` ${label} `;
   const style: Style = { fg: st.fg ?? "fg", bg: st.bg ?? "panel2", b: st.b ?? false };
   c.p.text(x, y, t, style);
@@ -36,7 +36,7 @@ function chip(c: LabCtx, x: number, y: number, label: string, id: string, on: ()
   return x + strWidth(t) + 1;
 }
 
-function input(c: LabCtx, x: number, y: number, w: number, f: TextField) {
+export function input(c: LabCtx, x: number, y: number, w: number, f: TextField) {
   c.p.fill(rect(x, y, w, 1), "codeBg");
   c.p.text(x + 1, y, ellipsize(f.text, w - 2), { fg: "fg", bg: "codeBg" });
   if (c.focus) c.p.text(x + 1 + strWidth(f.text.slice(0, f.cur)), y, f.text[f.cur] ?? " ", { fg: "accentInk", bg: "accent" });
