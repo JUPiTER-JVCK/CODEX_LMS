@@ -132,11 +132,11 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install playwright==1.63.0 pyte && python -m playwright install --with-deps chromium
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: codex-tui
           path: apps/tui/dist
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: CODEX_LMS-mac
           path: mac

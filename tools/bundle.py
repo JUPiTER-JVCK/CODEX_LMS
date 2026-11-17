@@ -56,7 +56,7 @@ def main():
     assert '*/' not in shell, 'page part contains a JavaScript comment end'
     bad = [c for c in out if ord(c) > 127]
     assert not bad, 'non-ASCII character in the bundle: %r' % bad[:3]
-    os.makedirs(os.path.dirname(a.out), exist_ok=True)
+    os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     open(a.out, 'w', newline='\n').write(out)
     # parse it as JavaScript exactly as node will
     if subprocess.run(['node', '-e', "new (require('vm').Script)(require('fs').readFileSync(process.argv[1],'utf8'))", a.out]).returncode:
