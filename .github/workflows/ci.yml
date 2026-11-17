@@ -53,6 +53,38 @@ jobs:
           npm run labs
           git diff --exit-code -- src/ws-labs.js
 
+  tui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: npm ci
+      - name: Type-check the terminal app
+        run: npx tsc --noEmit -p apps/tui
+      - name: Unit and headless tests
+        run: npm test -w @codex/tui
+      - name: Bundle into one file
+        run: npm run tui:build
+      # Runs the real program in a pseudo-terminal and reads the screen back: keys, mouse, resize, restore on exit.
+      - name: End to end, from source and from the bundle
+        run: |
+          python -m pip install pyte
+          python apps/tui/test/e2e_pty.py
+          python apps/tui/test/e2e_pty.py apps/tui/dist/codex-tui.mjs
+      - name: Upload the bundle
+        uses: actions/upload-artifact@v6
+        with:
+          name: codex-tui
+          path: apps/tui/dist/codex-tui.mjs
+          if-no-files-found: error
+          retention-days: 30
+
   apple-app:
     runs-on: macos-15
     steps:

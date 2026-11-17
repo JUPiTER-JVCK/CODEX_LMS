@@ -10,3 +10,6 @@ apple/CODEX_LMS.xcodeproj/
 apple/.build/
 apple/.swiftpm/
 DerivedData/
+
+# terminal app bundle
+apps/tui/dist/
