@@ -1,7 +1,7 @@
 {
   "name": "codex-lms-monorepo",
   "private": true,
-  "version": "2.0.0-dev",
+  "version": "1.1.0",
   "description": "CODEX_LMS: the classic single-file site (built by tools/build.py) plus the shared, tested widget logic in packages/.",
   "workspaces": [
     "packages/*"
