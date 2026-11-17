@@ -24,7 +24,12 @@ native search over chapters, sections and all command cards, back/forward, a sec
 setting. The pages show in a web view, so in-page Python, JavaScript playgrounds, labs and the practice terminal
 all work offline. Progress is saved by the app (Application Support), not by the browser.
 
-Needs Xcode 16 or later and [XcodeGen](https://github.com/yonaskolb/XcodeGen):
+**Ready-built Mac app:** every CI run uploads `CODEX_LMS-mac` (a zip with a universal `CODEX_LMS.app`). Open the
+run under the repository's Actions tab, download it from Artifacts, unzip, and move the app to Applications. It is
+not notarized, so the first time you open it macOS blocks it: open System Settings → Privacy & Security and click
+**Open Anyway** (or run `xattr -dr com.apple.quarantine /Applications/CODEX_LMS.app`).
+
+**Build it yourself** (also the way to run it on an iPhone or iPad). Needs Xcode 16 or later and [XcodeGen](https://github.com/yonaskolb/XcodeGen):
 
     python3 tools/chapters.py && python3 tools/build.py   # the app bundles dist/
     brew install xcodegen
