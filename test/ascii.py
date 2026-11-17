@@ -2,7 +2,8 @@
 
 For every <pre> that contains box-drawing characters, every distinct character is measured in the browser and compared with
 the width of one grid cell (times its display columns). A glyph with a different advance has fallen back to another
-font, which is what makes box borders wobble.
+font, which is what makes box borders wobble. It also checks that every element meant to show aligned text (code,
+command output, anatomy lines, results) really renders in a monospace face.
 
 usage: python3 test/ascii.py [CHAPTER_ID ...]       (needs dist/ served on http://localhost:8765)
 """
@@ -36,6 +37,22 @@ JS = r"""
     }
     probe.remove();
     if (bad.length) out.push({ font: cs.fontFamily.split(',')[0], cw, bad });
+  }
+  // anything showing aligned text must resolve to a monospace face: 'iiiiiiiiii' and 'MMMMMMMMMM' must be equally wide
+  const MONO = '#page .cb pre, #page .cb .o, #page .an .line, #page .res, #page textarea.ed, #page .lb-pre, #page .lb-mono, #page .term-ui, #page .hero pre';
+  const seen = new Set();
+  for (const e of document.querySelectorAll(MONO)) {
+    const cs = getComputedStyle(e), key = cs.fontFamily + cs.fontSize;
+    if (seen.has(key)) continue;
+    const probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre';
+    for (const k of ['fontFamily','fontSize','fontWeight','fontStyle']) probe.style[k] = cs[k];
+    document.body.appendChild(probe);
+    probe.textContent = 'i'.repeat(20); const wi = probe.getBoundingClientRect().width;
+    probe.textContent = 'M'.repeat(20); const wm = probe.getBoundingClientRect().width;
+    probe.remove();
+    seen.add(key);
+    if (Math.abs(wi - wm) > 0.5) out.push({ font: cs.fontFamily.split(',')[0], cw: wm / 20, bad: [{ ch: `<${e.tagName.toLowerCase()} class="${e.className}"> is not monospace`, adv: +(wi / 20).toFixed(2), want: +(wm / 20).toFixed(2) }] });
   }
   return out;
 }

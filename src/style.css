@@ -420,3 +420,14 @@ table{font:13.5px/1.45 var(--font-ui)}th{font-size:11px}th,td{padding:6px 11px}
 .cb.compact pre{padding:10px 80px 10px 13px}
 @media (max-width:900px){#app{grid-template-columns:minmax(0,1fr)}#page{padding:20px 16px 70px}}
 @media (max-width:600px){h1.ct{font-size:25px}h2.s{font-size:19px}.card .nm{font-size:16px}body{font-size:15px}}
+/* command and run output must use the same monospace grid as the command above it, or columns never line up */
+.cb .o{font:12.75px/1.5 var(--font-mono);color:var(--code-fg);opacity:.9;font-variant-ligatures:none}
+.cb.compact .o{padding-right:14px}
+/* compact examples: the Copy button gets its own column so long lines scroll beside it instead of underneath it */
+.cb.compact{position:static;display:grid;grid-template-columns:minmax(0,1fr) auto}
+.cb.compact .bar{position:static;grid-column:2;grid-row:1;padding:7px 8px 0 0;border:0;background:none;align-self:start}
+.cb.compact pre{grid-column:1;grid-row:1;padding:10px 12px;min-width:0}
+.cb.compact .o{grid-column:1/-1;grid-row:2;padding:0 14px 10px}
+@media (max-width:600px){.cb.compact pre{padding-right:10px}}
+/* wide command output scrolls sideways instead of wrapping, so columns stay aligned */
+.cb .o,.cb.compact .o{white-space:pre!important;overflow-x:auto}
