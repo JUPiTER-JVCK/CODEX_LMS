@@ -34,6 +34,7 @@ jobs:
           python test/labs.py
           python test/ascii.py
           python test/theme.py
+          python test/offline.py
   labs:
     runs-on: ubuntu-latest
     steps:

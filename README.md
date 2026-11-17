@@ -9,6 +9,7 @@ with automatic checks, quizzes and projects.
 - 49 chapters in 10 parts, 787 command cards, 270 exercises
 - Python runs in the browser (Pyodide); JavaScript runs in a sandbox with a built-in practice REST API
 - Light, dark and system themes; works on phones
+- Nothing is downloaded when you open it: the fonts are bundled in the page, and `test/offline.py` fails CI if a request ever leaves it
 - 19 interactive labs placed inside the sections they teach (bit switches, logic gates, packet dissector, cron explainer and more)
 
 ![A chapter in dark mode](docs/screenshots/chapter-dark.png)
@@ -26,7 +27,7 @@ in-page Python needs to be served over HTTP.
 - **Theme:** the button in the top bar cycles **System, Light, Dark**. System follows your operating system live.
   The choice is saved with your progress.
 - **Palette:** neutral greys, black and white with a single accent colour. Code keeps desaturated syntax colours so it stays readable.
-- **Layout:** a compact 15px reading column with Inter and JetBrains Mono.
+- **Layout:** a compact 15px reading column with Inter and JetBrains Mono, both bundled in the page (`src/fonts/`), so there is no font server to contact.
 - **Diagrams and command output** sit on a strict monospace grid. `tools/lint_ascii.py` and `test/ascii.py` fail the build if a box
   border drifts or if anything meant to line up falls back to a proportional font.
 
@@ -101,6 +102,7 @@ tests for `CodexCore` (table of contents, saved progress, search) on macOS or Li
 | `tools/pcapgen.js`, `tools/pcapcols.py` | write the lab captures as real `.pcap` files, and bake Wireshark's own column text into `src/ws-6-pcapcols.js` |
 | `src/sim.js`, `src/sbsrc.js` | simulated zsh, and the sandbox injected into every JavaScript playground |
 | `src/style.css`, `src/head.html` | design tokens, layout and page head |
+| `src/fonts/` | Inter and JetBrains Mono (variable, Latin subset), inlined into the stylesheet by `tools/build.py`; SIL OFL 1.1 licences alongside |
 | `packages/widgets/` | the logic behind the newer labs, as pure TypeScript with unit tests |
 | `packages/labs/` | the DOM views for those labs; `npm run labs` bundles them into `src/ws-labs.js` |
 | `tools/chapters.py`, `tools/build.py` | build chapter JSON, then assemble the single-file page |
@@ -126,6 +128,7 @@ and Node 20.19+ for the labs.
     python3 test/labs.py           # every lab: placement, interaction, no console errors
     python3 test/ascii.py          # diagrams and command output on a monospace grid (--hinting mimics a Linux CI renderer)
     python3 test/theme.py          # System / Light / Dark button, persistence, live OS changes
+    python3 test/offline.py        # the page makes no request outside itself; the bundled fonts load
     python3 tools/lint_ascii.py    # box borders that do not line up
     python3 test/pcapfilters.py    # needs node and tshark (apt install tshark, or brew install wireshark)
 
@@ -154,4 +157,5 @@ including the terminal-only renderers (`ascii.ts`, `subnet.ts`), so a terminal o
 
 ## License
 
-MIT, see `LICENSE`. The bundled Pyodide runtime in `dist/py/` keeps its own license (MPL-2.0).
+MIT, see `LICENSE`. The bundled Pyodide runtime in `dist/py/` keeps its own license (MPL-2.0), and the bundled fonts in
+`src/fonts/` keep theirs (SIL Open Font License 1.1, copies next to the files).

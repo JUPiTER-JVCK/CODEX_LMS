@@ -3,6 +3,7 @@
 
 Inputs (all under the project root):
   src/head.html     title, meta and font links (everything before <style>)
+  src/fonts/*.woff2 bundled fonts, inlined into the stylesheet as data: URIs
   src/style.css     base stylesheet; src/*.add.css files are appended in name order
   src/sim.js        simulated zsh
   src/sbsrc.js      source injected into every sandboxed playground frame
@@ -20,7 +21,7 @@ Outputs:
 
 Usage: python3 tools/build.py [--check-identical]
 """
-import json, os, re, sys, glob
+import base64, json, os, re, sys, glob
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -28,6 +29,22 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def rd(p):
     with open(os.path.join(ROOT, p), encoding='utf-8') as f:
         return f.read()
+
+
+# Fonts are bundled into the page (SIL OFL 1.1, see src/fonts/LICENSE-*.txt) so opening the book,
+# in a browser or in the app, never contacts a font server.
+FONTS = [('Inter', 'src/fonts/Inter-latin-wght-normal.woff2', '100 900'),
+         ('JetBrains Mono', 'src/fonts/JetBrainsMono-latin-wght-normal.woff2', '100 800')]
+
+
+def font_css():
+    out = ''
+    for family, path, weights in FONTS:
+        with open(os.path.join(ROOT, path), 'rb') as f:
+            b64 = base64.b64encode(f.read()).decode('ascii')
+        out += ('@font-face{font-family:"%s";font-style:normal;font-weight:%s;font-display:swap;'
+                'src:url(data:font/woff2;base64,%s) format("woff2")}\n' % (family, weights, b64))
+    return out
 
 
 def js_json(obj):
@@ -98,7 +115,7 @@ def build(check_identical=False):
             raise SystemExit('duplicate chapter id ' + c['id'])
         i = [x['id'] for x in book['chapters']].index(after)
         book['chapters'].insert(i + 1, c)
-    css = rd('src/style.css')
+    css = font_css() + rd('src/style.css')
     for p in sorted(glob.glob(os.path.join(ROOT, 'src/*.add.css'))):
         with open(p, encoding='utf-8') as f:
             css += f.read()
