@@ -146,11 +146,11 @@ the version before the redesign and are not part of the CI set.
 3. Add an entry to `LABS` in `tools/add_labs.py` naming the chapter and the text it should follow, then run it.
 4. `npm run labs`, `python3 tools/build.py`, and add a case to `test/labs.py`.
 
-## Parked: React/Tauri and Ink prototypes
+## Parked prototypes
 
 An earlier round built a React + Tauri desktop app and an Ink terminal app on the same widget logic. They were removed from the
-tree when the focus moved to the classic site, and remain in the history of draft PR #3 (commit `bf04bb1`). `packages/widgets` is
-kept so a desktop wrapper or a terminal version can reuse the same logic later.
+tree when the focus moved to the classic site and remain in the repository history (commit `bf04bb1`). `packages/widgets` is kept,
+including the terminal-only renderers (`ascii.ts`, `subnet.ts`), so a terminal or desktop version can reuse the same logic.
 
 ## License
 
