@@ -19,7 +19,7 @@ jobs:
           python tools/chapters.py
           python tools/build.py
       - name: dist is up to date
-        run: git diff --exit-code -- dist/index.html
+        run: git diff --exit-code -- dist/index.html dist/toc.json
       - name: ASCII diagrams are aligned
         run: python tools/lint_ascii.py --quiet
       - name: Display filters match tshark
@@ -51,3 +51,38 @@ jobs:
         run: |
           npm run labs
           git diff --exit-code -- src/ws-labs.js
+
+  apple-app:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v5
+      - name: CodexCore tests
+        run: swift test --package-path apple
+      - name: Generate Xcode project
+        run: |
+          brew install xcodegen
+          cd apple && xcodegen
+      # Release build for Apple Silicon and Intel, ad-hoc signed ("-") because Apple Silicon
+      # will not launch unsigned code. Not notarized: first launch needs Open Anyway.
+      - name: Build Mac app (Release)
+        run: |
+          xcodebuild -project apple/CODEX_LMS.xcodeproj -scheme CODEX_LMS -configuration Release \
+            -destination 'generic/platform=macOS' -derivedDataPath build \
+            ARCHS="arm64 x86_64" ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= ENABLE_HARDENED_RUNTIME=NO \
+            build
+          APP=build/Build/Products/Release/CODEX_LMS.app
+          codesign --verify --deep --strict "$APP"
+          lipo -archs "$APP/Contents/MacOS/CODEX_LMS"
+          test -f "$APP/Contents/Resources/dist/index.html"
+          test -f "$APP/Contents/Resources/dist/py/pyodide.asm.wasm"
+          mkdir -p out && ditto -c -k --keepParent "$APP" out/CODEX_LMS-mac.zip
+      - name: Upload Mac app
+        uses: actions/upload-artifact@v6
+        with:
+          name: CODEX_LMS-mac
+          path: out/CODEX_LMS-mac.zip
+          if-no-files-found: error
+          retention-days: 30
+      - name: Build for iOS Simulator
+        run: xcodebuild -project apple/CODEX_LMS.xcodeproj -scheme CODEX_LMS -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build

@@ -66,6 +66,27 @@ respect reduced-motion settings.
 <td><img src="docs/screenshots/lab-gates-light.png" alt="Logic gates lab"></td>
 </tr></table>
 
+## Apple app (macOS, iPadOS, iOS)
+
+`apple/` holds a native SwiftUI app with the same book. It has a native sidebar with progress per chapter,
+native search over chapters, sections and all command cards, back/forward, a section menu and an appearance
+setting. The pages show in a web view, so in-page Python, JavaScript playgrounds, labs and the practice terminal
+all work offline. Progress is saved by the app (Application Support), not by the browser.
+
+**Ready-built Mac app:** every CI run uploads `CODEX_LMS-mac` (a zip with a universal `CODEX_LMS.app`). Open the
+run under the repository's Actions tab, download it from Artifacts, unzip, and move the app to Applications. It is
+not notarized, so the first time you open it macOS blocks it: open System Settings → Privacy & Security and click
+**Open Anyway** (or run `xattr -dr com.apple.quarantine /Applications/CODEX_LMS.app`).
+
+**Build it yourself** (also the way to run it on an iPhone or iPad). Needs Xcode 16 or later and [XcodeGen](https://github.com/yonaskolb/XcodeGen):
+
+    python3 tools/chapters.py && python3 tools/build.py   # the app bundles dist/
+    brew install xcodegen
+    cd apple && xcodegen && open CODEX_LMS.xcodeproj
+
+Pick the CODEX_LMS scheme and run on My Mac, an iPad or an iPhone. `swift test --package-path apple` runs the
+tests for `CodexCore` (table of contents, saved progress, search) on macOS or Linux.
+
 ## Project layout
 
 | Path | What it is |
@@ -87,7 +108,11 @@ respect reduced-motion settings.
 | `tools/lint_ascii.py`, `tools/fix_ascii.py` | find, and safely re-align, drifting box diagrams |
 | `test/blocks.py`, `test/labs.py`, `test/ascii.py`, `test/theme.py` | browser tests: runnable blocks and exercises, every lab, diagram rendering, theme switch |
 | `test/pcapfilters.py` | checks the Wireshark lab's display-filter engine against real `tshark` on the same captures |
-| `dist/` | the built site: `index.html` plus the Python runtime in `py/` |
+| `dist/` | the built site: `index.html`, `toc.json` (contents for the Apple app) and the Python runtime in `py/` |
+| `src/app.add.css` | hides the page's own sidebar and toolbar when it runs inside the Apple app |
+| `apple/project.yml` | XcodeGen spec for the multiplatform app |
+| `apple/Sources/CodexCore/` | Swift models for `toc.json` and saved progress, and search; tests in `apple/Tests/` |
+| `apple/App/` | SwiftUI app: sidebar, search, web view, `codex://` scheme handler and the page bridge |
 
 ## Build and test
 
@@ -95,7 +120,7 @@ Needs Python 3 and Playwright, pinned to the version CI uses (`python3 -m pip in
 and Node 20.19+ for the labs.
 
     python3 tools/chapters.py      # chapters/*.py -> data/new/*.json
-    python3 tools/build.py         # -> dist/index.html (and pub.html for the Claude artifact host)
+    python3 tools/build.py         # -> dist/index.html, dist/toc.json (and pub.html for the Claude artifact host)
     (cd dist && python3 -m http.server 8765 &)
     python3 test/blocks.py servers apis crypto cloud wireshark defend
     python3 test/labs.py           # every lab: placement, interaction, no console errors

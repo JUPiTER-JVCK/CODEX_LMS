@@ -351,6 +351,8 @@
     if (sec) { setTimeout(function () { var t = document.getElementById(c.id + '/' + sec) || document.getElementById(sec); if (t) { t.scrollIntoView(); if (t.classList.contains('card') || t.classList.contains('ex') || t.classList.contains('cq')) { t.style.outline = '2px solid var(--accent)'; setTimeout(function () { t.style.outline = ''; }, 1600); } } }, 30); } else if (cur) window.scrollTo(0, 0);
     document.body.classList.remove('nav');
     $$('.navl').forEach(function (a) { a.classList.toggle('on', a.getAttribute('data-nav') === c.id); });
+    /* Native Apple app (apple/): tell the host which page is showing so its sidebar follows. */
+    if (window.__app) { try { window.webkit.messageHandlers.codex.postMessage({ type: 'route', id: c.id, sec: sec, title: c.title }); } catch (e) { } }
   }
   function showPage(c) {
     var pg = $('#page'), dom = c.part || 'found';
@@ -535,6 +537,7 @@
   function boot() {
     Array.prototype.slice.call(document.querySelectorAll('body > style, body > link[rel=stylesheet]')).forEach(function (n) { document.head.appendChild(n); });
     document.body.innerHTML = '<button class="skip" id="skip">Skip to content</button><div id="app"><nav id="side" aria-label="Contents"></nav><div id="main"><div id="top"><button class="tb" id="menu" aria-label="Open contents">☰ Contents</button><input id="q" type="search" placeholder="Search commands and topics" aria-label="Search the book (press / to focus)"><kbd class="qk" aria-hidden="true">/</kbd><span class="sp"></span><a class="tb hide-s" href="#atlas">Atlas</a><a class="tb hide-s" href="#practice">Practice</a><a class="tb hide-s" href="#values" title="Your placeholder values">My Values</a><button class="tb" id="theme" aria-label="Theme: system. Click to change (system, light, dark)."><svg class="ti" aria-hidden="true" width="14" height="14" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor"/></svg><span class="tl">System</span></button></div><div id="results" hidden></div><main id="page" tabindex="-1"></main></div><div id="scrim"></div></div>';
+    if (window.__app) document.body.classList.add('app');
     applyTheme(); buildNav(); buildIndex();
     
     document.addEventListener('click', function (e) {
