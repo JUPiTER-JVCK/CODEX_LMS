@@ -431,3 +431,5 @@ table{font:13.5px/1.45 var(--font-ui)}th{font-size:11px}th,td{padding:6px 11px}
 @media (max-width:600px){.cb.compact pre{padding-right:10px}}
 /* wide command output scrolls sideways instead of wrapping, so columns stay aligned */
 .cb .o,.cb.compact .o{white-space:pre!important;overflow-x:auto}
+/* a symbol glyph pinned to one monospace column (see gridLock in engine.js) */
+.g{display:inline-block;width:1ch;text-align:center;overflow:visible}.g2{width:2ch}

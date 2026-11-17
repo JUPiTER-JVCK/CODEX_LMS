@@ -437,6 +437,8 @@ table{font:13.5px/1.45 var(--font-ui)}th{font-size:11px}th,td{padding:6px 11px}
 @media (max-width:600px){.cb.compact pre{padding-right:10px}}
 /* wide command output scrolls sideways instead of wrapping, so columns stay aligned */
 .cb .o,.cb.compact .o{white-space:pre!important;overflow-x:auto}
+/* a symbol glyph pinned to one monospace column (see gridLock in engine.js) */
+.g{display:inline-block;width:1ch;text-align:center;overflow:visible}.g2{width:2ch}
 /* ===== Interactive labs (generated views live in packages/labs; styles use the book's tokens) ===== */
 .lb-card{--dom:var(--mute)}
 .lb{display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
@@ -2868,7 +2870,34 @@ window.__SBSRC="/* Node-compatible value formatting (a port of the parts of util
   var W = window.__widgets = window.__widgets || {};
   function autoSize(t) { if (!t || t.hasAttribute('data-fixed')) return; var lines = (t.value || t.placeholder || '').split('\n').length, lh = 20.5; var min = t.hasAttribute('data-stdin') ? 2 : 3; t.style.height = Math.min(Math.max(lines, min) * lh + 24, 520) + 'px'; }
   document.addEventListener('input', function (e) { var t = e.target; if (t && t.classList && t.classList.contains('ed') && !t.hasAttribute('data-fixed')) { var lines = t.value.split('\n').length; var want = Math.min(Math.max(lines, 3) * 20.5 + 24, 520); if (want > t.offsetHeight) t.style.height = want + 'px'; } });
+  /* Symbols in code blocks (box drawing, arrows, shapes, check marks...) are often missing from the code font, so the browser takes
+     each one from some other font whose cell width differs, and diagrams drift out of line. Pin every such glyph to exactly one
+     column (two for wide CJK and emoji), whichever font supplies it. Text content is unchanged, so copying still works. */
+  var LOCK = /[\u2100-\u2BFF\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE30-\uFE6F\uFF00-\uFF60\uFFE0-\uFFE6]|[\uD83C-\uD83E][\uDC00-\uDFFF]/;
+  var WIDE = /[\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE30-\uFE6F\uFF00-\uFF60\uFFE0-\uFFE6]|[\uD83C-\uD83E][\uDC00-\uDFFF]/;
+  var JOIN = /[\u0300-\u036F\u200D\uFE00-\uFE0F\u20D0-\u20FF]/;
+  function gridLock(root) {
+    $$('.cb pre, .cb .o, .hero pre', root).forEach(function (el) {
+      if (el.getAttribute('data-gl') || !LOCK.test(el.textContent)) return;
+      el.setAttribute('data-gl', '1');
+      var tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), nodes = [], n;
+      while ((n = tw.nextNode())) if (LOCK.test(n.nodeValue)) nodes.push(n);
+      nodes.forEach(function (t) {
+        var frag = document.createDocumentFragment(), buf = '', last = null;
+        Array.from(t.nodeValue).forEach(function (ch) {
+          if (last && JOIN.test(ch)) { last.textContent += ch; return; }   // variation selectors and combining marks stay with their glyph
+          if (LOCK.test(ch)) {
+            if (buf) { frag.appendChild(document.createTextNode(buf)); buf = ''; }
+            last = document.createElement('span'); last.className = WIDE.test(ch) ? 'g g2' : 'g'; last.textContent = ch; frag.appendChild(last);
+          } else { buf += ch; last = null; }
+        });
+        if (buf) frag.appendChild(document.createTextNode(buf));
+        t.parentNode.replaceChild(frag, t);
+      });
+    });
+  }
   function hydrate(root, ch) {
+    gridLock(root);
     $$('.wmount', root).forEach(function (m) {
       var f = W[m.getAttribute('data-w')], args = {}; try { args = JSON.parse(m.getAttribute('data-args')); } catch (e) { }
       if (!f) { m.innerHTML = '<div class="co co-warn"><div class="ch">Widget</div><p>The widget "' + esc(m.getAttribute('data-w')) + '" is not available.</p></div>'; return; }
