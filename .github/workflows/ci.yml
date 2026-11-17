@@ -18,8 +18,12 @@ jobs:
           python tools/build.py
       - name: dist is up to date
         run: git diff --exit-code -- dist/index.html
+      - name: Display filters match tshark
+        run: |
+          sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y tshark
+          python test/pcapfilters.py
       - name: Test
         run: |
           (cd dist && python -m http.server 8765 &) 
           sleep 2
-          python test/blocks.py servers apis crypto cloud
+          python test/blocks.py servers apis crypto cloud wireshark defend

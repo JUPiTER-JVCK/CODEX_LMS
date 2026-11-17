@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   var B = window.__BOOK, VARS = B.vars.vars, GROUPS = B.vars.groups, CH = B.chapters;
-  var PARTS = [['start', 'Start here'], ['found', 'Foundations'], ['zsh', 'The shell (zsh)'], ['net', 'Networking'], ['py', 'Python'], ['web', 'Web development'], ['srv', 'Servers, APIs & Cloud'], ['proj', 'Projects'], ['ref', 'Reference']];
+  var PARTS = [['start', 'Start here'], ['found', 'Foundations'], ['zsh', 'The shell (zsh)'], ['net', 'Networking'], ['py', 'Python'], ['web', 'Web development'], ['srv', 'Servers, APIs & Cloud'], ['sec', 'Security'], ['proj', 'Projects'], ['ref', 'Reference']];
   var KEY = 'ppp-v1';
   var $ = function (s, r) { return (r || document).querySelector(s); }, $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -230,12 +230,12 @@
     return '<div class="an" id="' + id + '"><h5>Anatomy' + (b.title ? ': ' + inl(b.title) : '') + '</h5><div class="line">' + line + '</div><ul>' + lis + '</ul></div>';
   }
   function badge(t, cls) { return '<span class="badge ' + (cls || '') + '">' + esc(t) + '</span>'; }
-  var CATN = { shell: 'shell', nav: 'navigation', files: 'files', view: 'viewing', perm: 'permissions', ops: 'operators', text: 'text', proc: 'processes', sys: 'system', mac: 'macOS', edit: 'editing', git: 'git', pkg: 'packages', 'net-info': 'net info', 'net-test': 'net test', 'net-dns': 'DNS', 'net-http': 'HTTP', 'net-port': 'ports', 'net-capture': 'capture', 'net-remote': 'remote', 'py-builtin': 'builtin', 'py-str': 'str', 'py-list': 'list', 'py-dict': 'dict', 'py-set': 'set', 'py-mod': 'module', 'py-lang': 'language', 'py-tool': 'tooling', 'web-html': 'HTML', 'web-css': 'CSS', 'web-js': 'JavaScript', 'web-dom': 'DOM', 'web-api': 'Web API', 'web-node': 'Node.js', 'web-npm': 'npm', 'web-xml': 'XML', 'web-tool': 'DevTools', 'web-http': 'HTTP', 'srv-svc': 'services', 'srv-admin': 'server admin', 'srv-web': 'web server', 'srv-api': 'API', 'srv-crypto': 'crypto & TLS', 'srv-cloud': 'cloud', 'srv-ctr': 'containers' };
+  var CATN = { shell: 'shell', nav: 'navigation', files: 'files', view: 'viewing', perm: 'permissions', ops: 'operators', text: 'text', proc: 'processes', sys: 'system', mac: 'macOS', edit: 'editing', git: 'git', pkg: 'packages', 'net-info': 'net info', 'net-test': 'net test', 'net-dns': 'DNS', 'net-http': 'HTTP', 'net-port': 'ports', 'net-capture': 'capture', 'net-remote': 'remote', 'py-builtin': 'builtin', 'py-str': 'str', 'py-list': 'list', 'py-dict': 'dict', 'py-set': 'set', 'py-mod': 'module', 'py-lang': 'language', 'py-tool': 'tooling', 'web-html': 'HTML', 'web-css': 'CSS', 'web-js': 'JavaScript', 'web-dom': 'DOM', 'web-api': 'Web API', 'web-node': 'Node.js', 'web-npm': 'npm', 'web-xml': 'XML', 'web-tool': 'DevTools', 'web-http': 'HTTP', 'srv-svc': 'services', 'srv-admin': 'server admin', 'srv-web': 'web server', 'srv-api': 'API', 'srv-crypto': 'crypto & TLS', 'srv-cloud': 'cloud', 'srv-ctr': 'containers', 'sec-pcap': 'packet analysis', 'sec-mac': 'macOS security', 'sec-linux': 'Linux security', 'sec-audit': 'auditing' };
   function cmdId(c) { return c.id ? 'cmd-' + c.id : 'cmd-' + slug(c.name); }
-  function osLabel(os) { return os === 'mac' ? 'ships with macOS' : os === 'all' ? 'macOS + Linux' : os === 'py' ? 'Python' : os === 'browser' ? 'in the browser' : os === 'node' ? 'Node.js' : os === 'web' ? 'browser + Node.js' : os === 'linux' ? 'Linux servers' : os === 'docker' ? 'Docker or OrbStack' : /^brew:/.test(os) ? 'brew install ' + os.slice(5) : os; }
+  function osLabel(os) { return os === 'mac' ? 'ships with macOS' : os === 'all' ? 'macOS + Linux' : os === 'py' ? 'Python' : os === 'browser' ? 'in the browser' : os === 'node' ? 'Node.js' : os === 'web' ? 'browser + Node.js' : os === 'linux' ? 'Linux servers' : os === 'docker' ? 'Docker or OrbStack' : os === 'wireshark' ? 'Wireshark (brew cask wireshark-app)' : /^brew:/.test(os) ? 'brew install ' + os.slice(5) : os; }
   var cmdIndex = {};
   function cardHTML(c) {
-    var dom = /^net/.test(c.cat) ? 'net' : /^py/.test(c.cat) ? 'py' : /^web/.test(c.cat) ? 'web' : /^srv/.test(c.cat) ? 'srv' : 'zsh';
+    var dom = /^net/.test(c.cat) ? 'net' : /^py/.test(c.cat) ? 'py' : /^web/.test(c.cat) ? 'web' : /^srv/.test(c.cat) ? 'srv' : /^sec/.test(c.cat) ? 'sec' : 'zsh';
     var isSh = function (t) { return /^(\$ |npm |npx |node |nvm |brew |curl |cd |mkdir |ls |cat |echo |open |xmllint |plutil |lsof |kill |export |which |git |python3 |cut |awk |printf |seq |grep |sort |head |tail |jq |xargs |sed |wc )/m.test(t) && !/^(const|let|var|function|import|export default|document|console)\b/m.test(t); };
     var isMk = function (t) { return /^\s*</.test(t); }, isCss = function (t) { return /^[^{}\n]*\{[^}]*:[^}]*\}/.test(t.trim()) && !/^(const|let|var|function|if|for)\b/.test(t.trim()); };
     var hlEx = function (t) { return dom === 'py' ? hlPy(t) : dom === 'web' ? (isSh(t) ? hlSh(t) : isMk(t) ? hlMarkup(t) : isCss(t) ? hlCss(t) : hlJs(t)) : hlSh(t); };
@@ -336,7 +336,7 @@
     PARTS.forEach(function (p) {
       var list = chapterList().filter(function (c) { return c.part === p[0]; });
       if (!list.length) return;
-      o += '<div class="navgrp dom-' + p[0] + '" style="--dom:var(--c-' + ({ start: 'found', found: 'found', zsh: 'zsh', net: 'net', py: 'py', web: 'web', srv: 'srv', proj: 'found', ref: 'ref' })[p[0]] + ')">' + p[1] + '</div>';
+      o += '<div class="navgrp dom-' + p[0] + '" style="--dom:var(--c-' + ({ start: 'found', found: 'found', zsh: 'zsh', net: 'net', py: 'py', web: 'web', srv: 'srv', sec: 'sec', proj: 'found', ref: 'ref' })[p[0]] + ')">' + p[1] + '</div>';
       list.forEach(function (c) { o += '<a class="navl dom-' + p[0] + '" data-nav="' + c.id + '" href="#' + c.id + '"><span class="n">' + (c.special ? '' : String(c.idx).padStart(2, '0')) + '</span><span>' + esc(c.title) + '</span><span class="ck"></span></a>'; });
     });
     $('#side').innerHTML = o; updateProgress();
@@ -708,7 +708,7 @@
     function draw() {
       var t = q.toLowerCase().split(/\s+/).filter(Boolean);
       var rows = cmds.filter(function (c) { if (cat && c.b.cat !== cat) return false; var hay = (c.b.name + ' ' + c.b.sum + ' ' + (c.b.tags || []).join(' ')).toLowerCase(); return t.every(function (x) { return hay.indexOf(x) >= 0; }); }).sort(function (a, b) { return a.b.name.toLowerCase() < b.b.name.toLowerCase() ? -1 : 1; });
-      var domOf = function (ct) { return /^net/.test(ct) ? 'net' : /^py/.test(ct) ? 'py' : /^web/.test(ct) ? 'web' : /^srv/.test(ct) ? 'srv' : 'zsh'; };
+      var domOf = function (ct) { return /^net/.test(ct) ? 'net' : /^py/.test(ct) ? 'py' : /^web/.test(ct) ? 'web' : /^srv/.test(ct) ? 'srv' : /^sec/.test(ct) ? 'sec' : 'zsh'; };
       list.innerHTML = (rows.length ? '<p class="atl-n">' + rows.length + ' shown</p>' : '') + rows.map(function (c, i) { return '<details class="atl" data-i="' + i + '" style="--dom:var(--c-' + domOf(c.b.cat) + ')"><summary><code class="atl-nm">' + esc(c.b.name) + '</code><span class="atl-sum">' + K.inl(c.b.sum) + '</span><a class="atl-ch" href="#' + c.ch.id + '">' + esc(c.ch.title) + '</a></summary><div class="body"></div></details>'; }).join('') || '<p>No matches.</p>';
       $$('.atl', list).forEach(function (d) { d.addEventListener('toggle', function () { if (d.open && !$('.body', d).innerHTML) { var c = rows[+d.getAttribute('data-i')]; $('.body', d).innerHTML = K.cardHTML(c.b); K.hydrate($('.body', d)); } }); });
     }

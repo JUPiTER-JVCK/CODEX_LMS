@@ -367,15 +367,18 @@ blocks = [
     mkdir -p ~/lab/ca && cd ~/lab/ca
     ossl version
     '''),
-    P('Create the root CA: a P-256 key and a self-signed certificate valid for ten years.'),
+    P('''Create the root CA: a P-256 key and a self-signed certificate valid for ten years. The two `-addext` options mark it as a CA that
+    may sign certificates. Python 3.13 and later verify strictly and reject a CA certificate without a `keyUsage` extension, with the error
+    "CA cert does not include key usage extension".'''),
     SH('''
     ossl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out ca.key
-    ossl req -x509 -new -key ca.key -sha256 -days 3650 -subj "/CN=Lab Root CA" -out ca.crt
+    ossl req -x509 -new -key ca.key -sha256 -days 3650 -subj "/CN=Lab Root CA" \\
+      -addext "basicConstraints=critical,CA:TRUE" -addext "keyUsage=critical,keyCertSign,cRLSign" -out ca.crt
     '''),
     P('Create the server key and a certificate signing request, then sign it with the CA. The extension file lists the names the certificate is valid for: browsers ignore the CN and check only the subjectAltName.'),
     SH('''
     ossl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out server.key
-    printf 'subjectAltName=DNS:lab.localhost,DNS:localhost,IP:127.0.0.1\\nextendedKeyUsage=serverAuth\\nbasicConstraints=CA:FALSE\\n' > server.ext
+    printf 'subjectAltName=DNS:lab.localhost,DNS:localhost,IP:127.0.0.1\\nextendedKeyUsage=serverAuth\\nkeyUsage=critical,digitalSignature\\nbasicConstraints=CA:FALSE\\n' > server.ext
     ossl req -new -key server.key -subj "/CN=lab.localhost" -out server.csr
     ossl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -days 30 -sha256 -extfile server.ext -out server.crt
     '''),
@@ -439,7 +442,7 @@ blocks = [
     CMD('openssl req', 'srv-crypto', 'brew:openssl@3', 'Create keys, certificate signing requests and self-signed or CA-signed certificates.',
         'openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out KEY\nopenssl req -new|-x509 -key KEY -subj "/CN=NAME" -out FILE\nopenssl x509 -req -in CSR -CA CA.crt -CAkey CA.key -extfile EXT -out CRT',
         ['`genpkey` makes a private key. `req -new` wraps the public half and your requested names into a **certificate signing request** (CSR), signed with the private key to prove you hold it. `req -x509` skips the CA and signs the certificate with the same key: a **self-signed** certificate, which is what a root CA is.',
-         '`x509 -req` is the CA side: it reads a CSR and signs a certificate with the CA key. The extensions file decides what the certificate is good for: `subjectAltName` lists the DNS names and IPs (clients check only this, not the CN), `basicConstraints=CA:FALSE` stops the certificate from signing others, and `extendedKeyUsage=serverAuth` limits it to TLS servers.',
+         '`x509 -req` is the CA side: it reads a CSR and signs a certificate with the CA key. The extensions file decides what the certificate is good for: `subjectAltName` lists the DNS names and IPs (clients check only this, not the CN), `basicConstraints=CA:FALSE` stops the certificate from signing others, `keyUsage` says which key operations are allowed, and `extendedKeyUsage=serverAuth` limits it to TLS servers. A CA certificate needs `basicConstraints=critical,CA:TRUE` and `keyUsage=critical,keyCertSign,cRLSign`; strict verifiers, including Python 3.13 and later, reject a CA without them.',
          'Public CAs such as Let\'s Encrypt run this same process automatically through the ACME protocol, after proving you control the domain.'],
         flags=[('genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256', 'a P-256 key; `-algorithm ed25519` also works for many uses'), ('req -new -subj "/CN=…"', 'make a CSR without the interactive questions'),
                ('req -x509 -days N', 'make a self-signed certificate valid for N days'), ('x509 -req -CA … -CAkey … -CAcreateserial', 'sign a CSR as a CA'),
