@@ -655,7 +655,7 @@
     var scr = $('.scr', root), inp = $('input', root), pr = $('.pr', root);
     function prompt() { var d = sh.cwd === SIM.HOME ? '~' : sh.cwd.split('/').pop() || '/'; return 'learner@macbook ' + d + ' %'; }
     function setPrompt() { pr.textContent = prompt(); }
-    function print(s, cls) { if (s === '') return; var d = h('div', { class: cls || '', text: s.replace(/\n$/, '') }); d.style.whiteSpace = 'pre-wrap'; scr.appendChild(d); scr.scrollTop = scr.scrollHeight; }
+    function print(s, cls) { if (s === '') return; var d = h('div', { class: cls || '', text: s.replace(/\n$/, '') }); scr.appendChild(d); scr.scrollTop = scr.scrollHeight; }
     function banner() { scr.innerHTML = ''; print('Lab shell ready. Try: ls, cat README.txt, head -3 access.log', 'd'); }
     banner(); setPrompt();
     function checkMissions() {

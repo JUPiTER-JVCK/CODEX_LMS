@@ -20,8 +20,11 @@ final class WebController: NSObject {
     var stateProvider: () -> String = { "{}" }
     var onSave: (String) -> Void = { _ in }
     var onRoute: (_ id: String, _ section: String, _ title: String) -> Void = { _, _, _ in }
+    var onLoaded: () -> Void = {}
+    var onHistoryChange: (_ canGoBack: Bool, _ canGoForward: Bool) -> Void = { _, _ in }
 
     private var started = false
+    private var observations: [NSKeyValueObservation] = []
 
     override init() {
         let config = WKWebViewConfiguration()
@@ -37,6 +40,21 @@ final class WebController: NSObject {
         config.userContentController.add(WeakMessageHandler(self), name: "codex")
         webView.navigationDelegate = self
         webView.uiDelegate = self
+        #if os(iOS)
+        // Let the app's background show until the page paints its own (no white flash in dark mode).
+        webView.isOpaque = false
+        webView.backgroundColor = .clear
+        webView.scrollView.backgroundColor = .clear
+        #endif
+        // Back/forward enablement follows the page's history, including in-page (#hash) moves.
+        // KVO for WKWebView arrives on the main thread.
+        let update: (WKWebView, NSKeyValueObservedChange<Bool>) -> Void = { [weak self] view, _ in
+            MainActor.assumeIsolated { self?.onHistoryChange(view.canGoBack, view.canGoForward) }
+        }
+        observations = [
+            webView.observe(\.canGoBack, options: [.new], changeHandler: update),
+            webView.observe(\.canGoForward, options: [.new], changeHandler: update),
+        ]
         if #available(macOS 13.3, iOS 16.4, *) {
             webView.isInspectable = true
         }
@@ -144,6 +162,21 @@ extension WebController: WKNavigationDelegate, WKUIDelegate {
             Self.openExternally(url)
         }
         return nil
+    }
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        onLoaded()
+    }
+
+    // Show the web view even if the load failed, so the reader never sits behind a spinner.
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        NSLog("CODEX_LMS: page failed: %@", String(describing: error))
+        onLoaded()
+    }
+
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        NSLog("CODEX_LMS: page failed to start: %@", String(describing: error))
+        onLoaded()
     }
 
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {

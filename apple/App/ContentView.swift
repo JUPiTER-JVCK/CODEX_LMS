@@ -1,5 +1,8 @@
 import SwiftUI
 import CodexCore
+#if os(macOS)
+import AppKit
+#endif
 
 struct ContentView: View {
     @Environment(BookStore.self) private var store
@@ -14,6 +17,11 @@ struct ContentView: View {
                 #endif
         } detail: {
             BookWebView(controller: store.web)
+                .opacity(store.pageReady ? 1 : 0)
+                .overlay {
+                    if !store.pageReady { ProgressView().controlSize(.large) }
+                }
+                .animation(.easeOut(duration: 0.2), value: store.pageReady)
                 .ignoresSafeArea(edges: .bottom)
                 .navigationTitle(store.currentTitle)
                 #if os(iOS)
@@ -22,7 +30,20 @@ struct ContentView: View {
                 .toolbar { ReaderToolbar(store: store) }
         }
         .searchable(text: $query, placement: .sidebar, prompt: "Search commands and topics")
+        #if os(macOS)
+        // preferredColorScheme(nil) does not hand a Mac window back to the system appearance,
+        // so "System" would stay stuck on the last forced mode. Set the app's appearance instead.
+        .onChange(of: store.appearance, initial: true) { _, mode in
+            NSApp.appearance = switch mode {
+            case .system: nil
+            case .light: NSAppearance(named: .aqua)
+            case .dark: NSAppearance(named: .darkAqua)
+            }
+        }
+        .frame(minWidth: 760, minHeight: 480)
+        #else
         .preferredColorScheme(store.colorScheme)
+        #endif
         .task { store.start() }
     }
 }
@@ -37,16 +58,23 @@ private struct Sidebar: View {
             get: { store.selectedRow },
             set: { if let r = $0 { store.open(r) } }
         )
+        let searching = !query.trimmingCharacters(in: .whitespaces).isEmpty
+        let hits = searching ? store.search.search(query) : []
         List(selection: selection) {
-            if query.trimmingCharacters(in: .whitespaces).isEmpty {
-                contents
+            if searching {
+                results(hits)
             } else {
-                results
+                contents
             }
         }
         #if os(macOS)
         .listStyle(.sidebar)
         #endif
+        .overlay {
+            if searching && hits.isEmpty {
+                ContentUnavailableView.search(text: query)
+            }
+        }
     }
 
     @ViewBuilder private var contents: some View {
@@ -83,11 +111,7 @@ private struct Sidebar: View {
         }
     }
 
-    @ViewBuilder private var results: some View {
-        let hits = store.search.search(query)
-        if hits.isEmpty {
-            Text("No matches").foregroundStyle(.secondary).selectionDisabled()
-        }
+    @ViewBuilder private func results(_ hits: [SearchHit]) -> some View {
         ForEach(hits) { hit in
             VStack(alignment: .leading, spacing: 2) {
                 Label {
@@ -127,13 +151,14 @@ private struct Sidebar: View {
 private struct ChapterRow: View {
     let chapter: Chapter
     let progress: ItemProgress
+    @ScaledMetric(relativeTo: .caption) private var numberWidth: CGFloat = RowMetrics.number
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: RowMetrics.gap) {
             Text(chapter.numberLabel)
                 .font(.caption.monospacedDigit())
                 .foregroundStyle(.secondary)
-                .frame(width: 22, alignment: .trailing)
+                .frame(width: numberWidth, alignment: .trailing)
             Text(chapter.plainTitle)
                 .lineLimit(2)
             Spacer(minLength: 4)
@@ -144,16 +169,24 @@ private struct ChapterRow: View {
     }
 }
 
+/// Chapter rows put the number in a fixed column; section rows indent to the title after it.
+private enum RowMetrics {
+    static let number: CGFloat = 22
+    static let gap: CGFloat = 10
+}
+
 /// A section of the open chapter, indented under the chapter's title.
 private struct SectionRow: View {
     let section: ChapterSection
+    // Scales with the same text style as the chapter number, so the indent stays aligned.
+    @ScaledMetric(relativeTo: .caption) private var numberWidth: CGFloat = RowMetrics.number
 
     var body: some View {
         Text(section.plainText)
             .font(.callout)
             .foregroundStyle(.secondary)
             .lineLimit(2)
-            .padding(.leading, 32)
+            .padding(.leading, numberWidth + RowMetrics.gap)
     }
 }
 
@@ -161,17 +194,25 @@ private struct SectionRow: View {
 private struct ProgressMark: View {
     let progress: ItemProgress
 
+    /// Ring and check share one footprint so titles and marks line up down the list.
+    @ScaledMetric(relativeTo: .body) private var size: CGFloat = 15
+
     var body: some View {
         if progress.isComplete {
-            Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+            Image(systemName: "checkmark.circle.fill")
+                .resizable()
+                .scaledToFit()
+                .foregroundStyle(.green)
+                .frame(width: size, height: size)
         } else if progress.done > 0 {
             ZStack {
-                Circle().stroke(.secondary.opacity(0.3), lineWidth: 2.5)
+                Circle().stroke(.secondary.opacity(0.3), lineWidth: 2)
                 Circle().trim(from: 0, to: progress.fraction)
-                    .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+                    .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 2, lineCap: .round))
                     .rotationEffect(.degrees(-90))
             }
-            .frame(width: 14, height: 14)
+            .padding(1)
+            .frame(width: size, height: size)
         }
     }
 }
@@ -183,7 +224,11 @@ private struct ReaderToolbar: ToolbarContent {
     var body: some ToolbarContent {
         ToolbarItemGroup(placement: .navigation) {
             Button { store.web.goBack() } label: { Label("Back", systemImage: "chevron.backward") }
+                .disabled(!store.canGoBack)
+                .help("Back")
             Button { store.web.goForward() } label: { Label("Forward", systemImage: "chevron.forward") }
+                .disabled(!store.canGoForward)
+                .help("Forward")
         }
         ToolbarItemGroup(placement: .primaryAction) {
             if let chapter = store.currentChapter, !chapter.sections.isEmpty {
@@ -196,14 +241,24 @@ private struct ReaderToolbar: ToolbarContent {
                 } label: {
                     Label("Sections", systemImage: "list.bullet")
                 }
+                .help("Jump to a section")
             }
             Menu {
                 Picker("Appearance", selection: Binding(get: { store.appearance }, set: { store.appearance = $0 })) {
                     ForEach(BookStore.Appearance.allCases) { Text($0.label).tag($0) }
                 }
+                SwiftUI.Section("Text Size (\(Int((store.textZoom * 100).rounded()))%)") {
+                    Button { store.zoomIn() } label: { Label("Larger", systemImage: "textformat.size.larger") }
+                        .disabled(!store.canZoomIn)
+                    Button { store.zoomOut() } label: { Label("Smaller", systemImage: "textformat.size.smaller") }
+                        .disabled(!store.canZoomOut)
+                    Button("Actual Size") { store.resetZoom() }
+                        .disabled(store.textZoom == 1)
+                }
             } label: {
-                Label("Appearance", systemImage: "circle.lefthalf.filled")
+                Label("Appearance", systemImage: "textformat.size")
             }
+            .help("Appearance and text size")
         }
     }
 }

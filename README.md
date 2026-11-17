@@ -69,8 +69,8 @@ respect reduced-motion settings.
 ## Apple app (macOS, iPadOS, iOS)
 
 `apple/` holds a native SwiftUI app with the same book. It has a native sidebar with progress per chapter,
-native search over chapters, sections and all command cards, back/forward, a section menu and an appearance
-setting. The pages show in a web view, so in-page Python, JavaScript playgrounds, labs and the practice terminal
+native search over chapters, sections and all command cards, back/forward, a section menu, an appearance
+setting and text size (⌘+ / ⌘− / ⌘0 on the Mac, or the Appearance menu in the toolbar). The pages show in a web view, so in-page Python, JavaScript playgrounds, labs and the practice terminal
 all work offline. Progress is saved by the app (Application Support), not by the browser.
 
 **Ready-built Mac app:** every CI run uploads `CODEX_LMS-mac` (a zip with a universal `CODEX_LMS.app`). Open the
