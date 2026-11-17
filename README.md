@@ -124,7 +124,7 @@ and Node 20.19+ for the labs.
     (cd dist && python3 -m http.server 8765 &)
     python3 test/blocks.py servers apis crypto cloud wireshark defend
     python3 test/labs.py           # every lab: placement, interaction, no console errors
-    python3 test/ascii.py          # diagrams and command output on a monospace grid
+    python3 test/ascii.py          # diagrams and command output on a monospace grid (--hinting mimics a Linux CI renderer)
     python3 test/theme.py          # System / Light / Dark button, persistence, live OS changes
     python3 tools/lint_ascii.py    # box borders that do not line up
     python3 test/pcapfilters.py    # needs node and tshark (apt install tshark, or brew install wireshark)

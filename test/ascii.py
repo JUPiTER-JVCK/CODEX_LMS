@@ -9,7 +9,9 @@ Symbols such as box-drawing characters are often missing from a web font (the Go
 browser takes each from another font with a different cell width. The page pins every such glyph to one column; this test proves
 it, on whatever fonts the machine has.
 
-usage: python3 test/ascii.py [CHAPTER_ID ...]       (needs dist/ served on http://localhost:8765)
+usage: python3 test/ascii.py [--hinting] [CHAPTER_ID ...]
+       --hinting  launch the browser with full font hinting, as on a typical Linux CI runner, where glyph advances are rounded
+                  to whole pixels unless text-rendering is geometricPrecision       (needs dist/ served on http://localhost:8765)
 """
 import sys
 from playwright.sync_api import sync_playwright
@@ -28,10 +30,11 @@ JS = r"""
     const text = el.textContent;
     if (!SYMBOL.test(text) || !el.getClientRects().length) continue;
     const cs = getComputedStyle(el);
+    // measure the cell with a probe *inside* the element, so it inherits everything that affects glyph advances
+    // (font, size, letter-spacing, text-rendering, ligatures...) instead of a hand-picked copy of some of them
     const probe = document.createElement('span');
     probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre';
-    for (const k of ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'letterSpacing']) probe.style[k] = cs[k];
-    document.body.appendChild(probe);
+    el.appendChild(probe);
     probe.textContent = 'M'.repeat(100);
     const cw = probe.getBoundingClientRect().width / 100;
     probe.remove();
@@ -67,7 +70,7 @@ JS = r"""
     seen.add(key);
     const probe = document.createElement('span');
     probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre';
-    for (const k of ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle']) probe.style[k] = cs[k];
+    for (const k of ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'fontKerning', 'fontVariantLigatures', 'fontFeatureSettings', 'letterSpacing', 'textRendering']) probe.style[k] = cs[k];
     document.body.appendChild(probe);
     probe.textContent = 'i'.repeat(20); const wi = probe.getBoundingClientRect().width;
     probe.textContent = 'M'.repeat(20); const wm = probe.getBoundingClientRect().width;
@@ -82,9 +85,10 @@ JS = r"""
 def main():
     args = sys.argv[1:]
     ids = [a for a in args if not a.startswith('--')]
+    hinting = '--hinting' in args
     problems = 0
     with sync_playwright() as p:
-        b = p.chromium.launch()
+        b = p.chromium.launch(args=['--font-render-hinting=full'] if hinting else [])
         pg = b.new_page(viewport={'width': 1300, 'height': 900})
         errs = []
         pg.on('pageerror', lambda e: errs.append(str(e)))
