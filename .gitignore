@@ -13,3 +13,4 @@ DerivedData/
 
 # terminal app bundle
 apps/tui/dist/
+dist/CODEX_LMS.html
