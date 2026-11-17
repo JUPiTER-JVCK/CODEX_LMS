@@ -3442,6 +3442,12 @@
      "line": 63
     },
     {
+     "t": "widget",
+     "name": "bitswitches",
+     "args": {},
+     "line": 63
+    },
+    {
      "t": "h",
      "level": 3,
      "text": "Powers of two worth knowing",
@@ -3648,6 +3654,12 @@
      "line": 176
     },
     {
+     "t": "widget",
+     "name": "utf8",
+     "args": {},
+     "line": 176
+    },
+    {
      "t": "code",
      "lang": "run",
      "attrs": {
@@ -3830,6 +3842,12 @@
      "code": "addr = 0xC0A80117\nmask = 0xFFFFFF00\nnet = addr & mask\nprint(hex(net), \".\".join(str((net >> s) & 0xFF) for s in (24, 16, 8, 0)))\nprint(f\"{mask:032b}\")\nprint(bin(mask).count(\"1\"))\nprint(addr & ~mask & 0xFFFFFFFF)",
      "line": 261,
      "out": "0xc0a80100 192.168.1.0\n11111111111111111111111100000000\n24\n23"
+    },
+    {
+     "t": "widget",
+     "name": "bitmask",
+     "args": {},
+     "line": 261
     },
     {
      "t": "p",
@@ -4483,6 +4501,12 @@
      "line": 506
     },
     {
+     "t": "widget",
+     "name": "latencyladder",
+     "args": {},
+     "line": 506
+    },
+    {
      "t": "p",
      "text": "Ask your Mac about itself. All of these are read-only:",
      "line": 508
@@ -4499,6 +4523,12 @@
     {
      "t": "p",
      "text": "`uname -m` reports the CPU architecture: `arm64` for Apple Silicon, `x86_64` for Intel. `sysctl` reads kernel settings by name, and `awk` turns a byte count into GiB. The [System and processes](#system) chapter covers these commands in full.",
+     "line": 523
+    },
+    {
+     "t": "widget",
+     "name": "gates",
+     "args": {},
      "line": 523
     },
     {
@@ -5125,6 +5155,12 @@
     {
      "t": "p",
      "text": "Homebrew's folders come first, so Homebrew's `python3` wins over Apple's. The folder order is the entire explanation of \"why does `python3` run the wrong one\".",
+     "line": 801
+    },
+    {
+     "t": "widget",
+     "name": "pathlookup",
+     "args": {},
      "line": 801
     },
     {
@@ -10544,6 +10580,12 @@
     {
      "t": "p",
      "text": "A million items cost the linear search a million looks and the binary search about twenty. That gap is why databases keep indexes sorted, why `git bisect` finds a bad commit among thousands in a dozen steps, and why you sort before you search.",
+     "line": 239
+    },
+    {
+     "t": "widget",
+     "name": "algoracer",
+     "args": {},
      "line": 239
     },
     {
@@ -27657,6 +27699,12 @@
      "line": 846
     },
     {
+     "t": "widget",
+     "name": "cron",
+     "args": {},
+     "line": 846
+    },
+    {
      "t": "p",
      "text": "Cron runs commands with an almost empty environment: `PATH` is just `/usr/bin:/bin`, there is no `.zshrc`, and the working directory is your home. Use absolute paths and redirect output to a file. On recent macOS versions cron also needs **Full Disk Access** (System Settings, Privacy & Security) before it can touch protected folders such as Documents and Desktop, which is one reason Apple prefers launchd.",
      "line": 851
@@ -29524,6 +29572,12 @@
        "line": 1
       }
      ],
+     "line": 267
+    },
+    {
+     "t": "widget",
+     "name": "procsim",
+     "args": {},
      "line": 267
     },
     {
@@ -35367,6 +35421,12 @@
      "lang": "ascii",
      "attrs": {},
      "code": "  TTL=1  ──▶ [router 1] ✗ TTL hits 0 ──▶ \"time exceeded\" from router 1 address\n  TTL=2  ──▶ [router 1] ──▶ [router 2] ✗ ──▶ \"time exceeded\" from router 2 address\n  TTL=3  ──▶ [router 1] ──▶ [router 2] ──▶ [router 3] ✗ ──▶ ... from router 3\n  TTL=4  ──▶ [router 1] ──▶ [router 2] ──▶ [router 3] ──▶ [destination]\n                                                            │\n        UDP probes: destination answers \"port unreachable\" (type 3 code 3) ◀┘\n        ICMP probes (-I): destination answers \"echo reply\"",
+     "line": 234
+    },
+    {
+     "t": "widget",
+     "name": "ttltrace",
+     "args": {},
      "line": 234
     },
     {
@@ -44869,6 +44929,12 @@
      "line": 312
     },
     {
+     "t": "widget",
+     "name": "dissect",
+     "args": {},
+     "line": 312
+    },
+    {
      "t": "p",
      "text": "Read it as a story. Line 1: your Mac asks the router (`192.168.1.1`, port 53) for the address of `example.com`; the `+` means \"recursion desired\" and `A?` is the question. Line 2: the router answers with `A 93.184.216.34`, 11.8 ms later. Only after that does anything touch the web server: lines 3 to 5 are the handshake (the gap between the SYN and the SYN+ACK, 19.3 ms, is the round trip to the server), line 6 is the HTTP request, and line 8 begins the response. Notice that tcpdump names the application protocol (`HTTP: GET / HTTP/1.1`) for port 80.",
      "line": 324
@@ -47313,6 +47379,12 @@
     {
      "t": "p",
      "text": "Now `ssh pi` means \"log in to `{{labhost}}` as `{{sshuser}}` with that key\", and `ssh web` connects to a machine that is only reachable *through* `pi`. The same aliases work for `scp`, `sftp` and `rsync`: `scp notes.txt pi:/tmp/`.",
+     "line": 429
+    },
+    {
+     "t": "widget",
+     "name": "sshconfig",
+     "args": {},
      "line": 429
     },
     {
@@ -53785,6 +53857,14 @@
      "code": "parts = \"192.168.1.10\".split(\".\")\nip = (int(parts[0]) << 24) | (int(parts[1]) << 16) | (int(parts[2]) << 8) | int(parts[3])\nprefix = 24\nmask = (0xFFFFFFFF << (32 - prefix)) & 0xFFFFFFFF\nnetwork = ip & mask\nwildcard = ~mask & 0xFFFFFFFF\nbroadcast = network | wildcard\n\ndef dotted(n):\n    return \".\".join(str((n >> shift) & 0xFF) for shift in (24, 16, 8, 0))\n\nprint(ip, hex(ip), f\"{ip:032b}\")\nprint(\"mask     \", dotted(mask))\nprint(\"network  \", dotted(network))\nprint(\"broadcast\", dotted(broadcast))\nprint(\"hosts    \", broadcast - network - 1)",
      "line": 358,
      "out": "3232235786 0xc0a8010a 11000000101010000000000100001010\nmask      255.255.255.0\nnetwork   192.168.1.0\nbroadcast 192.168.1.255\nhosts     254"
+    },
+    {
+     "t": "widget",
+     "name": "bitmask",
+     "args": {
+      "mode": "ip"
+     },
+     "line": 358
     },
     {
      "t": "p",
@@ -69283,6 +69363,14 @@
      "line": 59
     },
     {
+     "t": "widget",
+     "name": "pathlookup",
+     "args": {
+      "mode": "python"
+     },
+     "line": 59
+    },
+    {
      "t": "code",
      "lang": "term",
      "attrs": {
@@ -79796,6 +79884,12 @@
      "out": "<p>WAN up</p><p>LAN up</p>\n<ul><li>router</li><li>pi</li></ul>\n<p>status: </p><div>offline</div><p></p>\n<b>bold <i>both</i></b><i> italic?</i>\n<table><tbody><tr><td>pi</td></tr></tbody></table>\noops<table><tbody><tr><td>pi</td></tr></tbody></table>"
     },
     {
+     "t": "widget",
+     "name": "domtree",
+     "args": {},
+     "line": 211
+    },
+    {
      "t": "p",
      "text": "Line by line:",
      "line": 229
@@ -86637,6 +86731,12 @@
        "line": 1
       }
      ],
+     "line": 764
+    },
+    {
+     "t": "widget",
+     "name": "jswat",
+     "args": {},
      "line": 764
     },
     {
@@ -95135,6 +95235,12 @@
        "children": []
       }
      ],
+     "line": 577
+    },
+    {
+     "t": "widget",
+     "name": "netwaterfall",
+     "args": {},
      "line": 577
     },
     {
@@ -104837,6 +104943,12 @@
      "code": "const parse = (v) => v.split('.').map(Number);\n\nfunction satisfies(version, range) {\n  const [, op, base] = range.match(/^([\\^~]?)(.+)$/);\n  const [M, m, p] = parse(base);\n  const [vM, vm, vp] = parse(version);\n  const atLeast = vM > M || (vM === M && (vm > m || (vm === m && vp >= p)));\n  if (op === '') return vM === M && vm === m && vp === p;\n  if (op === '~') return atLeast && vM === M && vm === m;\n  if (M > 0) return atLeast && vM === M;            // ^1.4.2 means >=1.4.2 <2.0.0\n  if (m > 0) return atLeast && vM === 0 && vm === m; // ^0.4.2 means >=0.4.2 <0.5.0\n  return vM === 0 && vm === 0 && vp === p;          // ^0.0.3 means exactly 0.0.3\n}\n\nfor (const v of ['1.4.1', '1.4.2', '1.4.9', '1.9.0', '2.0.0']) {\n  console.log(v.padEnd(6), '^1.4.2', satisfies(v, '^1.4.2'), ' ~1.4.2', satisfies(v, '~1.4.2'));\n}",
      "line": 1385,
      "out": "1.4.1  ^1.4.2 false  ~1.4.2 false\n1.4.2  ^1.4.2 true  ~1.4.2 true\n1.4.9  ^1.4.2 true  ~1.4.2 true\n1.9.0  ^1.4.2 true  ~1.4.2 false\n2.0.0  ^1.4.2 false  ~1.4.2 false"
+    },
+    {
+     "t": "widget",
+     "name": "semver",
+     "args": {},
+     "line": 1385
     },
     {
      "t": "p",

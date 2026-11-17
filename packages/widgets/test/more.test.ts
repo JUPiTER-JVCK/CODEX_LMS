@@ -5,7 +5,7 @@ import {
   sha256Hex, sha256, hmacSha256, utf8, toHex, avalanche,
   utf8Breakdown, utf8Summary,
   applyMask, cidrMask, ipToNum, numToIp, flagNames,
-  lookup, DEFAULT_PATH,
+  lookup, DEFAULT_PATH, PY_PATH, PY_FS,
   b64urlEncode, b64urlDecode, makeToken, decodeToken, sampleToken, SAMPLE_SECRET,
   parseCron, explain, nextRuns,
 } from "../src/index.ts";
@@ -85,4 +85,13 @@ test("cron parse, explain and next runs", () => {
   const wk = nextRuns("30 8 * * 1-5", new Date(2026, 0, 16, 9, 0), 2); // Fri 9:00 -> next Mon, Tue
   assert.deepEqual(wk.map((d) => d.getDay()), [1, 2]);
   assert.deepEqual(nextRuns("0 0 30 2 *", from, 1), []); // Feb 30 never happens
+});
+
+test("python import search: a local random.py shadows the standard library", () => {
+  assert.equal(lookup("random", PY_PATH, PY_FS).found, "/usr/lib/python3.12/random");
+  const withLocal = { ...PY_FS, "(script folder)": [...PY_FS["(script folder)"], "random"] };
+  const r = lookup("random", PY_PATH, withLocal);
+  assert.equal(r.found, "(script folder)/random");
+  assert.deepEqual(r.shadowed, ["/usr/lib/python3.12/random"]);
+  assert.equal(lookup("requests", PY_PATH, PY_FS).found, "~/.venv/lib/python3.12/site-packages/requests");
 });

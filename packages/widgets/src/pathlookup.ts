@@ -22,3 +22,11 @@ export function lookup(command: string, path: string, fs: Record<string, string[
   const winner = steps.find((s) => s.winner);
   return { steps, found: winner ? `${winner.dir}/${command}` : null, shadowed: steps.filter((s) => s.shadowed).map((s) => `${s.dir}/${command}`) };
 }
+
+/** The same first-match-wins idea for Python's import system: sys.path is searched in order. */
+export const PY_PATH = "(script folder):/usr/lib/python3.12:~/.venv/lib/python3.12/site-packages";
+export const PY_FS: Record<string, string[]> = {
+  "(script folder)": ["utils", "config"],
+  "/usr/lib/python3.12": ["random", "json", "os", "socket", "string", "ipaddress"],
+  "~/.venv/lib/python3.12/site-packages": ["requests", "yaml", "numpy"],
+};

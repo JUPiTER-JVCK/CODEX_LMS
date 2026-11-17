@@ -12,6 +12,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install playwright==1.63.0 && python -m playwright install --with-deps chromium
+      - name: Labs are placed in their chapters
+        run: python tools/add_labs.py --check
       - name: Build
         run: |
           python tools/chapters.py
@@ -25,8 +27,10 @@ jobs:
           (cd dist && python -m http.server 8765 &)
           sleep 2
           python test/blocks.py servers apis crypto cloud
+          python test/labs.py
           python test/ascii.py
-  widgets:
+          python test/theme.py
+  labs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -35,5 +39,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Widget logic tests
+      - name: Lab logic tests
         run: npm test
+      - name: Type-check the lab views
+        run: npx tsc --noEmit -p packages/labs
+      - name: src/ws-5-labs.js is up to date
+        run: |
+          npm run labs
+          git diff --exit-code -- src/ws-5-labs.js

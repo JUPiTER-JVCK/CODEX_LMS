@@ -103,6 +103,7 @@ blocks = [
     print("input bits that differ: ", bits_differ(a, b))
     print("output bits that differ:", bits_differ(ha, hb), "of", len(ha) * 8)
     '''),
+    WIDGET('avalanche'),
     P('''The everyday use is checking that a download is exactly what the publisher released. macOS ships `shasum` (and `openssl dgst`).
     Compare the digest you compute with the one on the project's website or in its signed release notes:'''),
     TERM('''
@@ -132,6 +133,7 @@ blocks = [
     them per second, so an attacker who steals your database tries every common password against every hash in minutes. Two fixes, always
     together: a random **salt** per user (so identical passwords give different hashes and precomputed tables are useless) and a
     deliberately **slow, memory-hard** function, so each guess costs real time and memory.'''),
+    WIDGET('crackcalc'),
     TABLE(['Function', 'Tunable cost', 'Recommendation'], [
         ['Argon2id', 'time, memory, parallelism', 'the first choice for new systems (winner of the Password Hashing Competition, RFC 9106)'],
         ['scrypt', 'CPU and memory', 'good; built into Python\'s `hashlib` on macOS and Linux'],
