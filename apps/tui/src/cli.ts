@@ -105,4 +105,5 @@ export async function main(argv: string[]): Promise<number> {
 }
 
 const self = process.argv[1] ? path.resolve(process.argv[1]) : "";
-if (self === fileURLToPath(import.meta.url) || /codex-tui\.mjs$/.test(self)) main(process.argv.slice(2)).then((c) => process.exit(c));
+const isMain = (() => { try { return self === fileURLToPath(import.meta.url) || /codex-tui\.mjs$/.test(self); } catch { return false; } })();
+if (isMain) main(process.argv.slice(2)).then((c) => process.exit(c));

@@ -116,6 +116,22 @@ tests for `CodexCore` (table of contents, saved progress, search) on macOS or Li
 | `apple/Sources/CodexCore/` | Swift models for `toc.json` and saved progress, and search; tests in `apple/Tests/` |
 | `apple/App/` | SwiftUI app: sidebar, search, web view, `codex://` scheme handler and the page bridge |
 
+## Terminal app
+
+`node apps/tui/dist/codex-tui.mjs` (after `npm run tui:build`) or `npm run tui`. It reads the book from `dist/index.html`, shares your progress with the Mac app, supports mouse and keyboard, and has terminal versions of seven labs inside the sections that teach them (bit switches, logic gates, bit mask and mask-an-address, text to bytes, cron, latency ladder, subnet calculator). Labs the terminal does not have yet show a card pointing to the page or the Mac app. `?` shows the keys.
+
+## One file: page, terminal app and Mac app
+
+`python3 tools/bundle.py --app CODEX_LMS-mac.zip` (CI does this and uploads `CODEX_LMS-single-file`) writes **`CODEX_LMS.html`**, one file for whichever device you have:
+
+| Where | How | What you get |
+|---|---|---|
+| Any browser | open the file | the book, offline, with Python exercises working even from `file://` |
+| Terminal with Node 18+ | `node CODEX_LMS.html` | the terminal app (`--theme`, `--no-mouse`, `--list`, ...) |
+| Mac | `node CODEX_LMS.html --app`, or "Other ways to open this" in the page | installs and opens the Mac app |
+
+Also `--html` (serve the page and open a browser), `--extract DIR` and `--help`. The file is an HTML comment that is also a JavaScript comment (the Node launcher), so a browser ignores it and Node ignores the page. If Node reports `ERR_UNKNOWN_FILE_EXTENSION` (the folder's `package.json` says `"type": "module"`), run `node -e "require('./CODEX_LMS.html')" -- --tui`. About 10 MB without the Mac app; `--no-python` makes it smaller.
+
 ## Build and test
 
 Needs Python 3 and Playwright, pinned to the version CI uses (`python3 -m pip install playwright==1.63.0 && python3 -m playwright install chromium`),
@@ -129,6 +145,7 @@ and Node 20.19+ for the labs.
     python3 test/ascii.py          # diagrams and command output on a monospace grid (--hinting mimics a Linux CI renderer)
     python3 test/theme.py          # System / Light / Dark button, persistence, live OS changes
     python3 test/offline.py        # the page makes no request outside itself; the bundled fonts load
+    python3 test/bundle.py FILE    # the single file: as a page, with Python, and under node
     python3 tools/lint_ascii.py    # box borders that do not line up
     python3 test/pcapfilters.py    # needs node and tshark (apt install tshark, or brew install wireshark)
 

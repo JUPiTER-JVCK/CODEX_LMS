@@ -119,3 +119,34 @@ jobs:
           retention-days: 30
       - name: Build for iOS Simulator
         run: xcodebuild -project apple/CODEX_LMS.xcodeproj -scheme CODEX_LMS -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
+
+  bundle:
+    needs: [tui, apple-app]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: python -m pip install playwright==1.63.0 pyte && python -m playwright install --with-deps chromium
+      - uses: actions/download-artifact@v7
+        with:
+          name: codex-tui
+          path: apps/tui/dist
+      - uses: actions/download-artifact@v7
+        with:
+          name: CODEX_LMS-mac
+          path: mac
+      - name: Assemble CODEX_LMS.html (page + terminal app + Mac app + Python)
+        run: python tools/bundle.py --app mac/CODEX_LMS-mac.zip --out CODEX_LMS.html
+      - name: Test it as a page and under node
+        run: python test/bundle.py CODEX_LMS.html
+      - uses: actions/upload-artifact@v6
+        with:
+          name: CODEX_LMS-single-file
+          path: CODEX_LMS.html
+          if-no-files-found: error
+          retention-days: 30
