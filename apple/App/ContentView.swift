@@ -34,7 +34,7 @@ private struct Sidebar: View {
 
     var body: some View {
         let selection = Binding<String?>(
-            get: { store.currentPage },
+            get: { store.selectedRow },
             set: { if let r = $0 { store.open(r) } }
         )
         List(selection: selection) {
@@ -68,6 +68,12 @@ private struct Sidebar: View {
                 SwiftUI.Section(part.title) {
                     ForEach(chapters) { c in
                         ChapterRow(chapter: c, progress: store.progress(for: c)).tag(c.id)
+                        // The open chapter shows its sections underneath it.
+                        if c.id == store.currentPage {
+                            ForEach(c.sections) { s in
+                                SectionRow(section: s).tag("\(c.id)/\(s.id)")
+                            }
+                        }
                     }
                     ForEach(pages) { p in
                         Label(p.title, systemImage: icon(for: p.id)).tag(p.id)
@@ -135,6 +141,19 @@ private struct ChapterRow: View {
         }
         .accessibilityElement(children: .combine)
         .accessibilityValue(progress.total == 0 ? "" : "\(progress.done) of \(progress.total) done")
+    }
+}
+
+/// A section of the open chapter, indented under the chapter's title.
+private struct SectionRow: View {
+    let section: ChapterSection
+
+    var body: some View {
+        Text(section.plainText)
+            .font(.callout)
+            .foregroundStyle(.secondary)
+            .lineLimit(2)
+            .padding(.leading, 32)
     }
 }
 

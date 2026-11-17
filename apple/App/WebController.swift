@@ -53,7 +53,11 @@ final class WebController: NSObject {
     }
 
     func navigate(to route: String) {
-        evaluate("location.hash = \(Self.jsString("#" + route));")
+        // Setting the same hash again fires no event; re-run the engine's router so the
+        // page still scrolls back to that section.
+        evaluate("""
+        (function(h){ if (location.hash === h) window.dispatchEvent(new HashChangeEvent('hashchange')); else location.hash = h; })(\(Self.jsString("#" + route)));
+        """)
     }
 
     func goBack() { if webView.canGoBack { webView.goBack() } }

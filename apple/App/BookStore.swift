@@ -56,12 +56,22 @@ final class BookStore {
     func open(_ route: String) {
         let id = String(route.split(separator: "/", maxSplits: 1).first ?? "")
         guard !id.isEmpty else { return }
-        if route == currentPage && currentSection.isEmpty { return }
+        let section = route.count > id.count ? String(route.dropFirst(id.count + 1)) : ""
+        if id == currentPage && section.isEmpty && currentSection.isEmpty { return }
         currentPage = id
+        currentSection = section
         web.navigate(to: route)
     }
 
     var currentChapter: Chapter? { toc.chapter(id: currentPage) }
+
+    /// Sidebar row to highlight: the section when it is one of the chapter's headings
+    /// (not a command card or exercise anchor), otherwise the chapter.
+    var selectedRow: String {
+        guard !currentSection.isEmpty,
+              currentChapter?.sections.contains(where: { $0.id == currentSection }) == true else { return currentPage }
+        return "\(currentPage)/\(currentSection)"
+    }
 
     var continueRoute: String? { state.last.isEmpty ? nil : state.last }
 
