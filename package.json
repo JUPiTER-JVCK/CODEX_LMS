@@ -2,14 +2,15 @@
   "name": "codex-lms-monorepo",
   "private": true,
   "version": "2.0.0-dev",
-  "description": "CODEX_LMS: shared widget engine plus GUI (Tauri/React) and TUI (Ink) front-ends. The original single-file site is still built by tools/build.py into dist/.",
-  "workspaces": ["packages/*", "apps/*"],
-  "engines": { "node": ">=20.19" },
+  "description": "CODEX_LMS: the classic single-file site (built by tools/build.py) plus the shared, tested widget logic in packages/.",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
   "scripts": {
     "test": "npm test -w @codex/widgets",
-    "gui": "npm run dev -w @codex/gui",
-    "gui:build": "npm run build -w @codex/gui",
-    "tui": "npm start -w @codex/tui",
-    "outline": "python3 tools/export_outline.py"
+    "labs": "npm run build -w @codex/labs"
   }
 }
