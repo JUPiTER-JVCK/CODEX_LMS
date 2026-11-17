@@ -33,10 +33,13 @@ final class BookStore {
         try? FileManager.default.createDirectory(at: support, withIntermediateDirectories: true)
         stateURL = support.appendingPathComponent("state.json")
         let data = (try? Data(contentsOf: stateURL)) ?? Data("{}".utf8)
+        // Work with locals: @Observable properties can't be read until every one is set.
+        let saved = BookState.decode(data)
+        let page = saved.last.isEmpty ? (toc.chapters.first?.id ?? "welcome") : saved.last
         rawState = String(decoding: data, as: UTF8.self)
-        state = BookState.decode(data)
-        currentPage = state.last.isEmpty ? (toc.chapters.first?.id ?? "welcome") : state.last
-        currentTitle = toc.title(of: currentPage) ?? "CODEX_LMS"
+        state = saved
+        currentPage = page
+        currentTitle = toc.title(of: page) ?? "CODEX_LMS"
 
         web.stateProvider = { [unowned self] in self.rawState }
         web.onSave = { [unowned self] json in self.save(json) }
