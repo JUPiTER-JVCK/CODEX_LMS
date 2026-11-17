@@ -1,0 +1,575 @@
+from lib import *
+
+blocks = [
+    P('''The networking part showed you how to capture packets and read them. This chapter turns that into a security skill:
+    asking precise questions of a capture and proving the answers. You will master Wireshark's display-filter language, follow
+    conversations, use the statistics that show the shape of traffic at a glance, and work through five case files of the kind
+    defenders meet every week: credentials sent in clear text, a port scan, ARP spoofing, data smuggled out through DNS and encrypted
+    traffic you need to see inside. Everything happens first in the packet lab in this page, then in Wireshark and `tshark` on your Mac,
+    on the very same capture files.'''),
+    CALLOUT('danger', 'Only capture what you are allowed to', '''Capturing traffic on networks you do not own or administer, or reading other people's communications without permission, is
+    illegal in most countries and against the rules of every employer and school. Use your own devices and your own home network, the
+    captures in this chapter, or a lab you were given permission to test. When you capture at work, get the scope in writing first.'''),
+
+    H2('Wireshark on your Mac', 'setup'),
+    P('''Install the app with Homebrew (the setup chapter explains casks): `brew install --cask wireshark-app`. The cask also installs
+    the command-line tools (`tshark`, `dumpcap`, `capinfos`, `editcap`, `mergecap`) and **ChmodBPF**, a small launch daemon that lets
+    members of the `access_bpf` group open the packet-capture devices `/dev/bpf*`. That is what lets you capture without running Wireshark
+    as root, which matters: Wireshark's protocol dissectors parse untrusted bytes from the network, and you do not want that code running
+    with full privileges. Current releases are in the Wireshark 4.6 series; the output below was produced with 4.2, and the formats are the
+    same.'''),
+    TERM('''
+    $ dscl . -read /Groups/access_bpf GroupMembership
+    GroupMembership: learner
+    $ dumpcap -D
+    1. en0 (Wi-Fi)
+    2. lo0 (Loopback)
+    3. bridge0 (Thunderbolt Bridge)
+    4. utun3
+    5. ciscodump (Cisco remote capture)
+    6. sshdump (SSH remote capture)
+    '''),
+    P('''If your user is not in `GroupMembership`, run the "Install ChmodBPF" package that the cask leaves in
+    `/Applications/Wireshark.app/Contents/Resources/Extras/`, or add yourself with
+    `sudo dseditgroup -o edit -a "$USER" -t user access_bpf`, then log out and back in. `utun` interfaces are VPN tunnels; capture there
+    to see traffic before a VPN encrypts it.'''),
+    CMD('dumpcap', 'sec-pcap', 'wireshark', 'Wireshark\'s capture engine: write packets to disk efficiently, with ring buffers for long captures.',
+        'dumpcap -i IFACE [-f "CAPTURE FILTER"] -w FILE [-b filesize:KB -b files:N] [-a duration:SEC]',
+        ['`dumpcap` is the small program that Wireshark and `tshark` themselves run to capture. It does no dissection at all, so it is fast, uses little memory and is the safest thing to leave running: it only copies bytes to a file. Analyse the file afterwards in Wireshark or with `tshark -r`.',
+         'For long captures use a **ring buffer**: `-b filesize:20000 -b files:10` writes up to ten files of about 20 MB each and then overwrites the oldest, so a capture that runs for days never fills the disk. `-a duration:600` stops after ten minutes.',
+         'The `-f` option takes a **capture filter** in BPF syntax (the tcpdump language from the networking part), which decides what gets written at all. It is a different language from the display filters in this chapter.'],
+        flags=[('-D', 'list interfaces'), ('-i IFACE', 'interface to capture on (repeat for several)'), ('-f "FILTER"', 'BPF capture filter, such as "port 53"'),
+               ('-w FILE', 'write to a file; pcapng format by default'), ('-b filesize:KB -b files:N', 'ring buffer of N files'), ('-a duration:SEC', 'stop after SEC seconds'),
+               ('-q', 'quiet: do not print the packet count')],
+        examples=[('ex', 'Capture DNS for one minute', 'dumpcap -i en0 -f "port 53" -a duration:60 -w ~/lab/dns.pcapng'),
+                  ('ex', 'A week-long capture that never uses more than 200 MB', 'dumpcap -i en0 -b filesize:20000 -b files:10 -w ~/lab/ring.pcapng'),
+                  ('pipe', 'Capture, then list the names that were looked up', 'dumpcap -i en0 -f "port 53" -a duration:30 -w /tmp/dns.pcapng -q && tshark -r /tmp/dns.pcapng -Y "dns.flags.response == 0" -T fields -e dns.qry.name | sort | uniq -c | sort -rn')],
+        gotchas=['Captures contain everything the packets contained, including cookies, tokens and, on plain HTTP, passwords. Store them like secrets and delete them when you are done.'],
+        see=['tshark', 'tcpdump', 'capinfos'], tags=['capture']),
+
+    H2('The packet lab', 'lab'),
+    P('''Below is a working miniature of Wireshark. The five tabs are five captures, generated byte for byte (checksums included) so
+    that real Wireshark dissects them exactly as it would traffic from a real network. The list at the top is the **packet list**, coloured
+    with Wireshark's default rules (light purple TCP, light blue UDP, green HTTP, grey SYN and FIN, dark red RST). Click a packet to open it in
+    the **details** tree, click any field to highlight its bytes in the **bytes** pane, and type display filters in the bar exactly as you
+    would in Wireshark. Each tab ends with challenges; the rest of the chapter teaches what you need to solve them.'''),
+    WIDGET('pktlab'),
+    CALLOUT('try', 'Open the same capture in real Wireshark', '''Press **Download .pcap** in the lab, then open the file with `open -a Wireshark ~/Downloads/lab-login.pcap`. If the download is
+    blocked, press **Copy as base64** and run `pbpaste | base64 -d > ~/lab/lab-login.pcap` in Terminal. Every filter in this chapter gives the
+    same packets in both places: the lab's filter engine is checked against real `tshark` on these files.'''),
+
+    H2('Display filters in depth', 'filters'),
+    P('''A display filter is a boolean expression evaluated against every dissected packet. Packets for which it is true stay in the
+    list; the others are hidden, not deleted. The building blocks are **fields** (named values such as `ip.src` or `http.request.method`)
+    and **protocols** (`dns`, `tls`), combined with comparisons and logic. When you type in Wireshark's filter bar it turns green for
+    valid syntax and red for an error, just like the lab.'''),
+    ANAT('A display filter', [
+        ('ip.addr', 'a field: an IPv4 address that matches either the source or the destination'),
+        ('==', 'comparison operator; also written eq'),
+        ('192.168.1.0/24', 'a value; IP fields accept CIDR to match a whole subnet'),
+        ('&&', 'logical and; also written and'),
+        ('tcp.port in {22, 80, 445}', 'membership: matches any value in the set (ranges such as 8000..8080 work too)'),
+        ('&& !', 'and not'),
+        ('(tcp.flags.reset == 1)', 'parentheses group a sub-expression'),
+    ]),
+    TABLE(['Operator', 'Also written', 'Meaning', 'Example'], [
+        ['`==`', '`eq`', 'any occurrence equals', '`ip.addr == 192.168.1.60`'],
+        ['`!=`', '`ne`, `all_ne`', 'no occurrence equals (and the field must exist)', '`ip.addr != 192.168.1.23`'],
+        ['`>` `<` `>=` `<=`', '`gt lt ge le`', 'numeric comparison', '`frame.len > 1000`'],
+        ['`contains`', '', 'text or bytes appear inside the field', '`http.user_agent contains "curl"`'],
+        ['`matches`', '`~`', 'regular expression, case-insensitive by default', '`dns.qry.name matches "^[0-9]-"`'],
+        ['`in {…}`', '', 'value is in a set or range', '`tcp.dstport in {1..1024}`'],
+        ['`&&` `\\|\\|` `!`', '`and` `or` `not`', 'combine expressions', '`dns && !mdns`'],
+    ], 'Operators'),
+    P('''Two rules explain most surprises. First, many fields occur more than once in a packet: `ip.addr` holds both the source and the
+    destination, `tcp.port` both ports. `==` is true if **any** occurrence matches. Since Wireshark 3.6, `!=` means the opposite of `==`, "no
+    occurrence matches", so `ip.addr != 192.168.1.23` really does hide every packet involving that address. Second, a comparison on a
+    field that is absent is false. `ip.addr != 192.168.1.23` is therefore false for an ARP packet, which has no IP layer at all: if you want
+    ARP too, write `!(ip.addr == 192.168.1.23)`.'''),
+    TABLE(['Question', 'Display filter'], [
+        ['Everything to or from one host', '`ip.addr == 192.168.1.60`'],
+        ['Traffic between two hosts', '`ip.addr == 192.168.1.23 && ip.addr == 198.51.100.30`'],
+        ['New TCP connections being opened', '`tcp.flags.syn == 1 && tcp.flags.ack == 0`'],
+        ['Ports that answered "open"', '`tcp.flags.syn == 1 && tcp.flags.ack == 1`'],
+        ['Connections refused or torn down', '`tcp.flags.reset == 1`'],
+        ['Unencrypted logins and forms', '`http.request.method == "POST"`'],
+        ['Credentials in HTTP headers', '`http.authorization`'],
+        ['Any packet containing a word', '`frame contains "password"`'],
+        ['Which sites were visited over HTTPS', '`tls.handshake.type == 1` (then read the SNI)'],
+        ['DNS questions only', '`dns.flags.response == 0`'],
+        ['Unusually long DNS names', '`dns.qry.name.len > 30`'],
+        ['ARP replies that nobody asked for', '`arp.opcode == 2` (then compare MACs)'],
+        ['Traffic that is not the usual noise', '`!(arp || dns || icmp || mdns || ssdp)`'],
+    ], 'Security filters worth memorising'),
+    CALLOUT('tip', 'Let Wireshark write the filter', '''In Wireshark, right-click any field in the details pane and choose **Apply as Filter**, then **Selected** (or **Not Selected**, or
+    **…and Selected** to combine). The exact field name and value go into the filter bar. It is the fastest way to learn field names.
+    The status bar at the bottom also shows the field name of whatever you click.'''),
+    CMD('tshark -T fields', 'sec-pcap', 'wireshark', 'Extract chosen fields from a capture as tab-separated text, ready for sort, uniq, awk or Python.',
+        'tshark -r FILE [-Y "DISPLAY FILTER"] -T fields -e FIELD [-e FIELD…] [-E header=y] [-E separator=,]',
+        ['`tshark` is Wireshark without the window: the same dissectors and the same display filters. `-T fields` prints one line per matching packet with only the fields you name, which turns a capture into a table. Fields that occur several times in a packet are joined with commas.',
+         'This is where packet analysis meets the shell: `-Y` selects packets, `-e` selects columns, and everything after the pipe is the text processing you already know. Add `-E header=y -E separator=,` to produce CSV for a spreadsheet or pandas.'],
+        flags=[('-r FILE', 'read a capture instead of capturing live'), ('-Y "FILTER"', 'display filter'), ('-T fields -e NAME', 'print these fields'),
+               ('-E header=y', 'first line names the fields'), ('-E separator=,', 'field separator (default tab)'), ('-2', 'two passes, so columns can use information from later packets')],
+        examples=[('ex', 'Every HTTP request: who, what and where', 'tshark -r lab-login.pcap -Y http.request -T fields -e frame.number -e http.request.method -e http.host -e http.request.uri'),
+                  ('pipe', 'Rank the hosts that opened the most TCP connections', "tshark -r {{file}} -Y 'tcp.flags.syn == 1 && tcp.flags.ack == 0' -T fields -e ip.src | sort | uniq -c | sort -rn | head"),
+                  ('pipe', 'A CSV of requests for Python or a spreadsheet', 'tshark -r lab-login.pcap -Y http.request -T fields -E header=y -E separator=, -e frame.time_relative -e ip.src -e http.request.method -e http.request.uri > requests.csv')],
+        gotchas=['A field that a packet does not have prints as an empty column, so the number of tabs stays constant. Use `awk -F\'\\t\'` to split.',
+                 'Quote filters that contain spaces, `!` or `"` in single quotes, so zsh does not interpret them.'],
+        see=['tshark', 'tshark -z', 'awk'], tags=['tshark']),
+    TERM('''
+    $ tshark -r lab-login.pcap -Y http.request -T fields -e frame.number -e http.request.method -e http.host -e http.request.uri
+    6	GET	intranet.lab.example	/login
+    10	POST	intranet.lab.example	/login
+    14	GET	intranet.lab.example	/admin
+    21	GET	192.168.1.60:8080	/api/backups
+    $ tshark -r lab-login.pcap -Y http.request -T fields -E header=y -E separator=, -e frame.time_relative -e ip.src -e http.request.method -e http.request.uri
+    frame.time_relative,ip.src,http.request.method,http.request.uri
+    0.041000000,192.168.1.23,GET,/login
+    2.871800000,192.168.1.23,POST,/login
+    2.932600000,192.168.1.23,GET,/admin
+    4.165900000,192.168.1.23,GET,/api/backups
+    '''),
+
+    H2('Conversations and statistics', 'stats'),
+    P('''Reading packets one by one does not scale. Wireshark's **Statistics** menu shows the shape of a capture in seconds: who talks to
+    whom, how much, with which protocols, and what Wireshark itself thinks is odd. Use it first on any unfamiliar capture, then filter
+    into the interesting parts. Every view has a `tshark -z` equivalent:'''),
+    TABLE(['Wireshark menu', 'Shows', 'tshark'], [
+        ['Statistics, Protocol Hierarchy', 'which protocols, how many frames and bytes each', '`-q -z io,phs`'],
+        ['Statistics, Conversations', 'every pair of endpoints, with packets, bytes and duration', '`-q -z conv,ip` (or `conv,tcp`)'],
+        ['Statistics, Endpoints', 'every address, with traffic sent and received', '`-q -z endpoints,ip`'],
+        ['Analyze, Expert Information', 'warnings Wireshark raised: retransmissions, resets, duplicate IPs', '`-q -z expert`'],
+        ['Analyze, Follow, TCP Stream', 'the payload of one connection as text, client in red, server in blue', '`-q -z follow,tcp,ascii,N`'],
+        ['Statistics, HTTP, Packet Counter', 'HTTP requests and response codes', '`-q -z http,tree`'],
+    ]),
+    TERM('''
+    $ tshark -r lab-browse.pcap -q -z io,phs
+
+    ===================================================================
+    Protocol Hierarchy Statistics
+    Filter:
+
+    eth                                      frames:34 bytes:5324
+      arp                                    frames:2 bytes:84
+      ip                                     frames:32 bytes:5240
+        udp                                  frames:4 bytes:338
+          dns                                frames:4 bytes:338
+        tcp                                  frames:26 bytes:4706
+          tls                                frames:5 bytes:3379
+          http                               frames:2 bytes:301
+            json                             frames:1 bytes:156
+        icmp                                 frames:2 bytes:196
+    ===================================================================
+    $ tshark -r lab-browse.pcap -q -z endpoints,ip
+    ================================================================================
+    IPv4 Endpoints
+    Filter:<No Filter>
+                           |  Packets  | |  Bytes  | | Tx Packets | | Tx Bytes | | Rx Packets | | Rx Bytes |
+    192.168.1.23                  32          5240         18            1778          14            3462
+    203.0.113.10                  16          3973          7            2861           9            1112
+    198.51.100.20                 10           733          4             318           6             415
+    192.168.1.1                    6           534          3             283           3             251
+    ================================================================================
+    '''),
+    P('''Read the hierarchy as a budget: on a home network, most bytes should be TLS (or QUIC on UDP 443). A large share of plain `http`,
+    `ftp` or `telnet` means unencrypted data you should look at. In Endpoints, a host that sends far more than it receives is uploading;
+    sometimes that is a backup, sometimes it is exfiltration.'''),
+    CMD('tshark -z', 'sec-pcap', 'wireshark', 'Run Wireshark\'s statistics on a capture from the terminal: hierarchy, conversations, endpoints, expert info, streams.',
+        'tshark -r FILE -q -z STATISTIC[,ARGS] [-z …]',
+        ['`-z` runs one of Wireshark\'s statistics modules over the whole file and prints a report at the end; `-q` suppresses the per-packet lines so you see only the report. You can give several `-z` options in one run. `tshark -z help` lists them all.',
+         'A display filter can be added as the last argument of many statistics, for example `-z conv,tcp,"ip.addr == 192.168.1.60"`, or applied to the whole run with `-Y`.'],
+        flags=[('-q', 'quiet: only print the statistics'), ('-z io,phs', 'protocol hierarchy'), ('-z conv,ip / conv,tcp / conv,udp', 'conversations'), ('-z endpoints,ip', 'endpoints'),
+               ('-z expert', 'expert information by severity'), ('-z follow,tcp,ascii,N', 'the payload of TCP stream N'), ('-z http,tree', 'HTTP methods and status codes'), ('-z dns,tree', 'DNS query and response statistics')],
+        examples=[('ex', 'What is in this capture?', 'tshark -r {{file}} -q -z io,phs -z conv,ip'),
+                  ('ex', 'Read the whole conversation of stream 0', 'tshark -r lab-login.pcap -q -z follow,tcp,ascii,0'),
+                  ('pipe', 'Only the warnings and errors from expert info', "tshark -r {{file}} -q -z expert | sed -n '/^Errors/,/^Notes/p'")],
+        see=['tshark -T fields', 'capinfos'], tags=['tshark', 'statistics']),
+
+    H2('Case 1: credentials in clear text', 'case-cleartext'),
+    P('''Plain HTTP, FTP, Telnet, POP3 and IMAP without TLS send usernames and passwords as readable text, and anyone on the path can read
+    them: the café Wi-Fi, a compromised router, a misconfigured mirror port. Open the **Cleartext login** tab. A search for the word
+    `pass` anywhere in the frame finds both the login form (which contains the field *name*) and the POST that carries the *value*:'''),
+    TERM('''
+    $ tshark -r lab-login.pcap -Y 'frame contains "pass"'
+        8   0.071400 198.51.100.30 → 192.168.1.23 HTTP 240 HTTP/1.1 200 OK  (text/html)
+       10   2.871800 192.168.1.23 → 198.51.100.30 HTTP 255 POST /login HTTP/1.1  (application/x-www-form-urlencoded)
+    $ tshark -r lab-login.pcap -Y 'http.request.method == "POST"' -T fields -e urlencoded-form.key -e urlencoded-form.value
+    user,pass,next	learner,hunter2-lab,/admin
+    $ tshark -r lab-login.pcap -Y http.authorization -T fields -e http.authorization -e http.authbasic
+    Basic YWRtaW46TkFTLWJhY2t1cC0yMDI2	admin:NAS-backup-2026
+    '''),
+    P('''Two lessons. **Basic authentication is not encryption**: the header is base64 of `user:password`, and Wireshark decodes it for you
+    (`http.authbasic`). And a **session cookie** is as good as a password until it expires: anyone who copies `session=7f3a…` from this capture
+    can paste it into a browser and be logged in as `learner`. That is why HTTPS everywhere, cookies marked `Secure` and `HttpOnly`, and
+    short session lifetimes matter.'''),
+    TERM('''
+    $ tshark -r lab-login.pcap -q -z follow,tcp,ascii,0 | head -30
+
+    ===================================================================
+    Follow: tcp,ascii
+    Filter: tcp.stream eq 0
+    Node 0: 192.168.1.23:52001
+    Node 1: 198.51.100.30:80
+    107
+    GET /login HTTP/1.1
+    Host: intranet.lab.example
+    User-Agent: Mozilla/5.0 (Macintosh)
+    Accept: text/html
+
+
+    	186
+    HTTP/1.1 200 OK
+    Content-Type: text/html
+    Content-Length: 121
+
+    <form method="post" action="/login"><input name="user"><input name="pass" type="password"><button>Sign in</button></form>
+    201
+    POST /login HTTP/1.1
+    Host: intranet.lab.example
+    User-Agent: Mozilla/5.0 (Macintosh)
+    Content-Type: application/x-www-form-urlencoded
+    Content-Length: 43
+
+    user=learner&pass=hunter2-lab&next=%2Fadmin
+    	107
+    HTTP/1.1 302 Found
+    '''),
+    P('In the `follow` output each block starts with its byte count; server blocks are indented with a tab. Wireshark shows the same thing in colour: client red, server blue.'),
+
+    H2('Case 2: a port scan', 'case-scan'),
+    P('''A scan is someone asking every door whether it is open. In the **Port scan** tab, one host sends SYNs to 18 ports on the NAS in
+    under ten milliseconds. Closed ports answer `RST, ACK`. Open ports answer `SYN, ACK`, and the scanner immediately answers *that*
+    with `RST` instead of completing the handshake. That is a **half-open** or **SYN scan**, nmap's default when it runs as root: it learns which
+    ports are open without ever finishing a connection the application would log.'''),
+    TERM('''
+    $ tshark -r lab-scan.pcap -Y "tcp.flags.syn == 1 && tcp.flags.ack == 1" -T fields -e ip.src -e tcp.srcport
+    192.168.1.60	22
+    192.168.1.60	80
+    192.168.1.60	445
+    $ tshark -r lab-scan.pcap -q -z conv,ip
+    ================================================================================
+    IPv4 Conversations
+    Filter:<No Filter>
+                                                   |       <-      | |       ->      | |     Total     |    Relative    |   Duration   |
+                                                   | Frames  Bytes | | Frames  Bytes | | Frames  Bytes |      Start     |              |
+    192.168.1.66         <-> 192.168.1.60              18 972 bytes      21 1134 bytes      39 2106 bytes     0.001300000         0.0143
+    ================================================================================
+    '''),
+    P('''Signs of a scan in any capture: one source, many destination ports (or many destination hosts on one port), tiny packets, a
+    window size like `1024` that no normal operating system uses, a low TTL, and a burst measured in milliseconds. From inside your own
+    network, a scan is worth investigating: something on the LAN is mapping it. Turn the logic into a detector in the exercise below.'''),
+    EX('wireshark-ex-detect-a-scan', 'Detect a port scan in packet metadata', 'py',
+       '''`PACKETS` is a list of `(src_ip, dst_ip, dst_port, flags)` tuples, as you might export with `tshark -T fields`. Write
+       `scanners(packets, threshold=10)` that returns a sorted list of source IPs that sent a pure SYN (flags exactly `"S"`) to at least
+       `threshold` **distinct** destination ports on the same destination host. Print the result.''',
+       '''
+       from collections import defaultdict
+
+       PACKETS = [("192.168.1.66", "192.168.1.60", p, "S") for p in (21, 22, 23, 25, 53, 80, 110, 135, 139, 143, 443, 445)] + \\
+                 [("192.168.1.23", "203.0.113.10", 443, "S"), ("192.168.1.23", "203.0.113.10", 443, "A"),
+                  ("192.168.1.70", "192.168.1.60", 445, "S")] * 5
+
+       def scanners(packets, threshold=10):
+           ports = defaultdict(set)
+           for src, dst, port, flags in packets:
+               if flags == "S":
+                   ports[(src, dst)].add(port)
+           return sorted({src for (src, dst), seen in ports.items() if len(seen) >= threshold})
+
+       print(scanners(PACKETS))
+       ''',
+       hints=['Group by the pair `(src, dst)` and collect ports in a `set`, so repeated SYNs to the same port count once.', 'Only pure SYNs count: a SYN, ACK is a reply, not a probe.'],
+       why='''Counting **distinct** ports is the key idea: a busy client may send hundreds of SYNs to port 443 and is not scanning, while
+       ten different ports on one host in a burst almost always is. Real detectors such as Zeek and Suricata add a time window and track
+       hosts as well as ports, but the core is exactly this grouping.''',
+       starter='''
+       from collections import defaultdict
+
+       PACKETS = [("192.168.1.66", "192.168.1.60", p, "S") for p in (21, 22, 23, 25, 53, 80, 110, 135, 139, 143, 443, 445)] + \\
+                 [("192.168.1.23", "203.0.113.10", 443, "S"), ("192.168.1.23", "203.0.113.10", 443, "A"),
+                  ("192.168.1.70", "192.168.1.60", 445, "S")] * 5
+
+       def scanners(packets, threshold=10):
+           return []
+
+       print(scanners(PACKETS))
+       ''',
+       check='''
+       assert scanners(PACKETS) == ["192.168.1.66"], "Expected ['192.168.1.66'], got " + repr(scanners(PACKETS))
+       busy = [("10.0.0.5", "10.0.0.9", 443, "S")] * 50
+       assert scanners(busy) == [], "Fifty SYNs to one port is a busy client, not a scan"
+       mixed = [("10.0.0.7", "10.0.0.9", p, "SA") for p in range(20)]
+       assert scanners(mixed) == [], "Only pure SYN packets ('S') count as probes"
+       wide = [("10.0.0.8", "10.0.0.%d" % h, 22, "S") for h in range(30)]
+       assert scanners(wide) == [], "Ports are counted per destination host"
+       assert scanners(PACKETS, threshold=13) == [], "Use the threshold argument"
+       assert "192.168.1.66" in out, "Print the result"
+       '''),
+
+    H2('Case 3: ARP spoofing', 'case-arp'),
+    P('''ARP maps IP addresses to MAC addresses on a local network, and it has no authentication: any device may announce "192.168.1.1
+    is at my MAC", and most hosts believe the latest announcement. An attacker who tells your Mac that they are the router, and tells the
+    router that they are your Mac, sits in the middle of all your traffic: **ARP spoofing**, also called ARP poisoning. Open the **ARP
+    spoofing** tab and look at frames 10 to 19: replies that nobody requested, every two seconds, all from `66:66:66:13:37:01`. Wireshark
+    notices too:'''),
+    TERM('''
+    $ tshark -r lab-arp.pcap -Y "arp.opcode == 2" -T fields -e frame.number -e arp.src.proto_ipv4 -e arp.src.hw_mac
+    2	192.168.1.1	3c:37:86:c1:5a:02
+    10	192.168.1.1	66:66:66:13:37:01
+    11	192.168.1.23	66:66:66:13:37:01
+    12	192.168.1.1	66:66:66:13:37:01
+    13	192.168.1.23	66:66:66:13:37:01
+    14	192.168.1.1	66:66:66:13:37:01
+    15	192.168.1.23	66:66:66:13:37:01
+    16	192.168.1.1	66:66:66:13:37:01
+    17	192.168.1.23	66:66:66:13:37:01
+    18	192.168.1.1	66:66:66:13:37:01
+    19	192.168.1.23	66:66:66:13:37:01
+    $ tshark -r lab-arp.pcap -q -z expert
+
+    Warns (10)
+    =============
+       Frequency      Group           Protocol  Summary
+               5   Sequence           ARP/RARP  Duplicate IP address configured (192.168.1.1)
+               5   Sequence           ARP/RARP  Duplicate IP address configured (192.168.1.23)
+
+    Chats (4)
+    =============
+       Frequency      Group           Protocol  Summary
+               2   Sequence                TCP  Connection establish request (SYN): server port 443
+               2   Sequence                TCP  Connection establish acknowledge (SYN+ACK): server port 443
+    '''),
+    P('''The proof is in the Ethernet header: in frame 3 your Mac sends its HTTPS traffic to the router's MAC `3c:37:86:c1:5a:02`; from
+    frame 20 the same traffic goes to `66:66:66:13:37:01`. The IP addresses never changed, which is why the user notices nothing. Note
+    that `66` as the first byte has the "locally administered" bit set: a made-up MAC, not one from a manufacturer. On your Mac, `arp -a`
+    shows the current table, and the same IP appearing with two MACs over time is the giveaway. Defences: TLS everywhere (the attacker sees
+    only ciphertext), switches with Dynamic ARP Inspection, and a static ARP entry for the gateway on machines that matter.'''),
+
+    H2('Case 4: data leaving through DNS', 'case-dns'),
+    P('''Firewalls often block everything outbound except DNS, because nothing works without it. Malware takes advantage: it encodes
+    stolen data into the *names* it looks up, and the attacker's name server for that domain simply records every query. In the **DNS
+    exfiltration** tab, the queries to `t.cdn-sync.net` are long, random-looking, numbered, of type TXT and go to an unusual server.'''),
+    TERM('''
+    $ tshark -r lab-exfil.pcap -Y "dns.qry.type == 16 && dns.flags.response == 0" -T fields -e dns.qry.name
+    0-mrrf64dbonzxo33smq6u.t.cdn-sync.net
+    1-g33soizwg5bnjayhe43f.t.cdn-sync.net
+    2-hnug643uhuytalrsgaxd.t.cdn-sync.net
+    3-qlrv.t.cdn-sync.net
+    '''),
+    P('''The labels use only `a` to `z` and `2` to `7`: the alphabet of **base32**, popular for this exact purpose because DNS names are
+    not case-sensitive. Put the chunks in order, strip the numbers and decode:'''),
+    RUN('''
+    import base64
+
+    names = """0-mrrf64dbonzxo33smq6u.t.cdn-sync.net
+    1-g33soizwg5bnjayhe43f.t.cdn-sync.net
+    2-hnug643uhuytalrsgaxd.t.cdn-sync.net
+    3-qlrv.t.cdn-sync.net""".split()
+
+    chunks = sorted((int(n.split("-", 1)[0]), n.split("-", 1)[1].split(".")[0]) for n in names)
+    data = "".join(c for _, c in chunks).upper()
+    data += "=" * (-len(data) % 8)              # base32 works in blocks of 8 characters
+    print(base64.b32decode(data).decode())
+    '''),
+    P('''Detection does not depend on decoding: long labels (`dns.qry.name.len > 30` finds them), high randomness, many unique subdomains
+    under one domain, unusual record types such as TXT, and queries that bypass your normal resolver (here they go straight to
+    `203.0.113.53`, not to the router). Real defences send all DNS through a resolver you control and alert on those patterns.'''),
+    EX('wireshark-ex-score-dns-names', 'Score DNS names for exfiltration', 'py',
+       '''Write `suspicious(name)` that returns `True` when the **first label** of a DNS name (the part before the first dot) is at least 16
+       characters long and at least 20% of its characters are digits. Then print the names from `NAMES` that are suspicious, one per line, in
+       their original order.''',
+       '''
+       NAMES = ["www.apple.com", "mrrf64dbonzxo33smq6u.t.cdn-sync.net", "g33soizwg5bnjayhe43f.t.cdn-sync.net",
+                "time.apple.com", "a1b2c3d4e5f6a7b8c9d0.cdn.example", "configuration-service.lab.example"]
+
+       def suspicious(name):
+           label = name.split(".")[0]
+           digits = sum(c.isdigit() for c in label)
+           return len(label) >= 16 and digits / len(label) >= 0.2
+
+       for n in NAMES:
+           if suspicious(n):
+               print(n)
+       ''',
+       hints=['`name.split(".")[0]` is the first label.', '`sum(c.isdigit() for c in label)` counts digits.'],
+       why='''A long label alone is not enough (`configuration-service` is long and innocent), and digits alone are not either. Combining
+       two weak signals gives a much better one, which is how real detections are built. Base32 data averages about 19% digits, because 2 to 7
+       are 6 of its 32 symbols; real heuristics usually measure entropy instead of digit share.''',
+       starter='''
+       NAMES = ["www.apple.com", "mrrf64dbonzxo33smq6u.t.cdn-sync.net", "g33soizwg5bnjayhe43f.t.cdn-sync.net",
+                "time.apple.com", "a1b2c3d4e5f6a7b8c9d0.cdn.example", "configuration-service.lab.example"]
+
+       def suspicious(name):
+           return False
+
+       for n in NAMES:
+           if suspicious(n):
+               print(n)
+       ''',
+       check='''
+       got = [n for n in NAMES if suspicious(n)]
+       assert got == ["mrrf64dbonzxo33smq6u.t.cdn-sync.net", "g33soizwg5bnjayhe43f.t.cdn-sync.net", "a1b2c3d4e5f6a7b8c9d0.cdn.example"], "Expected the two base32 names and the hex name, got " + repr(got)
+       assert not suspicious("abcdefghijklmnop12.example"), "2 digits in 18 characters is below 20%"
+       assert not suspicious("configuration-service.lab.example"), "A long label without digits is not suspicious"
+       assert not suspicious("a1b2.example"), "A short label is not suspicious"
+       assert out.strip().split("\\n") == got, "Print each suspicious name on its own line, in order"
+       '''),
+
+    H2('Case 5: seeing inside encrypted traffic', 'tls'),
+    P('''Most traffic today is TLS, and a capture shows only ciphertext. That is the point of TLS, and it also means an analyst sees less.
+    What is still visible: IP addresses and ports, timing and sizes, and from the ClientHello the **server name** (SNI) and the **ALPN**
+    protocol list, unless the site uses Encrypted Client Hello. The pattern of a ClientHello (versions, ciphers, extensions) also
+    fingerprints the client software; defenders use fingerprints such as **JA4** to spot malware that claims to be a browser.'''),
+    TERM('''
+    $ tshark -r lab-browse.pcap -Y "tls.handshake.type == 1" -T fields -e ip.dst -e tls.handshake.extensions_server_name -e tls.handshake.extensions_alpn_str
+    203.0.113.10	app.lab.example	h2,http/1.1
+    '''),
+    P('''To read inside **your own** TLS sessions, make the client write its session secrets to a **key log file**, then give that file to
+    Wireshark. Browsers, curl built with OpenSSL, and Python all honour the `SSLKEYLOGFILE` environment variable. This works for TLS 1.3 and
+    for forward-secret ciphers, because it logs the per-session secrets rather than any long-term key. Using the HTTPS server and CA from the
+    encryption chapter:'''),
+    FILE('fetch.py', '''
+    import ssl, urllib.request
+
+    ctx = ssl.create_default_context(cafile="ca.crt")      # the lab CA from the encryption chapter
+    with urllib.request.urlopen("https://localhost:8443/site/", context=ctx) as r:
+        print(r.status, r.read().decode().strip())
+    print("keylog:", ctx.keylog_filename)                   # set from SSLKEYLOGFILE
+    '''),
+    TERM('''
+    $ dumpcap -i lo0 -f "tcp port 8443" -w tls.pcapng -q &
+    $ SSLKEYLOGFILE=$PWD/keys.log python3 fetch.py
+    200 hello over TLS
+    keylog: /Users/learner/lab/ca/keys.log
+    $ kill %1
+    $ cut -d' ' -f1 keys.log | sort | uniq -c
+       1 #
+       1 CLIENT_HANDSHAKE_TRAFFIC_SECRET
+       1 CLIENT_TRAFFIC_SECRET_0
+       1 EXPORTER_SECRET
+       1 SERVER_HANDSHAKE_TRAFFIC_SECRET
+       1 SERVER_TRAFFIC_SECRET_0
+    $ tshark -r tls.pcapng | sed -n 4,9p
+        4 0.000410090    127.0.0.1 → 127.0.0.1    TLSv1 1582 Client Hello (SNI=localhost)
+        5 0.000428353    127.0.0.1 → 127.0.0.1    TCP 66 8443 → 35876 [ACK] Seq=1 Ack=1517 Win=83968 Len=0 TSval=1069661502 TSecr=3309246594
+        6 0.000995320    127.0.0.1 → 127.0.0.1    TLSv1.3 1993 Server Hello, Change Cipher Spec, Application Data, Application Data, Application Data, Application Data
+        7 0.001023119    127.0.0.1 → 127.0.0.1    TCP 66 35876 → 8443 [ACK] Seq=1517 Ack=1928 Win=90112 Len=0 TSval=3309246595 TSecr=1069661503
+        8 0.001696957    127.0.0.1 → 127.0.0.1    TLSv1.3 146 Change Cipher Spec, Application Data
+        9 0.001773476    127.0.0.1 → 127.0.0.1    TLSv1.3 211 Application Data
+    $ tshark -r tls.pcapng -o tls.keylog_file:keys.log -Y http
+        9 0.001773476    127.0.0.1 → 127.0.0.1    HTTP 211 GET /site/ HTTP/1.1
+       11 0.003710594    127.0.0.1 → 127.0.0.1    HTTP 566 HTTP/1.0 200 OK  (text/html)
+    '''),
+    P('''In the Wireshark app, set the same file under **Wireshark, Settings (Preferences in older versions), Protocols, TLS, (Pre)-Master-Secret log filename**. Frame 9
+    that was "Application Data" becomes a readable `GET /site/`. For a browser, start it from Terminal with the variable set, for example
+    `SSLKEYLOGFILE=~/lab/keys.log /Applications/Firefox.app/Contents/MacOS/firefox`. The transcript above was recorded on Linux, where the
+    loopback interface is `lo`; on a Mac it is `lo0`.'''),
+    CALLOUT('danger', 'A key log file is a skeleton key', '''Anyone with `keys.log` and your capture can read every logged session: passwords, cookies, messages. Never leave `SSLKEYLOGFILE` set in
+    your shell profile, delete the key log after the lab, and never accept a key log or "debugging build" from someone else. Malware has used
+    this exact variable to steal sessions.'''),
+    CMD('mergecap', 'sec-pcap', 'wireshark', 'Merge several capture files into one, in timestamp order.',
+        'mergecap -w OUT.pcapng FILE1 FILE2 … [-a]',
+        ['`mergecap` combines captures, interleaving packets by timestamp, so traffic recorded on two machines or two interfaces at the same time becomes one timeline. With `-a` it simply concatenates the files instead, which is what you want for the parts of a ring buffer.',
+         'Pair it with `editcap` (from the networking part) to cut files down by time or count, and `capinfos` to check what you have.'],
+        flags=[('-w FILE', 'output file'), ('-a', 'concatenate in the given order instead of merging by time'), ('-F pcap', 'write classic pcap instead of pcapng')],
+        examples=[('ex', 'Merge the lab captures into one file', 'mergecap -w all.pcap lab-*.pcap'),
+                  ('pipe', 'Join a ring buffer, then summarise the result', "mergecap -a -w week.pcapng ring_*.pcapng && capinfos -c -d -u week.pcapng")],
+        see=['capinfos', 'editcap', 'dumpcap'], tags=['pcap']),
+    TERM('''
+    $ capinfos -c -u -d -s lab-login.pcap
+    File name:           lab-login.pcap
+    Number of packets:   27
+    File size:           3041 bytes
+    Data size:           2585 bytes
+    Capture duration:    4.182700 seconds
+    $ mergecap -w all.pcap lab-*.pcap && capinfos -c -d all.pcap
+    File name:           all.pcap
+    Number of packets:   140
+    Data size:           13 kB
+    '''),
+
+    EX('wireshark-ex-write-the-filters', 'Write the filters', 'think',
+       '''Write a display filter for each question, then test them in the lab or in Wireshark: (a) every packet to or from the NAS
+       `192.168.1.60` except ARP; (b) only DNS questions, never answers, for names containing `apple`; (c) TCP packets that carry data
+       (not bare ACKs) on port 8080; (d) any HTTP response that is an error (status 400 or higher); (e) everything that is **not** ARP, DNS or
+       ICMP.''',
+       '''(a) ip.addr == 192.168.1.60          (ARP has no ip.addr field, so it is excluded automatically)
+(b) dns.flags.response == 0 && dns.qry.name contains "apple"
+(c) tcp.port == 8080 && tcp.len > 0
+(d) http.response.code >= 400
+(e) !(arp || dns || icmp)''',
+       hints=['A field that is absent makes a comparison false: use that in (a).', '`tcp.len` is the payload length; a bare ACK has 0.'],
+       why='''Each answer uses one idea from this chapter: absent fields (a), field plus protocol logic (b), payload length rather than flags
+       (c), numeric comparison on a status (d), and negating a group with parentheses (e). Writing filters from questions, not from
+       memory, is the skill that transfers to any capture.'''),
+    EX('wireshark-ex-capture-your-own-dns', 'Capture your own DNS and rank it', 'terminal',
+       '''On your Mac, capture DNS for 30 seconds while you open a few websites, then list every name your Mac asked for, most frequent first.
+       Use `dumpcap` to capture and `tshark` to analyse the file. Which names surprised you?''',
+       '''dumpcap -i en0 -f "udp port 53" -a duration:30 -w ~/lab/mydns.pcapng -q
+tshark -r ~/lab/mydns.pcapng -Y "dns.flags.response == 0" -T fields -e dns.qry.name | sort | uniq -c | sort -rn | head -20''',
+       hints=['Capture filters (`-f`) use BPF syntax; display filters (`-Y`) use Wireshark syntax.', 'If you see almost nothing, your browser may use encrypted DNS (DNS over HTTPS). Then the lookups are inside TLS to the resolver.'],
+       why='''Splitting capture and analysis is how professionals work: `dumpcap` writes fast and safely, and you can re-analyse the file
+       as many times as you like. Many of the names will be analytics, telemetry and content delivery networks that the sites you visited
+       load in the background: a capture is the most honest privacy report there is.'''),
+
+    CHECK('wireshark-ch-wireshark-checkpoint', 'Wireshark checkpoint',
+          Q('Which statement about capture filters and display filters is true?', [('They use the same syntax', False), ('Capture filters (BPF) decide what is saved; display filters decide what is shown from what was saved', True), ('Display filters are faster during capture', False), ('Only tshark supports display filters', False)],
+            'Two languages for two moments. A capture filter cannot be undone: packets it drops are never recorded.'),
+          Q('What does `ip.addr != 10.0.0.5` show in Wireshark 3.6 or later?', [('Packets where either address is not 10.0.0.5, which is almost every packet', False), ('Packets where neither source nor destination is 10.0.0.5', True), ('Only packets from 10.0.0.5', False), ('A syntax error', False)],
+            'Since 3.6, `!=` is "all not equal": the exact negation of `==`. The old "any not equal" is written `~=`.'),
+          Q('A host answers a SYN with SYN, ACK, and the scanner replies RST. What does that tell you?', [('The port is closed', False), ('The port is open, and the scanner is doing a half-open (SYN) scan', True), ('A firewall dropped the packet', False), ('The connection completed normally', False)],
+            'SYN, ACK means a service is listening. Replying RST instead of ACK is the hallmark of a SYN scan.'),
+          Q('Wireshark warns "Duplicate IP address configured (192.168.1.1)". The most likely cause on a home network?', [('A DNS failure', False), ('Two devices claiming the router\'s IP, often ARP spoofing', True), ('An expired certificate', False), ('A slow Wi-Fi link', False)],
+            'Two different MACs announcing the same IP is either a misconfiguration or an attacker putting themselves in the middle.'),
+          Q('You have a capture of your own HTTPS session and want to read it. What do you need?', [('The website\'s private key', False), ('The per-session secrets from SSLKEYLOGFILE', True), ('Nothing: Wireshark decrypts TLS automatically', False), ('A slower cipher', False)],
+            'TLS 1.3 sessions use ephemeral keys, so even the server key would not help. The key log records each session\'s secrets.'),
+          Q('Which detail of DNS queries is the strongest single sign of exfiltration?', [('Type A records', False), ('Many long, random-looking subdomains under one domain', True), ('Queries to the local router', False), ('Responses with a TTL of 300', False)],
+            'Data has to fit into the names, so they become long, varied and numerous. Volume to one domain plus randomness is the pattern.')),
+
+    PROJECT('wireshark-pr-netwatch', 'netwatch: alerts from your own packets', 'intermediate', 60,
+            ['dumpcap', 'tshark fields', 'Python', 'detection logic'],
+            P('''Build `netwatch.py`, a small network monitor for your home lab. It reads a capture (or a ring buffer of them) with `tshark`,
+            runs the detections from this chapter and prints one line per alert. Run it against the five lab captures first: each should
+            produce exactly the alerts its story implies, and the browsing capture none.'''),
+            H3('1. Get the data'),
+            P('''Call `tshark -r FILE -T fields -E separator=/t` with `subprocess.run` and the fields you need: `frame.time_relative`, `eth.src`,
+            `arp.opcode`, `arp.src.proto_ipv4`, `arp.src.hw_mac`, `ip.src`, `ip.dst`, `tcp.dstport`, `tcp.flags.syn`, `tcp.flags.ack`, `dns.qry.name`,
+            `dns.flags.response`, `http.request.method`, `http.authorization`. Parse each line into a dictionary.'''),
+            H3('2. Four detections'),
+            UL('**ARP**: an IP address seen with a different MAC than before. Alert with both MACs and the frame time.',
+               '**Scan**: your `scanners()` function from this chapter, with a time window of two seconds.',
+               '**DNS**: your `suspicious()` function, plus more than three suspicious names under the same parent domain.',
+               '**Clear text**: any HTTP POST or `Authorization` header on a port other than 443.'),
+            H3('3. Output'),
+            P('One line per alert, tab separated: time, severity, detection, details. Exit with status 1 if anything was found, so a shell script or cron job can react.'),
+            H3('4. Run it live'),
+            P('''Record a ring buffer with `dumpcap -b filesize:10000 -b files:6` on your Mac or a Raspberry Pi, and run `netwatch.py` on each file as
+            it closes. On macOS a LaunchAgent can do this every few minutes; on a Pi use a systemd timer.'''),
+            H3('5. Stretch goals'),
+            UL('Add a "new device" alert: a MAC address never seen before on your LAN.', 'Send alerts to your phone with a webhook, signed with HMAC as in the APIs chapter.', 'Compare your results with Zeek or Suricata on the same captures and note what they find that you do not.')),
+]
+
+terms = [
+    ('display filter', 'a Wireshark expression that hides packets for which it is false; fields, protocols, comparisons and logic'),
+    ('capture filter', 'a BPF expression applied while capturing; packets it rejects are never saved'),
+    ('dissector', 'the Wireshark code that decodes one protocol and produces its fields'),
+    ('ChmodBPF', 'the macOS launch daemon that lets members of access_bpf capture without root'),
+    ('ring buffer', 'a set of capture files of fixed size where the oldest is overwritten'),
+    ('half-open scan', 'a port scan that sends SYN and answers SYN, ACK with RST, never completing the connection'),
+    ('ARP spoofing', 'sending forged ARP replies so traffic for one IP address goes to the attacker\'s MAC'),
+    ('DNS exfiltration', 'smuggling data out of a network by encoding it in DNS query names'),
+    ('SNI', 'Server Name Indication: the host name in the TLS ClientHello, visible to observers'),
+    ('JA4', 'a fingerprint of a TLS client computed from its ClientHello, used to identify client software'),
+    ('SSLKEYLOGFILE', 'environment variable that makes clients write TLS session secrets so Wireshark can decrypt their traffic'),
+    ('expert information', 'Wireshark\'s list of anomalies it noticed while dissecting, by severity'),
+]
+
+CHAPTER = chapter('wireshark', 'Wireshark: Packet Analysis for Security',
+                  'Master display filters, follow conversations, read statistics, and investigate clear-text credentials, scans, ARP spoofing, DNS exfiltration and TLS',
+                  'cloud', 140,
+                  ['Capture safely on macOS without root, with ring buffers for long captures',
+                   'Write precise display filters, including multi-value fields, sets, CIDR, contains and matches',
+                   'Use Follow TCP Stream, Conversations, Endpoints, Protocol Hierarchy and Expert Information, in Wireshark and tshark',
+                   'Recognise clear-text credentials, port scans, ARP spoofing and DNS exfiltration in a capture, and write detectors for them',
+                   'Decrypt your own TLS traffic with a key log, and explain what remains visible when you cannot'],
+                  blocks, terms, part='sec', file='42-wireshark.gm')

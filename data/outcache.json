@@ -12,6 +12,7 @@
 "505518a024764317": "without the key: password=hunter2-lab",
 "5c95dd55dc0827a0": "8 requests, 11786 bytes\nby status: {'2xx': 4, '4xx': 2, '5xx': 2}\nserver error: 2 x POST /api/devices 502\n404s came from: 192.0.2.66",
 "64d10e2e687c8e6b": "18\nprivate\ned ok",
+"6e11ce63267421c3": "failed attempts by address: {'45.95.147.12': 3, '193.32.162.80': 1}\nlogin: learner from 192.168.1.23 with publickey\nlogin: root from 185.220.101.4 with password  <-- investigate",
 "72ba8ed828a0570f": "attempt 1: 503, waiting 1 s (Retry-After)\nfinal: 200 { ok: true, attempt: 2 }",
 "7c0d6d466f8981ab": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\n04a6f55face2f46be8c23f627d539827615851e10751b63ec59db6d2c706b770\ninput bits that differ:  1\noutput bits that differ: 127 of 256",
 "7fd2e816fe73cb73": "5e6163c4a86585474c157f5611e9f00ce17e81560d653c2b792459b2411d79e8\n147e0e9c65c13ee53e41350206a49fa5eb52b4a06366d3aaf2d8d8360b8def60\n5e6163c4a86585474c157f5611e9f00ce17e81560d653c2b792459b2411d79e8",
@@ -22,6 +23,7 @@
 "bf8f4ef98a8aa446": "b60090e3052297ae\nFalse ['blake2b', 'blake2s', 'md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha3_224', 'sha3_256', 'sha3_384', 'sha3_512', 'sha512']\n[IPv4Network('10.0.0.0/24'), IPv4Network('10.0.1.0/24')]\n32\nok",
 "cf6f4c4c9ce99e8d": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\n200 6",
 "d15e77f70196d794": "public key: 32 bytes\nsignature:  64 bytes\ngenuine:   true\ntampered:  false",
+"eca4dd8af6b689f3": "db_password=Corr3ct-H0rse;host=10.20.8.5",
 "f6c39b07e7932f27": "sha256=ec8a6c8e4f52dc3c4d2c347ebb1aa521167ab78388c7c2164b8f66c8bebf4f6f\ngenuine: True\nedited:  False\nforged:  False",
 "ff0af588f5b2effc": "plaintext  19 bytes\nciphertext 610bd57c0d6eb49fb3ed33e1f471c4a99b6cbd\ntag        e7ef675752f0784676176284d0f9f85f\ndecrypted: nas backup at 02:00\ntampered:  OperationError"
 }

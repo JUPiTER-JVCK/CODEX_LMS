@@ -381,14 +381,14 @@
     },
     {
      "t": "p",
-     "text": "The book has seven parts that build on each other, then two capstones and two reference chapters. You can jump around, but the order is chosen so that each chapter only uses what came before it.",
+     "text": "The book has eight parts that build on each other, then two capstones and two reference chapters. You can jump around, but the order is chosen so that each chapter only uses what came before it.",
      "line": 137
     },
     {
      "t": "code",
      "lang": "ascii",
      "attrs": {},
-     "code": "  ⟪c:START⟫ 00-01 ──▶ ⟪g:FOUNDATIONS⟫ 02-05 ──▶ ⟪y:ZSH⟫ 06-11 ──▶ ⟪b:NETWORK⟫ 12-19\n    tools, lab        bits, layers,        the command     see, probe, capture,\n                      subnets, logic       line, pipes     tunnel and fix networks\n                                                                      │\n  ⟪r:WEB⟫ 29-37 ◀──────────────────────── ⟪m:PYTHON⟫ 20-28 ◀───────────────┘\n    HTML, CSS, JavaScript,   scripts, scanners, parsers and tools\n    DevTools, DOM, XML, Node\n        │\n        └──▶ ⟪c:SERVERS, APIs & CLOUD⟫ 38-41 ──▶ ⟪r:PROJECTS⟫ 42-44\n               services, logs, nginx, APIs,        netkit (Python), LAN dashboard\n               encryption and TLS, cloud           (web), roadmap",
+     "code": "  ⟪c:START⟫ 00-01 ──▶ ⟪g:FOUNDATIONS⟫ 02-05 ──▶ ⟪y:ZSH⟫ 06-11 ──▶ ⟪b:NETWORK⟫ 12-19\n    tools, lab        bits, layers,        the command     see, probe, capture,\n                      subnets, logic       line, pipes     tunnel and fix networks\n                                                                      │\n  ⟪r:WEB⟫ 29-37 ◀──────────────────────── ⟪m:PYTHON⟫ 20-28 ◀───────────────┘\n    HTML, CSS, JavaScript,   scripts, scanners, parsers and tools\n    DevTools, DOM, XML, Node\n        │\n        └──▶ ⟪c:SERVERS, APIs & CLOUD⟫ 38-41 ──▶ ⟪r:SECURITY⟫ 42-43 ──▶ ⟪r:PROJECTS⟫ 44-46\n               services, logs, nginx, APIs,        Wireshark, hardening,   netkit, LAN dashboard,\n               encryption and TLS, cloud           triage, response        roadmap",
      "line": 139
     },
     {
@@ -428,6 +428,16 @@
        "Web",
        "[How the web works](#web-intro), [HTML](#html), [CSS](#css), [JavaScript fundamentals](#js-basics), [JavaScript in depth](#js-deeper), [DevTools and the console](#devtools), [The DOM](#dom), [XML](#xml), [Node.js](#node)",
        "Build and style pages, write modern JavaScript, drive the browser console and DevTools, manipulate the DOM and handle events, parse XML with XPath, and write servers and APIs with Node.js"
+      ],
+      [
+       "Servers, APIs & Cloud",
+       "[Server basics](#servers), [APIs](#apis), [Encryption](#crypto), [Cloud computing](#cloud)",
+       "Run and supervise services, put nginx in front of them, call and secure APIs, use hashes, keys and TLS correctly with your own CA, and plan a small cloud deployment"
+      ],
+      [
+       "Security",
+       "[Wireshark](#wireshark), [Defending your Mac and servers](#defend)",
+       "Filter and dissect captures to find clear-text credentials, scans, ARP spoofing, DNS tunnels and TLS metadata, audit and baseline a Mac, harden a Linux server, triage logs and respond to an incident"
       ],
       [
        "Projects",
@@ -106836,7 +106846,7 @@
     "Make a tool behave in pipelines with exit codes, quiet mode, stdin and JSON or CSV output",
     "Review your own code against a rubric"
    ],
-   "file": "42-capstone.gm",
+   "file": "44-capstone.gm",
    "blocks": [
     {
      "t": "p",
@@ -108482,7 +108492,7 @@
     "Test the API with node --test against a real server on a random port, and find a planted bug with DevTools",
     "Run the app safely on your Mac and, deliberately, on your LAN"
    ],
-   "file": "43-web-capstone.gm",
+   "file": "45-web-capstone.gm",
    "blocks": [
     {
      "t": "p",
@@ -110030,7 +110040,7 @@
     "Read primary documentation (man pages, PEPs, RFCs) instead of searching for summaries",
     "Practice offensive skills only on systems built or authorized for it"
    ],
-   "file": "44-next.gm",
+   "file": "46-next.gm",
    "blocks": [
     {
      "t": "p",
@@ -110859,7 +110869,12 @@
       [
        "CompTIA Security+",
        "Security fundamentals and operations",
-       "Track 1 above"
+       "Track 1 above and the Security part of this book"
+      ],
+      [
+       "CompTIA CySA+, or the Wireshark Certified Analyst (WCA)",
+       "Security operations: detection, log and packet analysis, incident response",
+       "Security+, plus regular practice with the packet lab and triage drill"
       ],
       [
        "AWS Certified Cloud Practitioner, then Solutions Architect Associate (or the Azure and Google Cloud equivalents)",

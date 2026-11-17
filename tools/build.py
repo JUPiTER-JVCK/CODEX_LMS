@@ -36,10 +36,14 @@ def js_json(obj):
     return json.dumps(obj, separators=(',', ':'), ensure_ascii=False).replace('<', '\\u003c')
 
 
-# Same order and labels as PARTS in src/engine.js.
-PARTS = [['start', 'Start here'], ['found', 'Foundations'], ['zsh', 'The shell (zsh)'], ['net', 'Networking'],
-         ['py', 'Python'], ['web', 'Web development'], ['srv', 'Servers, APIs & Cloud'], ['proj', 'Projects'],
-         ['ref', 'Reference']]
+def engine_parts():
+    # Part order and labels come from PARTS in src/engine.js, so the app's sidebar can't drift from the page.
+    m = re.search(r"var PARTS = (\[\[.*?\]\]);", rd('src/engine.js'))
+    if not m:
+        raise SystemExit('PARTS not found in src/engine.js')
+    return json.loads(m.group(1).replace("'", '"'))
+
+
 # Same as EXTRA in src/engine.js: pages the engine generates rather than chapters.
 SPECIAL = [{'id': 'atlas', 'title': 'Command Atlas', 'sub': 'Every command in the book, searchable'},
            {'id': 'practice', 'title': 'Practice Hub', 'sub': 'Exercises, checkpoints, projects and the practice terminal'},
@@ -74,7 +78,7 @@ def toc(book):
                       for b in c['blocks'] if b['t'] == 'cmd'],
             'items': item_ids(c),
         })
-    return {'version': 1, 'parts': [{'id': p, 'title': t} for p, t in PARTS], 'chapters': out, 'special': SPECIAL}
+    return {'version': 1, 'parts': [{'id': p, 'title': t} for p, t in engine_parts()], 'chapters': out, 'special': SPECIAL}
 
 
 def slug(s):

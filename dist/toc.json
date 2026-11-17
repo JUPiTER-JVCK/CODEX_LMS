@@ -30,6 +30,10 @@
    "title": "Servers, APIs & Cloud"
   },
   {
+   "id": "sec",
+   "title": "Security"
+  },
+  {
    "id": "proj",
    "title": "Projects"
   },
@@ -8413,8 +8417,198 @@
    ]
   },
   {
-   "id": "capstone",
+   "id": "wireshark",
    "num": 42,
+   "title": "Wireshark: Packet Analysis for Security",
+   "sub": "Master display filters, follow conversations, read statistics, and investigate clear-text credentials, scans, ARP spoofing, DNS exfiltration and TLS",
+   "part": "sec",
+   "time": 140,
+   "level": "intermediate",
+   "sections": [
+    {
+     "id": "setup",
+     "text": "Wireshark on your Mac",
+     "level": 2
+    },
+    {
+     "id": "lab",
+     "text": "The packet lab",
+     "level": 2
+    },
+    {
+     "id": "filters",
+     "text": "Display filters in depth",
+     "level": 2
+    },
+    {
+     "id": "stats",
+     "text": "Conversations and statistics",
+     "level": 2
+    },
+    {
+     "id": "case-cleartext",
+     "text": "Case 1: credentials in clear text",
+     "level": 2
+    },
+    {
+     "id": "case-scan",
+     "text": "Case 2: a port scan",
+     "level": 2
+    },
+    {
+     "id": "case-arp",
+     "text": "Case 3: ARP spoofing",
+     "level": 2
+    },
+    {
+     "id": "case-dns",
+     "text": "Case 4: data leaving through DNS",
+     "level": 2
+    },
+    {
+     "id": "tls",
+     "text": "Case 5: seeing inside encrypted traffic",
+     "level": 2
+    }
+   ],
+   "cards": [
+    {
+     "id": "cmd-dumpcap",
+     "name": "dumpcap",
+     "sum": "Wireshark's capture engine: write packets to disk efficiently, with ring buffers for long captures.",
+     "cat": "sec-pcap"
+    },
+    {
+     "id": "cmd-tshark-t-fields",
+     "name": "tshark -T fields",
+     "sum": "Extract chosen fields from a capture as tab-separated text, ready for sort, uniq, awk or Python.",
+     "cat": "sec-pcap"
+    },
+    {
+     "id": "cmd-tshark-z",
+     "name": "tshark -z",
+     "sum": "Run Wireshark's statistics on a capture from the terminal: hierarchy, conversations, endpoints, expert info, streams.",
+     "cat": "sec-pcap"
+    },
+    {
+     "id": "cmd-mergecap",
+     "name": "mergecap",
+     "sum": "Merge several capture files into one, in timestamp order.",
+     "cat": "sec-pcap"
+    }
+   ],
+   "items": [
+    "wireshark-ex-detect-a-scan",
+    "wireshark-ex-score-dns-names",
+    "wireshark-ex-write-the-filters",
+    "wireshark-ex-capture-your-own-dns",
+    "wireshark-ch-wireshark-checkpoint",
+    "wireshark-pr-netwatch#0",
+    "wireshark-pr-netwatch#1",
+    "wireshark-pr-netwatch#2",
+    "wireshark-pr-netwatch#3",
+    "wireshark-pr-netwatch#4"
+   ]
+  },
+  {
+   "id": "defend",
+   "num": 43,
+   "title": "Defending Your Mac and Servers",
+   "sub": "Think in threats, check every macOS protection from Terminal, audit and baseline your machine, harden Linux servers, triage logs and respond to incidents",
+   "part": "sec",
+   "time": 110,
+   "level": "intermediate",
+   "sections": [
+    {
+     "id": "threats",
+     "text": "Think like a defender: threats before tools",
+     "level": 2
+    },
+    {
+     "id": "macos",
+     "text": "What macOS already does for you",
+     "level": 2
+    },
+    {
+     "id": "audit",
+     "text": "Audit your Mac in one command",
+     "level": 2
+    },
+    {
+     "id": "linux",
+     "text": "Hardening and watching a Linux server",
+     "level": 2
+    },
+    {
+     "id": "triage",
+     "text": "Triage: reading logs like an analyst",
+     "level": 2
+    },
+    {
+     "id": "ir",
+     "text": "When something goes wrong: incident response",
+     "level": 2
+    }
+   ],
+   "cards": [
+    {
+     "id": "cmd-socketfilterfw",
+     "name": "socketfilterfw",
+     "sum": "Inspect and configure the macOS application firewall from Terminal.",
+     "cat": "sec-mac"
+    },
+    {
+     "id": "cmd-fdesetup",
+     "name": "fdesetup",
+     "sum": "Check and manage FileVault full-disk encryption.",
+     "cat": "sec-mac"
+    },
+    {
+     "id": "cmd-spctl",
+     "name": "spctl",
+     "sum": "Query Gatekeeper: is it on, and would it let this app run?",
+     "cat": "sec-mac"
+    },
+    {
+     "id": "cmd-codesign",
+     "name": "codesign",
+     "sum": "Show and verify the code signature of an app or binary.",
+     "cat": "sec-mac"
+    },
+    {
+     "id": "cmd-fail2ban-client",
+     "name": "fail2ban-client",
+     "sum": "Control fail2ban: see which jails run, who is banned, and unban addresses.",
+     "cat": "sec-linux"
+    },
+    {
+     "id": "cmd-last",
+     "name": "last",
+     "sum": "List recent logins and reboots from the login records.",
+     "cat": "sec-audit"
+    },
+    {
+     "id": "cmd-lynis",
+     "name": "lynis",
+     "sum": "Audit the security configuration of a Linux (or macOS) system and suggest hardening steps.",
+     "cat": "sec-audit"
+    }
+   ],
+   "items": [
+    "defend-ex-persistence-diff",
+    "defend-ex-ssh-attackers-report",
+    "defend-ex-first-hour",
+    "defend-ch-defence-checkpoint",
+    "defend-pr-baseline#0",
+    "defend-pr-baseline#1",
+    "defend-pr-baseline#2",
+    "defend-pr-baseline#3",
+    "defend-pr-baseline#4"
+   ]
+  },
+  {
+   "id": "capstone",
+   "num": 44,
    "title": "Capstone: netkit",
    "sub": "Build one tested, installable command that combines subnet maths, ping, DNS, port scan and log analysis",
    "part": "proj",
@@ -8505,7 +8699,7 @@
   },
   {
    "id": "web-capstone",
-   "num": 43,
+   "num": 45,
    "title": "Capstone: a LAN Dashboard, Front to Back",
    "sub": "Build, test, debug and share a full-stack app: Express API, JSON file store, TCP port checks, XML and RSS feeds, and a plain-JavaScript dashboard",
    "part": "proj",
@@ -8582,7 +8776,7 @@
   },
   {
    "id": "next",
-   "num": 44,
+   "num": 46,
    "title": "Where to Go From Here",
    "sub": "A map of what you can do now, what to learn next, and a routine that gets you there",
    "part": "proj",
@@ -8668,7 +8862,7 @@
   },
   {
    "id": "cheats",
-   "num": 45,
+   "num": 47,
    "title": "Cheat Sheets",
    "sub": "One-page lookup tables for the shell, networking, HTTP, permissions, Python, pip, git and web development",
    "part": "ref",
@@ -8776,7 +8970,7 @@
   },
   {
    "id": "fixes",
-   "num": 46,
+   "num": 48,
    "title": "Fixes",
    "sub": "A problem-to-fix index for the errors you will actually hit on a Mac",
    "part": "ref",
