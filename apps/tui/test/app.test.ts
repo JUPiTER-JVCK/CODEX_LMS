@@ -285,3 +285,48 @@ test("the splash dismisses on any key, and is skipped when asked", () => {
   t += 5000;
   assert.equal(app.wantsTick(), false);
 });
+
+test("every lab the book places that has a terminal version draws, takes keys and clicks, and stays inside its box", () => {
+  const names = ["bitswitches", "gates", "bitmask", "utf8", "cron", "latencyladder", "subnet"];
+  const found = new Set<string>();
+  for (const c of book.chapters) {
+    const ws = c.blocks.filter((b) => b.t === "widget" && names.includes(b.name));
+    if (!ws.length) continue;
+    const { app, send, screen } = mk({ cols: 140, rows: 50 });
+    app.go(c.id);
+    for (const w of ws) {
+      found.add(w.name);
+      const line = app.doc.lines.findIndex((l) => l.widget?.name === w.name);
+      assert.ok(line >= 0, `${w.name} is placed in ${c.id}`);
+      app.scroll = Math.max(0, line - 2);
+      const s = app.render();
+      assert.ok(s.bg.every((v) => v >= 0));
+      for (const k of ["\r", "1", "+", "<", "a", "\t", "x", "\x7f", "\x1b"]) { send(k); app.render(); }
+    }
+  }
+  assert.deepEqual([...found].sort(), names.slice().sort(), "every lab is placed somewhere in the book");
+});
+
+test("bit switches: pressing keys and clicking change the value shown", () => {
+  const { app, send, screen } = mk({ cols: 140, rows: 50 });
+  app.go("computers");
+  const line = app.doc.lines.findIndex((l) => l.widget?.name === "bitswitches");
+  app.scroll = Math.max(0, line - 2);
+  app.render();
+  send("\r"); send("7"); send("0"); // flip the top bit and the lowest... bit 0 is the leftmost chip
+  assert.match(screen(), /decimal \d+/);
+  send("+");
+  const before = screen();
+  send("~");
+  assert.notEqual(screen(), before);
+});
+
+test("subnet lab calculates as you type", () => {
+  const { app, send, screen } = mk({ cols: 140, rows: 50 });
+  app.go("addressing");
+  const line = app.doc.lines.findIndex((l) => l.widget?.name === "subnet");
+  app.scroll = Math.max(0, line - 2);
+  app.render();
+  send("\r");
+  assert.match(screen(), /192\.168\.1\.128/); // network of 192.168.1.130/26
+});

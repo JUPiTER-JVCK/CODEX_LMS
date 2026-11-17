@@ -116,6 +116,10 @@ tests for `CodexCore` (table of contents, saved progress, search) on macOS or Li
 | `apple/Sources/CodexCore/` | Swift models for `toc.json` and saved progress, and search; tests in `apple/Tests/` |
 | `apple/App/` | SwiftUI app: sidebar, search, web view, `codex://` scheme handler and the page bridge |
 
+## Terminal app
+
+`node apps/tui/dist/codex-tui.mjs` (after `npm run tui:build`) or `npm run tui`. It reads the book from `dist/index.html`, shares your progress with the Mac app, supports mouse and keyboard, and has terminal versions of seven labs inside the sections that teach them (bit switches, logic gates, bit mask and mask-an-address, text to bytes, cron, latency ladder, subnet calculator). Labs the terminal does not have yet show a card pointing to the page or the Mac app. `?` shows the keys.
+
 ## One file: page, terminal app and Mac app
 
 `python3 tools/bundle.py --app CODEX_LMS-mac.zip` (CI does this and uploads `CODEX_LMS-single-file`) writes **`CODEX_LMS.html`**, one file for whichever device you have:
