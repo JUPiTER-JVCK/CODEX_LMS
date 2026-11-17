@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "DOM views for the interactive labs. Bundled into src/ws-5-labs.js, which tools/build.py inlines into the book.",
+  "description": "DOM views for the interactive labs. Bundled into src/ws-labs.js, which tools/build.py inlines into the book.",
   "scripts": {
     "build": "node build.mjs",
     "typecheck": "tsc --noEmit -p ."

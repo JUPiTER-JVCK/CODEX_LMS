@@ -22,11 +22,15 @@ jobs:
         run: git diff --exit-code -- dist/index.html
       - name: ASCII diagrams are aligned
         run: python tools/lint_ascii.py --quiet
+      - name: Display filters match tshark
+        run: |
+          sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y tshark
+          python test/pcapfilters.py
       - name: Browser tests
         run: |
           (cd dist && python -m http.server 8765 &)
           sleep 2
-          python test/blocks.py servers apis crypto cloud
+          python test/blocks.py servers apis crypto cloud wireshark defend
           python test/labs.py
           python test/ascii.py
           python test/theme.py
@@ -43,7 +47,7 @@ jobs:
         run: npm test
       - name: Type-check the lab views
         run: npx tsc --noEmit -p packages/labs
-      - name: src/ws-5-labs.js is up to date
+      - name: src/ws-labs.js is up to date
         run: |
           npm run labs
-          git diff --exit-code -- src/ws-5-labs.js
+          git diff --exit-code -- src/ws-labs.js
