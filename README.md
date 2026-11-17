@@ -34,7 +34,7 @@ in-page Python needs to be served over HTTP.
 
 ## Build and test
 
-Needs Python 3 and Playwright (`python3 -m pip install playwright && python3 -m playwright install chromium`).
+Needs Python 3 and Playwright, pinned to the version CI uses (`python3 -m pip install playwright==1.63.0 && python3 -m playwright install chromium`).
 
     python3 tools/chapters.py      # chapters/*.py -> data/new/*.json
     python3 tools/build.py         # -> dist/index.html (and pub.html for the Claude artifact host)
@@ -42,3 +42,7 @@ Needs Python 3 and Playwright (`python3 -m pip install playwright && python3 -m 
     python3 test/blocks.py servers apis crypto cloud
 
 Add `--update` to `test/blocks.py` after changing code in a chapter to record its new real output.
+
+## License
+
+MIT, see `LICENSE`. The bundled Pyodide runtime in `dist/py/` keeps its own license (MPL-2.0).

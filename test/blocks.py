@@ -65,3 +65,4 @@ with sync_playwright() as p:
 if upd:
     json.dump(cache, open(cachep, 'w'), indent=0, sort_keys=True)
 print('problems:', bad)
+sys.exit(1 if bad else 0)
