@@ -1,8 +1,8 @@
 
 /* ===== Servers, APIs & Cloud part: domain colour + widgets ===== */
-:root{--c-srv:#8fb3ff}
-:root[data-theme="light"]{--c-srv:#2450c2}
-@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--c-srv:#2450c2}}
+:root{--c-srv:#82aef0}
+:root[data-theme="light"]{--c-srv:#2a56b8}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--c-srv:#2a56b8}}
 .dom-srv{--dom:var(--c-srv)}.card.cat-srv{--dom:var(--c-srv)}
 .wg.sv{--dom:var(--c-srv)}
 .wg.sv code{font-size:.92em}

@@ -388,7 +388,7 @@
      "t": "code",
      "lang": "ascii",
      "attrs": {},
-     "code": "  ⟪c:START⟫ 00-01 ──▶ ⟪g:FOUNDATIONS⟫ 02-05 ──▶ ⟪y:ZSH⟫ 06-11 ──▶ ⟪b:NETWORK⟫ 12-19\n    tools, lab        bits, layers,        the command     see, probe, capture,\n                      subnets, logic       line, pipes     tunnel and fix networks\n                                                                      │\n  ⟪r:WEB⟫ 29-37 ◀──────────────────────── ⟪m:PYTHON⟫ 20-28 ◀───────────────┘\n    HTML, CSS, JavaScript,   scripts, scanners, parsers and tools\n    DevTools, DOM, XML, Node\n        │\n        └──▶ ⟪c:SERVERS, APIs & CLOUD⟫ 38-41 ──▶ ⟪r:PROJECTS⟫ 42-44\n               services, logs, nginx, APIs,        netkit (Python), LAN dashboard\n               encryption and TLS, cloud           (web), roadmap",
+     "code": "  ⟪c:START⟫ 00-01 ──▶ ⟪g:FOUNDATIONS⟫ 02-05 ──▶ ⟪y:ZSH⟫ 06-11 ──▶ ⟪b:NETWORK⟫ 12-19\n    tools, lab        bits, layers,        the command     see, probe, capture,\n                      subnets, logic       line, pipes     tunnel and fix networks\n                                                                   │   \n  ⟪r:WEB⟫ 29-37 ◀──────────────────────── ⟪m:PYTHON⟫ 20-28 ◀───────────────┘\n    HTML, CSS, JavaScript,   scripts, scanners, parsers and tools\n    DevTools, DOM, XML, Node\n        │\n        └──▶ ⟪c:SERVERS, APIs & CLOUD⟫ 38-41 ──▶ ⟪r:PROJECTS⟫ 42-44\n               services, logs, nginx, APIs,        netkit (Python), LAN dashboard\n               encryption and TLS, cloud           (web), roadmap",
      "line": 139
     },
     {
@@ -20816,7 +20816,7 @@
      "t": "code",
      "lang": "ascii",
      "attrs": {},
-     "code": "  ┌─────────┐  stdout   ╔═══════════╗   stdin   ┌─────────┐  stdout   ╔═══════════╗   stdin   ┌─────────┐\n  │  cat    │ ────────▶ ║   pipe    ║ ────────▶ │  grep   │ ────────▶ ║   pipe    ║ ────────▶ │  wc -l  │ ──▶ screen\n  │access.log│           ║  (buffer) ║           │  404    │           ║  (buffer) ║           │         │\n  └─────────┘           ╚═══════════╝           └─────────┘           ╚═══════════╝           └─────────┘\n       ▲ stderr stays on the terminal: ───────────────────────────────────────────────────────────────────▶",
+     "code": "  ┌──────────┐ stdout   ╔═══════════╗   stdin   ┌─────────┐  stdout   ╔═══════════╗   stdin   ┌─────────┐\n  │  cat     │────────▶ ║   pipe    ║ ────────▶ │  grep   │ ────────▶ ║   pipe    ║ ────────▶ │  wc -l  │ ──▶ screen\n  │access.log│          ║  (buffer) ║           │  404    │           ║  (buffer) ║           │         │\n  └──────────┘          ╚═══════════╝           └─────────┘           ╚═══════════╝           └─────────┘\n       ▲ stderr stays on the terminal: ───────────────────────────────────────────────────────────────────▶",
      "line": 162
     },
     {
@@ -22066,7 +22066,7 @@
      "t": "code",
      "lang": "ascii",
      "attrs": {},
-     "code": " access.log  (one record per line)\n ┌────────────────────────────────────────────────────────────────────────────────────────────┐\n │ 45.33.32.156 - - [07/Oct/2026:09:14:08 +0000] \"GET /api/v1/orders HTTP/1.1\" 404 782 \"-\" ... │\n └────────────────────────────────────────────────────────────────────────────────────────────┘\n     $1           $2 $3 $4                $5      $6   $7               $8      $9  $10\n   client IP                    time     tz     method  path             proto  status bytes\n\n awk splits on runs of whitespace:  $1=45.33.32.156   $7=/api/v1/orders   $9=404   $10=782\n cut -d' ' counts every single space, so empty fields appear if there are doubled spaces",
+     "code": " access.log  (one record per line)\n ┌────────────────────────────────────────────────────────────────────────────────────────────┐\n │ 45.33.32.156 - - [07/Oct/2026:09:14:08 +0000] \"GET /api/v1/orders HTTP/1.1\" 404 782 \"-\" ...│ \n └────────────────────────────────────────────────────────────────────────────────────────────┘\n     $1           $2 $3 $4                $5      $6   $7               $8      $9  $10\n   client IP                    time     tz     method  path             proto  status bytes\n\n awk splits on runs of whitespace:  $1=45.33.32.156   $7=/api/v1/orders   $9=404   $10=782\n cut -d' ' counts every single space, so empty fields appear if there are doubled spaces",
      "line": 23
     },
     {
@@ -28051,7 +28051,7 @@
        "t": "code",
        "lang": "ascii",
        "attrs": {},
-       "code": "   netcheck.zsh\n   ┌─────────────┐   ┌─────────────┐   ┌──────────────┐   ┌─────────────┐   ┌──────────────┐\n   │ route / IP  │ ▶ │  gateway    │ ▶ │  DNS lookup  │ ▶ │  internet   │ ▶ │  HTTP fetch  │\n   │ route -n get│   │  ping -c 3  │   │  dig +short  │   │  ping 1.1.1.1│  │  curl -w ... │\n   └─────────────┘   └─────────────┘   └──────────────┘   └─────────────┘   └──────────────┘\n          each check ──▶ pass() or fail()  ──▶  fails counter  ──▶  exit $fails",
+       "code": "   netcheck.zsh\n   ┌─────────────┐   ┌─────────────┐   ┌──────────────┐   ┌─────────────┐   ┌──────────────┐\n   │ route / IP  │ ▶ │  gateway    │ ▶ │  DNS lookup  │ ▶ │  internet   │ ▶ │  HTTP fetch  │\n   │ route -n get│   │  ping -c 3  │   │  dig +short  │   │ ping 1.1.1.1│   │  curl -w ... │\n   └─────────────┘   └─────────────┘   └──────────────┘   └─────────────┘   └──────────────┘\n          each check ──▶ pass() or fail()  ──▶  fails counter  ──▶  exit $fails",
        "line": 1004
       },
       {
@@ -71709,7 +71709,7 @@
      "t": "code",
      "lang": "ascii",
      "attrs": {},
-     "code": "          class Host                                  instances\n   ┌──────────────────────────┐              ┌───────────────────────┐\n   │ count = 2         (shared)│◀────────────│ a   ip='192.168.1.1'   │  ⟪c:instance dict⟫\n   │ __init__(self, ip, name) │    lookup    │     name='router'      │\n   │ ping_command(self)       │◀────────────┼───────────────────────┤\n   │                          │              │ b   ip='192.168.1.20'  │\n   └──────────────────────────┘              │     name=''            │\n                                             └───────────────────────┘",
+     "code": "          class Host                                  instances\n   ┌──────────────────────────┐              ┌───────────────────────┐\n   │ count = 2        (shared)│◀─────────────│ a   ip='192.168.1.1'  │  ⟪c:instance dict⟫\n   │ __init__(self, ip, name) │    lookup    │     name='router'     │\n   │ ping_command(self)       │◀─────────────┼───────────────────────┤\n   │                          │              │ b   ip='192.168.1.20' │\n   └──────────────────────────┘              │     name=''           │\n                                             └───────────────────────┘",
      "line": 26
     },
     {
@@ -83130,7 +83130,7 @@
      "t": "code",
      "lang": "ascii",
      "attrs": {},
-     "code": " ┌──────────────────────────────── margin (transparent, outside, can collapse) ─────────┐\n │   ┌──────────────────────────── border ─────────────────────────────────────────┐    │\n │   │   ┌──────────────────────── padding (takes the element's background) ────┐  │    │\n │   │   │                                                                      │  │    │\n │   │   │            ⟪c:content box⟫   width × height  (box-sizing: content-box)     │  │    │\n │   │   │                                                                      │  │    │\n │   │   └──────────────────────────────────────────────────────────────────────┘  │    │\n │   └─────────────────────────────────────────────────────────────────────────────┘    │\n └──────────────────────────────────────────────────────────────────────────────────────┘\n   width: 200px; padding: 20px; border: 4px  →  border box = 200 + 2×20 + 2×4 = ⟪y:248px⟫ wide\n   same with box-sizing: border-box          →  border box = ⟪g:200px⟫, content = 200 − 48 = 152px",
+     "code": " ┌──────────────────────────────── margin (transparent, outside, can collapse) ─────────┐\n │   ┌──────────────────────────── border ─────────────────────────────────────────┐    │\n │   │   ┌──────────────────────── padding (takes the element's background) ────┐  │    │\n │   │   │                                                                      │  │    │\n │   │   │            ⟪c:content box⟫   width × height  (box-sizing: content-box)   │  │    │\n │   │   │                                                                      │  │    │\n │   │   └──────────────────────────────────────────────────────────────────────┘  │    │\n │   └─────────────────────────────────────────────────────────────────────────────┘    │\n └──────────────────────────────────────────────────────────────────────────────────────┘\n   width: 200px; padding: 20px; border: 4px  →  border box = 200 + 2×20 + 2×4 = ⟪y:248px⟫ wide\n   same with box-sizing: border-box          →  border box = ⟪g:200px⟫, content = 200 − 48 = 152px",
      "line": 619
     },
     {
@@ -93894,7 +93894,7 @@
      "t": "code",
      "lang": "ascii",
      "attrs": {},
-     "code": " ┌─ page ───────────────────────────────────────────────────────────────────────────┐\n │                                                                                  │\n ├─ DevTools ───────────────────────────────────────────────────────────────────────┤\n │ ⟪c:Elements⟫  ⟪c:Console⟫  Sources  ⟪c:Network⟫  Performance  Memory  ⟪c:Application⟫  Lighthouse   │\n ├──────────────────────────────────────────┬───────────────────────────────────────┤\n │ main area: DOM tree / request list /     │ sidebar: Styles, Computed, Layout /   │\n │ source code / recording                  │ headers, preview / Scope, Call Stack  │\n ├──────────────────────────────────────────┴───────────────────────────────────────┤\n │ drawer (⎋ toggles it in Chrome): a second Console, Network conditions, Changes   │\n └──────────────────────────────────────────────────────────────────────────────────┘\n   ⟪c:cyan⟫ = also in this book's drawer",
+     "code": " ┌─ page ───────────────────────────────────────────────────────────────────────────┐\n │                                                                                  │\n ├─ DevTools ───────────────────────────────────────────────────────────────────────┤\n │ ⟪c:Elements⟫  ⟪c:Console⟫  Sources  ⟪c:Network⟫  Performance  Memory  ⟪c:Application⟫  Lighthouse│   \n ├──────────────────────────────────────────┬───────────────────────────────────────┤\n │ main area: DOM tree / request list /     │ sidebar: Styles, Computed, Layout /   │\n │ source code / recording                  │ headers, preview / Scope, Call Stack  │\n ├──────────────────────────────────────────┴───────────────────────────────────────┤\n │ drawer (⎋ toggles it in Chrome): a second Console, Network conditions, Changes   │\n └──────────────────────────────────────────────────────────────────────────────────┘\n   ⟪c:cyan⟫ = also in this book's drawer",
      "line": 53
     },
     {
@@ -97678,7 +97678,7 @@
      "t": "code",
      "lang": "ascii",
      "attrs": {},
-     "code": "                         ┌───── target element ─────┐\n   ⟪y:target.before(x)⟫  │                          │  ⟪y:target.after(x)⟫\n   'beforebegin'  ──▶    │ ⟪g:target.prepend(x)⟫     │    ◀── 'afterend'\n                         │  'afterbegin' ──▶ first  │\n                         │      ...existing...      │\n                         │  last ◀── 'beforeend'    │\n                         │ ⟪g:target.append(x)⟫      │\n                         └──────────────────────────┘\n   ⟪y:yellow⟫ = outside the element (siblings)      ⟪g:green⟫ = inside it (children)\n   strings in quotes = positions for insertAdjacentHTML / insertAdjacentElement",
+     "code": "                         ┌───── target element ─────┐\n   ⟪y:target.before(x)⟫      │                          │  ⟪y:target.after(x)⟫\n   'beforebegin'  ──▶    │ ⟪g:target.prepend(x)⟫        │    ◀── 'afterend'\n                         │  'afterbegin' ──▶ first  │\n                         │      ...existing...      │\n                         │  last ◀── 'beforeend'    │\n                         │ ⟪g:target.append(x)⟫         │\n                         └──────────────────────────┘\n   ⟪y:yellow⟫ = outside the element (siblings)      ⟪g:green⟫ = inside it (children)\n   strings in quotes = positions for insertAdjacentHTML / insertAdjacentElement",
      "line": 618
     },
     {
@@ -98283,7 +98283,7 @@
      "t": "code",
      "lang": "ascii",
      "attrs": {},
-     "code": "            ⟪c:1. CAPTURE⟫ (down)                         ⟪m:3. BUBBLE⟫ (up)\n   window ─────────────┐                          ┌──────────── window\n   document ───────────┤                          ├──────────── document\n   <body> ─────────────┤                          ├──────────── <body>\n   <section#panel> ────┤                          ├──── <section#panel>   ◀ stopPropagation() here\n   <div.card> ─────────┤                          ├──────── <div.card>       stops the rest\n                       ▼                          │\n                  ⟪y:2. TARGET⟫  <button#save>  ───────┘\n                  listeners on the target run in registration order",
+     "code": "            ⟪c:1. CAPTURE⟫ (down)                         ⟪m:3. BUBBLE⟫ (up)\n   window ─────────────┐                          ┌──────────── window\n   document ───────────┤                          ├──────────── document\n   <body> ─────────────┤                          ├──────────── <body>\n   <section#panel> ────┤                          ├──── <section#panel>   ◀ stopPropagation() here\n   <div.card> ─────────┤                          ├──────── <div.card>       stops the rest\n                       ▼                          │\n                 ⟪y:2. TARGET⟫  <button#save>  ───────┘ \n                  listeners on the target run in registration order",
      "line": 892
     },
     {
@@ -108505,7 +108505,7 @@
      "t": "code",
      "lang": "ascii",
      "attrs": {},
-     "code": "  Safari / Chrome / phone                          Node process (server.js)\n ┌────────────────────────────┐   HTTP    ┌──────────────────────────────────────────────────┐\n │ index.html  style.css      │◀─────────▶│ express.static(public/)                          │\n │ app.js  ── state, events,  │  GET /    │                                                  │\n │            polling 10 s    │           │ /api router (src/app.js)                         │\n │ render.js ─ DOM from data  │  JSON     │   validate.js ──▶ 422 { error, fields }          │\n │ api.js ──── fetch wrapper ─┼──────────▶│   store.js ────▶ data/devices.json (atomic write) │\n └────────────────────────────┘  /api/*   │   monitor.js ──▶ check.js ── net.connect ──┐     │\n        ▲  RSS reader, curl, xmllint      │      │ 'change' events                     │     │\n        └──────── /feed.rss  /api/devices.xml ◀── feeds.js (escaped XML)            │     │\n                                          └─────────────────────────────────────────┼─────┘\n                                                        TCP SYN to 192.168.1.x:port ▼  your LAN only",
+     "code": "  Safari / Chrome / phone                          Node process (server.js)\n ┌────────────────────────────┐   HTTP    ┌──────────────────────────────────────────────────┐\n │ index.html  style.css      │◀─────────▶│ express.static(public/)                          │\n │ app.js  ── state, events,  │  GET /    │                                                  │\n │            polling 10 s    │           │ /api router (src/app.js)                         │\n │ render.js ─ DOM from data  │  JSON     │   validate.js ──▶ 422 { error, fields }          │\n │ api.js ──── fetch wrapper ─┼──────────▶│   store.js ───▶ data/devices.json (atomic write) │\n └────────────────────────────┘  /api/*   │   monitor.js ──▶ check.js ── net.connect ──┐     │\n        ▲  RSS reader, curl, xmllint      │      │ 'change' events                     │     │\n        └──────── /feed.rss  /api/devices.xml ◀── feeds.js (escaped XML)               │     │\n                                          └────────────────────────────────────────────┼─────┘\n                                                           TCP SYN to 192.168.1.x:port ▼  your LAN only",
      "line": 20
     },
     {

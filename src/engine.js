@@ -222,7 +222,7 @@
   function tableHTML(b) {
     return '<div class="tw"><table><thead><tr>' + b.head.map(function (c) { return '<th>' + inl(c) + '</th>'; }).join('') + '</tr></thead><tbody>' + b.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + inl(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
   }
-  var ANC = ['#4cc9e8', '#f2c14e', '#7bdc8c', '#f08fb0', '#b79af7', '#ff9f6b', '#6bb8ff', '#c4d96b'];
+  var ANC = ['var(--an1)', 'var(--an2)', 'var(--an3)', 'var(--an4)', 'var(--an5)', 'var(--an6)', 'var(--an7)', 'var(--an8)'];
   function anatomyHTML(b) {
     var id = 'an' + (++uid);
     var line = b.tokens.map(function (t, i) { return '<span class="tk" data-i="' + i + '" style="--tc:' + ANC[i % ANC.length] + '">' + phHTML(t.tok) + '</span>'; }).join(' ');
@@ -493,10 +493,21 @@
     res.hidden = false;
   }
 
-  function applyTheme() { if (S.theme) document.documentElement.setAttribute('data-theme', S.theme); }
+  var THEME_ICON = { '': '<circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor"/>', light: '<circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.1 3.1l1.4 1.4M11.5 11.5l1.4 1.4M3.1 12.9l1.4-1.4M11.5 4.5l1.4-1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>', dark: '<path d="M13.5 9.6A5.6 5.6 0 0 1 6.4 2.5a5.6 5.6 0 1 0 7.1 7.1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>' };
+  var THEME_NAME = { '': 'System', light: 'Light', dark: 'Dark' };
+  /* Theme is '' (follow the system), 'light' or 'dark'. With no data-theme attribute the CSS follows prefers-color-scheme live. */
+  function applyTheme() {
+    var t = S.theme === 'light' || S.theme === 'dark' ? S.theme : '', root = document.documentElement;
+    if (t) root.setAttribute('data-theme', t); else root.removeAttribute('data-theme');
+    var b = document.getElementById('theme');
+    if (b) {
+      b.querySelector('svg').innerHTML = THEME_ICON[t]; b.querySelector('.tl').textContent = THEME_NAME[t];
+      b.setAttribute('aria-label', 'Theme: ' + THEME_NAME[t].toLowerCase() + '. Click to change (system, light, dark).'); b.title = 'Theme: ' + THEME_NAME[t];
+    }
+  }
   function boot() {
     Array.prototype.slice.call(document.querySelectorAll('body > style, body > link[rel=stylesheet]')).forEach(function (n) { document.head.appendChild(n); });
-    document.body.innerHTML = '<button class="skip" id="skip">Skip to content</button><div id="app"><nav id="side" aria-label="Contents"></nav><div id="main"><div id="top"><button class="tb" id="menu" aria-label="Open contents">☰ Contents</button><input id="q" type="search" placeholder="Search commands and topics" aria-label="Search the book (press / to focus)"><kbd class="qk" aria-hidden="true">/</kbd><span class="sp"></span><a class="tb hide-s" href="#atlas">Atlas</a><a class="tb hide-s" href="#practice">Practice</a><a class="tb hide-s" href="#values" title="Your placeholder values">My Values</a><button class="tb" id="theme" aria-label="Switch between light and dark theme"><svg class="ti" aria-hidden="true" width="14" height="14" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor"/></svg><span class="tl">Theme</span></button></div><div id="results" hidden></div><main id="page" tabindex="-1"></main></div><div id="scrim"></div></div>';
+    document.body.innerHTML = '<button class="skip" id="skip">Skip to content</button><div id="app"><nav id="side" aria-label="Contents"></nav><div id="main"><div id="top"><button class="tb" id="menu" aria-label="Open contents">☰ Contents</button><input id="q" type="search" placeholder="Search commands and topics" aria-label="Search the book (press / to focus)"><kbd class="qk" aria-hidden="true">/</kbd><span class="sp"></span><a class="tb hide-s" href="#atlas">Atlas</a><a class="tb hide-s" href="#practice">Practice</a><a class="tb hide-s" href="#values" title="Your placeholder values">My Values</a><button class="tb" id="theme" aria-label="Theme: system. Click to change (system, light, dark)."><svg class="ti" aria-hidden="true" width="14" height="14" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor"/></svg><span class="tl">System</span></button></div><div id="results" hidden></div><main id="page" tabindex="-1"></main></div><div id="scrim"></div></div>';
     applyTheme(); buildNav(); buildIndex();
     
     document.addEventListener('click', function (e) {
@@ -504,8 +515,7 @@
       if (t.id === 'menu') { document.body.classList.toggle('nav'); return; }
       if (t.id === 'scrim' || t.closest('#side')) { document.body.classList.remove('nav'); return; }
       if (t.id === 'theme') {
-        var root = document.documentElement, cur = S.theme || root.getAttribute('data-theme') || (window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-        S.theme = cur === 'dark' ? 'light' : 'dark'; applyTheme(); save();
+        S.theme = S.theme === 'light' ? 'dark' : S.theme === 'dark' ? '' : 'light'; applyTheme(); save();
       }
     });
     var qi = $('#q'), tm; qi.addEventListener('input', function () { clearTimeout(tm); tm = setTimeout(function () { doSearch(qi.value); }, 80); }); qi.addEventListener('focus', function () { if (qi.value) doSearch(qi.value); });
