@@ -5861,6 +5861,18 @@
      "line": 51
     },
     {
+     "t": "p",
+     "text": "Protocols stack on top of one another. Read the figure from the top down: each name uses the one under it. HTTPS is HTTP inside TLS inside TCP; HTTP/3 swaps TCP for QUIC, which brings its own encryption and runs over UDP. A few protocols skip the transport layer and ride directly inside IP.",
+     "line": 51
+    },
+    {
+     "t": "code",
+     "lang": "ascii",
+     "attrs": {},
+     "code": "  application  HTTPS IMAPS SMTPS LDAPS   HTTP SSH SMTP IMAP   HTTP/3   DNS DHCP NTP SNMP   ICMP ICMPv6\n                 │     │     │     │     BGP RDP LDAP VNC       │      RTP RIP mDNS SIP    OSPF GRE ESP\n               ┌─┴─────┴─────┴─────┴─┐          │               │             │                │\n  security     │         ⟪m:TLS⟫         │          │            ┌──┴───┐         │                │\n               └──────────┬──────────┘          │            │ ⟪m:QUIC⟫ │         │                │\n                          │                     │            └──┬───┘         │                │\n               ┌──────────┴─────────────────────┴──┐         ┌──┴─────────────┴──┐             │\n  transport    │               ⟪g:TCP⟫                 │         │        ⟪g:UDP⟫        │             │\n               └─────────────────┬─────────────────┘         └─────────┬─────────┘             │\n               ┌─────────────────┴─────────────────────────────────────┴───────────────────────┴──┐\n  internet     │                                  ⟪y:IPv4 / IPv6⟫                                     │\n               └──────────────────────────────────────────────────────────────────────────────────┘\n  link                       Ethernet, Wi-Fi (802.11), PPP, a VPN tunnel ...\n\n  QUIC carries its own TLS 1.3. DNS and SIP also use TCP, and DNS over TLS joins the column on the left.\n  The column on the right has no ports: IP's protocol field names it (ICMP 1, GRE 47, ESP 50, OSPF 89).",
+     "line": 51
+    },
+    {
      "t": "h",
      "level": 3,
      "text": "Encapsulation",
@@ -5877,6 +5889,18 @@
      "lang": "ascii",
      "attrs": {},
      "code": "  Application   [ HTTP request: GET / HTTP/1.1 ...                    ]       message\n  Transport     [⟪g:TCP 20⟫][ HTTP request ...                          ]       segment\n  Internet      [⟪y:IP 20⟫][⟪g:TCP 20⟫][ HTTP request ...                ]       packet\n  Link          [⟪c:Ethernet 14⟫][⟪y:IP 20⟫][⟪g:TCP 20⟫][ HTTP request ... ][⟪c:FCS 4⟫]   frame\n\n  header sizes in bytes (minimum); FCS = frame check sequence, a 4-byte error check",
+     "line": 57
+    },
+    {
+     "t": "p",
+     "text": "Laid end to end, this is what actually crosses the cable: the link layer wraps everything, and the 1500-byte MTU limits what fits between its header and trailer.",
+     "line": 57
+    },
+    {
+     "t": "code",
+     "lang": "ascii",
+     "attrs": {},
+     "code": "  one full-size Ethernet frame carrying a TCP segment, as it leaves the network card (bytes)\n\n  ┌──────────┬─────┬─────────┬─────────┬──────┬───────────┬───────────┬────────────┬─────┐\n  │ preamble │ SFD │ ⟪c:dst MAC⟫ │ ⟪c:src MAC⟫ │ ⟪c:type⟫ │ ⟪y:IP header⟫ │ ⟪g:TCP hdr⟫   │    data    │ ⟪c:FCS⟫ │\n  │    7     │  1  │    6    │    6    │  2   │    20+    │    20+    │ up to 1460 │  4  │\n  └──────────┴─────┴─────────┴─────────┴──────┴───────────┴───────────┴────────────┴─────┘\n   ◀──── sync ────▶ ◀──── link header 14 ────▶ ◀────── IP packet, max 1500 ───────▶  CRC\n                    ◀─────────────────── the frame: 64 to 1518 bytes ───────────────────▶\n\n  type: 0x0800 IPv4, 0x86dd IPv6, 0x0806 ARP.   FCS: a CRC-32 the receiver recomputes;\n  a mismatch drops the frame. Preamble and SFD (start frame delimiter) let the receiver\n  lock on; capture tools never show them, and the 1500 bytes in the middle are the MTU.",
      "line": 57
     },
     {
@@ -6060,6 +6084,18 @@
       ]
      ],
      "title": "",
+     "line": 149
+    },
+    {
+     "t": "p",
+     "text": "Drawn to scale, the 2.4 GHz band shows why only three channels are usable side by side. The higher bands are not drawn to scale, but show how they are divided into the blocks (U-NII) that regulators license.",
+     "line": 149
+    },
+    {
+     "t": "code",
+     "lang": "ascii",
+     "attrs": {},
+     "code": "  2.4 GHz   2400 to 2483.5 MHz: numbers are 5 MHz apart, but each signal is about 20 MHz wide\n\n          ╭───────────────────╮    ╭───────────────────╮    ╭───────────────────╮\n          │     ⟪g:channel 1⟫     │    │     ⟪g:channel 6⟫     │    │     ⟪g:channel 11⟫    │\n  ────────┴───────────────────┴────┴───────────────────┴────┴───────────────────┴─────────────\n  ch                1    2    3    4    5    6    7    8    9   10   11   12   13          14\n  MHz 2400        2412                     2437                     2462                  2484\n  channel 3 spans 2412 to 2432 MHz, on top of both 1 and 6, so it interferes with both.\n  12 and 13 are allowed in much of the world but not the US; 14 was Japan only, for 802.11b.\n\n  5 GHz   5150 to 5850 MHz (not to scale)\n\n  ┌──────────┬──────────┐       ┌────────────────────────────┬─────────────┐\n  │ U-NII-1  │ U-NII-2A │       │          U-NII-2C          │   U-NII-3   │\n  │ 36 to 48 │ 52 to 64 │  gap  │         100 to 144         │ 149 to 165  │\n  │          │   ⟪y:DFS⟫    │       │            ⟪y:DFS⟫             │             │\n  └──────────┴──────────┘       └────────────────────────────┴─────────────┘\n  5150       5250       5350    5470                         5725          5850\n  DFS: the access point must listen for radar first, and move away if it hears any.\n  Channels are 20 MHz; 40, 80 and 160 MHz widths join neighbours (36+40+44+48 = one 80 MHz).\n\n  6 GHz   5925 to 7125 MHz, Wi-Fi 6E and Wi-Fi 7 only (not to scale)\n\n  ┌───────────────────────┬──────────┬───────────────────────┬────────────────┐\n  │        U-NII-5        │ U-NII-6  │        U-NII-7        │    U-NII-8     │\n  │       1 to 93         │ 97 - 113 │      117 to 185       │   189 to 233   │\n  └───────────────────────┴──────────┴───────────────────────┴────────────────┘\n  5925                    6425       6525                    6875             7125\n  59 channels of 20 MHz (1, 5, 9 ... 233), room for 14 of 80 MHz, 7 of 160 MHz and\n  3 of 320 MHz (Wi-Fi 7). Which parts of 6 GHz are allowed differs by country.",
      "line": 149
     },
     {
@@ -8914,6 +8950,18 @@
      "line": 409
     },
     {
+     "t": "p",
+     "text": "The /64 rule means every global address splits the same way:",
+     "line": 409
+    },
+    {
+     "t": "code",
+     "lang": "ascii",
+     "attrs": {},
+     "code": "  a global unicast address on an ordinary LAN\n\n    2001:0db8:1234 : 0005 : 1c3a:7d4e:9f21:5a6b\n   ├──────────────┤ ├────┤ ├───────────────────┤\n       ⟪y:48 bits⟫      ⟪g:16 bits⟫        ⟪c:64 bits⟫\n    ⟪y:routing prefix⟫ ⟪g:subnet ID⟫    ⟪c:interface ID⟫\n    from your ISP  you pick it   SLAAC: random, or\n                                 EUI-64 from the MAC\n   ├──────────────────────┤\n      /64: the network. Every LAN is a /64, so a /48 gives you 65,536 of them.",
+     "line": 409
+    },
+    {
      "t": "table",
      "head": [
       "Prefix",
@@ -8971,6 +9019,18 @@
     {
      "t": "p",
      "text": "The `%en0` you see after a link-local address on macOS is the **zone ID**: because every interface has an `fe80::` address, the address alone does not say which link to use. When you ping one, include the zone: `ping6 fe80::1%en0`.",
+     "line": 439
+    },
+    {
+     "t": "p",
+     "text": "The prefixes from the table above, as a family tree. IPv6 has three kinds of address, and the first bits tell you which:",
+     "line": 439
+    },
+    {
+     "t": "code",
+     "lang": "ascii",
+     "attrs": {},
+     "code": "  IPv6 address\n  │\n  ├── ⟪g:unicast⟫: one interface\n  │     ├── global            2000::/3        routable on the internet\n  │     ├── unique local      fc00::/7        private, in practice fd00::/8\n  │     ├── link-local        fe80::/10       this link only, written with %en0\n  │     ├── loopback          ::1/128         this machine\n  │     ├── unspecified       ::/128          \"no address yet\", a source during setup\n  │     └── IPv4-mapped       ::ffff:0:0/96   ::ffff:192.0.2.1, an IPv4 peer of an IPv6 socket\n  │\n  ├── ⟪y:multicast⟫: every member of a group (replaces broadcast)        ff00::/8\n  │     ├── permanent         ff0X::          ff02::1 all nodes, ff02::2 all routers\n  │     ├── temporary         ff1X::          made up by an application\n  │     └── solicited-node    ff02::1:ffXX:XXXX\n  │                           ends in the last 24 bits of a unicast address, so NDP can ask\n  │                           for one neighbour without waking every host the way ARP does\n  │\n  └── ⟪c:anycast⟫: the nearest of several interfaces sharing one address\n                              no prefix of its own: an ordinary unicast address given to many\n                              hosts, such as a public DNS service answering from the closest site\n\n  X is the scope: 1 interface, 2 link, 5 site, 8 organization, e global",
      "line": 439
     },
     {
@@ -18982,6 +19042,18 @@
      "line": 899
     },
     {
+     "t": "p",
+     "text": "Read one line of `ls -l` from left to right, then turn its permission string into the octal digits `chmod` takes:",
+     "line": 899
+    },
+    {
+     "t": "code",
+     "lang": "ascii",
+     "attrs": {},
+     "code": "  $ ls -l backup.sh\n  -rwxr-xr--  1  ana  staff  2048  Nov 18 09:14  backup.sh\n  │└┬┘└┬┘└┬┘  │   │     │     │    └─────┬────┘  └──┬───┘\n  │ │  │  │   │   │     │     │          │          └── name\n  │ │  │  │   │   │     │     │          └── last modified\n  │ │  │  │   │   │     │     └── size in bytes\n  │ │  │  │   │   │     └── group that owns it\n  │ │  │  │   │   └── owner\n  │ │  │  │   └── hard links (for a folder: entries that point at it)\n  │ │  │  └── ⟪r:others⟫: everyone else\n  │ │  └── ⟪y:group⟫: members of staff\n  │ └── ⟪g:owner⟫: ana\n  └── type: - file, d directory, l symbolic link\n\n          ⟪g:owner⟫    ⟪y:group⟫    ⟪r:others⟫\n          r w x    r - x    r - -\n          4 2 1    4 0 1    4 0 0\n          ─────    ─────    ─────\n            7        5        4        chmod 754 backup.sh",
+     "line": 899
+    },
+    {
      "t": "table",
      "head": [
       "Octal",
@@ -19108,6 +19180,18 @@
     {
      "t": "p",
      "text": "A lowercase `s` or `t` means the underlying `x` is also set; an uppercase `S` or `T` means it is not, which is usually a mistake.",
+     "line": 934
+    },
+    {
+     "t": "p",
+     "text": "Where the special bits show up in the string:",
+     "line": 934
+    },
+    {
+     "t": "code",
+     "lang": "ascii",
+     "attrs": {},
+     "code": "  -rws r-x r-x   setuid, x also set        runs as the file's owner           chmod 4755  u+s\n  -rwS r-- r--   setuid, no x: capital S   nothing can run it: a mistake\n  drwx rws r-x   setgid on a folder        new files get the folder's group   chmod 2775  g+s\n  drwx rwx rwt   sticky on a folder        only a file's owner may delete it  chmod 1777  +t\n     ▲   ▲   ▲\n     └───┴───┴── each special bit borrows the x slot of its class (ls -ld /private/tmp shows the t)",
      "line": 934
     },
     {
@@ -29469,6 +29553,18 @@
      "notes": [],
      "line": 207,
      "id": "lsof-files"
+    },
+    {
+     "t": "p",
+     "text": "Every tool in this chapter looks at one part of the machine. Placed on a map of the system, they show where to look first: a slow program is a question for the top rows, a full disk or a saturated link for the bottom ones. Linux names are listed where they differ, because the same picture holds there.",
+     "line": 207
+    },
+    {
+     "t": "code",
+     "lang": "ascii",
+     "attrs": {},
+     "code": "                    ┌────────────────────────────────────────────────────┐\n  programs          │ applications and their libraries                   │  ps  top  pgrep  sample\n                    ├────────────────────────────────────────────────────┤\n  the boundary      │ system calls                                       │  fs_usage  sc_usage\n                    ├────────────────┬─────────────────┬─────────────────┤\n  the kernel        │ files: VFS,    │ network:        │ CPU scheduler   │\n                    │ file systems,  │ sockets, TCP,   │ virtual memory  │\n                    │ volumes        │ UDP, IP         │                 │\n                    ├────────────────┴─────────────────┴─────────────────┤\n                    │ device drivers                                     │\n                    └───────┬──────────────────┬───────────────────┬─────┘\n                            │                  │                   │\n  hardware              SSD, disk         network card          CPU, RAM\n\n  files, disks   lsof  fs_usage  df -h  du -sh  iostat  diskutil list\n  network        netstat -an  lsof -i  nettop  tcpdump  ifconfig\n  CPU, memory    top -o cpu  vm_stat  memory_pressure  sudo powermetrics\n  everything     Activity Monitor, log stream, sysctl\n\n  The same map on Linux: strace instead of fs_usage; ss and ip for the network;\n  vmstat, free, mpstat and iotop for the rest; perf and eBPF tools see every layer.",
+     "line": 207
     },
     {
      "t": "h",
@@ -44749,6 +44845,18 @@
      "line": 249
     },
     {
+     "t": "p",
+     "text": "The whole filter language fits on one screen:",
+     "line": 249
+    },
+    {
+     "t": "code",
+     "lang": "ascii",
+     "attrs": {},
+     "code": "  a BPF capture filter\n  │\n  ├── primitive:  [protocol] [direction] [type] value\n  │     protocol    ether  ip  ip6  arp  tcp  udp  icmp  icmp6     (left out: any)\n  │     direction   src  dst  src or dst  src and dst               (left out: src or dst)\n  │     type        host 192.168.1.50   net 10.0.0.0/8   port 443   portrange 6000-6010\n  │     examples    tcp dst port 443    src net 192.168.1.0/24    ip6    ether host f0:18:98:3a:6d:21\n  │\n  ├── combine:    and &&    or ||    not !    ( ... )\n  │     example     'host 192.168.1.50 and (port 80 or port 443) and not arp'\n  │\n  ├── size:       less 128    greater 1000                         (whole packet, bytes)\n  │\n  ├── kind:       broadcast   multicast   vlan 10   gateway router.lan\n  │\n  └── bytes:      proto[offset:size] compared with a number\n        tcp[tcpflags] & (tcp-syn|tcp-ack) == tcp-syn      only the first packet of each connection\n        tcp[tcpflags] & tcp-rst != 0                      resets\n        icmp[icmptype] == icmp-echo                       ping requests, not replies\n        flag names: tcp-fin tcp-syn tcp-rst tcp-push tcp-ack tcp-urg",
+     "line": 249
+    },
+    {
      "t": "h",
      "level": 3,
      "text": "Matching TCP flags",
@@ -49241,6 +49349,18 @@
     {
      "t": "p",
      "text": "The rule that makes this efficient: **the first failing test is the problem, and everything above it is noise until it is fixed.** If you cannot ping the gateway, DNS errors tell you nothing.",
+     "line": 42
+    },
+    {
+     "t": "p",
+     "text": "The method as a loop. The order of tests is the table above; the loop is what you do around it:",
+     "line": 42
+    },
+    {
+     "t": "code",
+     "lang": "ascii",
+     "attrs": {},
+     "code": "  ┌────────────┐    ┌────────────┐    ┌──────────────┐    ┌──────────────┐    ┌─────────────┐\n  │ 1 gather   │───▶│ 2 choose   │───▶│ 3 isolate    │───▶│ 4 fix, then  │───▶│ 5 write it  │\n  │ what fails,│    │ a layer    │    │ run tests in │    │ run the same │    │ down: cause,│\n  │ for whom,  │    │ and order  │    │ order; stop  │    │ failing test │    │ fix, how you│\n  │ since when │    │ to test    │    │ at the first │    │ again        │    │ proved it   │\n  └────────────┘    └────────────┘    │ failure      │    └──────┬───────┘    └─────────────┘\n                          ▲           └──────────────┘           │\n                          └───────── still failing: go back ─────┘\n\n  Ask first what changed: a new router, a VPN, an update, a cable, a different room.\n  The answer often takes you straight to step 3.",
      "line": 42
     },
     {
@@ -111514,6 +111634,18 @@
     {
      "t": "p",
      "text": "This chapter is for lookup, not for reading front to back. Each section is one page of tables and short code blocks, ordered the way you reach for them: move around, shape text, edit the command line, test the network, then the reference numbers (ports, subnets, status codes, permissions) then Python, pip and git, and finally the web: JavaScript, the DOM, DevTools, Node.js and npm, XML and CSS. Nothing here is explained from scratch. When a row is unfamiliar, the link at the top of each section goes to the chapter that teaches it, and the Command Atlas has the full card.",
+     "line": 13
+    },
+    {
+     "t": "p",
+     "text": "The most used commands at a glance, grouped by job. Each group has its own section below or its own chapter.",
+     "line": 13
+    },
+    {
+     "t": "code",
+     "lang": "ascii",
+     "attrs": {},
+     "code": "  ls  cd  pwd    cat  less      grep  sed      chmod 755 f    ps aux         df -h\n  cp  mv  rm     head -n 20     awk  cut       chown u:g f    top  htop*     du -sh dir\n  mkdir  touch   tail -f        sort  uniq     ls -l@  xattr  pgrep  pkill   sw_vers\n  ln -s  open .  wc -l  file    tr  jq  diff   id  sudo  su   kill  lsof     system_profiler\n  find  mdfind   xxd  pbcopy    column         umask          launchctl      sysctl  uname -a\n  ⟪c:files⟫          ⟪c:viewing⟫        ⟪c:text⟫           ⟪c:permissions⟫    ⟪c:processes⟫      ⟪c:system⟫\n  ▲              ▲              ▲              ▲              ▲              ▲\n  └──────────────┴──────────────┴──────┬───────┴──────────────┴──────────────┘\n                              ┌────────┴────────┐\n                              │  ⟪g:zsh on a Mac⟫   │\n                              └────────┬────────┘\n  ┌──────────────┬──────────────┬──────┴───────┬──────────────┬──────────────┐\n  ▼              ▼              ▼              ▼              ▼              ▼\n  ⟪c:network⟫        ⟪c:remote⟫         ⟪c:archives⟫       ⟪c:packages⟫       ⟪c:services⟫       ⟪c:help⟫\n  ifconfig       ssh user@h     tar -czf a.tgz brew install   brew services  man cmd\n  ipconfig       scp f h:path   tar -xzf a.tgz brew upgrade   launchctl list tldr cmd*\n  ping  dig      rsync -av      zip -r a.zip   brew list      log stream     which  type\n  traceroute     ssh-keygen     unzip a.zip    pip install    pmset -g       whence -va\n  curl -I  nc    ssh-copy-id    shasum -a 256  npm install    softwareupdate history\n\n  * htop and tldr come from Homebrew. On Linux the package tool is apt, dnf or zypper,\n    services are systemctl, logs are journalctl, and ifconfig gives way to ip a and ss -tulpn.",
      "line": 13
     },
     {
