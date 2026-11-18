@@ -6,7 +6,7 @@ A hands-on, book-style course for learning on a Mac: macOS Terminal (zsh), netwo
 self-contained web page with runnable Python and JavaScript, a simulated terminal, interactive labs, exercises
 with automatic checks, quizzes and projects.
 
-- 49 chapters in 10 parts, 787 command cards, 270 exercises
+- 50 chapters in 10 parts, 787 command cards, 272 exercises
 - Python runs in the browser (Pyodide); JavaScript runs in a sandbox with a built-in practice REST API
 - Light, dark and system themes; works on phones
 - Nothing is downloaded when you open it: the fonts are bundled in the page, and `test/offline.py` fails CI if a request ever leaves it
@@ -58,6 +58,7 @@ respect reduced-motion settings.
 | Semver ranges | Node.js, npm | which versions `^`, `~` and comparators allow |
 | TTL and traceroute | Reachability, Latency and Path | why each hop answers |
 | Take a packet apart | Packet Capture | hex dump of a TCP SYN and a DNS query, field by field |
+| TCP flags byte | Reference, Wireshark Cheat Sheet | click flag bits; the hex value, the `tcp.flags` filter and what the combination means |
 | Avalanche effect | Encryption, hashes | one changed character flips about half the SHA-256 bits |
 | How long to guess it? | Encryption, passwords | entropy vs fast and slow hashes |
 | Decode, forge, verify a JWT | APIs | the payload is readable; editing it breaks the signature |
@@ -99,6 +100,7 @@ tests for `CodexCore` (table of contents, saved progress, search) on macOS or Li
 | `src/ws-1..4-*.js`, `src/srv.add.css` | labs for chapters 38-41 |
 | `src/ws-5-pcap.js`, `ws-6-pcapcols.js`, `ws-7-pktlab.js`, `ws-8-triage.js`, `src/sec.add.css` | the Wireshark packet lab and the log-triage drill for chapters 42-43; `ws-5-pcap.js` is the packet engine (encoder, dissector, display-filter engine) |
 | `src/ws-labs.js`, `src/labs.add.css` | the 19 newer labs (**generated** from `packages/labs`) and their styles |
+| `chapters/ch_7_wsref.py`, `src/ws-9-wsref.js`, `src/wsref.add.css` | the Wireshark Cheat Sheet in the Reference part and its pictures (window, filter pipeline, layers, TCP conversation, flags byte), drawn as theme-aware SVG |
 | `tools/pcapgen.js`, `tools/pcapcols.py` | write the lab captures as real `.pcap` files, and bake Wireshark's own column text into `src/ws-6-pcapcols.js` |
 | `src/sim.js`, `src/sbsrc.js` | simulated zsh, and the sandbox injected into every JavaScript playground |
 | `src/style.css`, `src/head.html` | design tokens, layout and page head |
@@ -110,6 +112,7 @@ tests for `CodexCore` (table of contents, saved progress, search) on macOS or Li
 | `tools/lint_ascii.py`, `tools/fix_ascii.py` | find, and safely re-align, drifting box diagrams |
 | `test/blocks.py`, `test/labs.py`, `test/ascii.py`, `test/theme.py` | browser tests: runnable blocks and exercises, every lab, diagram rendering, theme switch |
 | `test/pcapfilters.py` | checks the Wireshark lab's display-filter engine against real `tshark` on the same captures |
+| `test/wsref_filters.py` | compiles every filter on the Wireshark cheat sheet with real `tshark` and `dumpcap`, and checks that the filters it calls wrong are really rejected |
 | `dist/` | the built site: `index.html`, `toc.json` (contents for the Apple app) and the Python runtime in `py/` |
 | `src/app.add.css` | hides the page's own sidebar and toolbar when it runs inside the Apple app |
 | `apple/project.yml` | XcodeGen spec for the multiplatform app |

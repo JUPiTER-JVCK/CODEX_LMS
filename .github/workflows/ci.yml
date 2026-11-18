@@ -26,11 +26,12 @@ jobs:
         run: |
           sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y tshark
           python test/pcapfilters.py
+          python test/wsref_filters.py
       - name: Browser tests
         run: |
           (cd dist && python -m http.server 8765 &)
           sleep 2
-          python test/blocks.py servers apis crypto cloud wireshark defend
+          python test/blocks.py servers apis crypto cloud wireshark defend wireshark-ref
           python test/labs.py
           python test/ascii.py
           python test/theme.py
