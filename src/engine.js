@@ -137,7 +137,29 @@
   function hlAscii(src) {
     return esc(src).replace(/⟪([rgybcmwd]):([^⟫]*)⟫/g, function (m, c, t) { return '<span class="a-' + c + '">' + t + '</span>'; }).replace(/([─│┌┐└┘├┤┬┴┼═║╔╗╚╝╠╣╦╩╬▶◀▲▼→←↑↓]+)/g, function (m) { return m.indexOf('<') >= 0 ? m : '<span class="a-d">' + m + '</span>'; });
   }
+  /* Cisco IOS: prompt, ! comments, "no" and "do" prefixes, the command word, and numbers, addresses and interface names. */
+  var IOSKW = /^(no|do|default)$/, IOSIF = /^(GigabitEthernet|FastEthernet|TenGigabitEthernet|Ethernet|Serial|Loopback|Vlan|Port-channel|Tunnel|Gi|Fa|Te|Se|Lo|Po|Tu|g|f)\d[\d\/.:-]*$/i;
+  function hlIosLine(l) {
+    var m = /^(\s*)(!.*)$/.exec(l); if (m) return m[1] + sp('com', esc(m[2]));
+    var o = '', pm = /^([A-Za-z][\w.-]*(?:\([\w-]+\))?[#>])(\s?)/.exec(l);
+    if (pm) { o += sp('com', esc(pm[1])) + pm[2]; l = l.slice(pm[0].length); }
+    var cmdPos = true, first = true;
+    l.split(/(\s+)/).forEach(function (w) {
+      if (!w) return;
+      if (/^\s+$/.test(w)) { o += w; return; }
+      if (w === '|') { o += sp('op', '|'); cmdPos = true; return; }
+      if (cmdPos && IOSKW.test(w)) { o += sp('kw', esc(w)); return; }
+      if (cmdPos) { o += sp('cmd', esc(w)); cmdPos = false; first = false; return; }
+      if (/^\d+(\.\d+){0,3}(\/\d+)?$/.test(w) || /^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$/i.test(w) || IOSIF.test(w)) o += sp('num', esc(w));
+      else if (/^[A-Z][A-Z0-9_-]+$/.test(w) && w.length > 1) o += sp('var', esc(w));
+      else if (/^".*"$/.test(w)) o += sp('str', esc(w));
+      else o += esc(w);
+    });
+    return o;
+  }
+  function hlIos(src) { return src.split('\n').map(hlIosLine).join('\n'); }
   function hlGeneric(lang, code) {
+    if (lang === 'ios') return hlIos(code);
     if (lang === 'sh' || lang === 'zsh' || lang === 'bash' || lang === 'shell') return hlSh(code);
     if (lang === 'python' || lang === 'py' || lang === 'run') return hlPy(code);
     if (lang === 'ascii') return hlAscii(code);
@@ -190,7 +212,7 @@
     if (lang === 'run') return runBox(b);
     if (lang === 'jsrun') return window.__core.jsBox(b);
     if (lang === 'webplay' || lang === 'devtools') return '<div class="wmount" data-w="weblab" data-args="' + esc(JSON.stringify({ kind: lang, code: b.code, attrs: a })) + '"></div>';
-    var label = lang === 'sh' ? 'zsh' : lang === 'file' ? (a.name || 'file') : lang === 'python' ? 'Python' : lang === 'out' ? 'Output' : ({ js: 'JavaScript', javascript: 'JavaScript', node: 'Node.js', mjs: 'JavaScript module', html: 'HTML', css: 'CSS', xml: 'XML', json: 'JSON', svg: 'SVG' })[lang] || lang;
+    var label = lang === 'sh' ? 'zsh' : lang === 'file' ? (a.name || 'file') : lang === 'python' ? 'Python' : lang === 'out' ? 'Output' : ({ js: 'JavaScript', javascript: 'JavaScript', node: 'Node.js', mjs: 'JavaScript module', html: 'HTML', css: 'CSS', xml: 'XML', json: 'JSON', svg: 'SVG', ios: 'Cisco IOS' })[lang] || lang;
     if (a.name && lang !== 'file') label = a.name;
     var tools = '';
     if (lang === 'python') tools = '<button class="cp" data-playground="' + esc(b.code) + '">Open in playground</button>';
@@ -230,17 +252,18 @@
     return '<div class="an" id="' + id + '"><h5>Anatomy' + (b.title ? ': ' + inl(b.title) : '') + '</h5><div class="line">' + line + '</div><ul>' + lis + '</ul></div>';
   }
   function badge(t, cls) { return '<span class="badge ' + (cls || '') + '">' + esc(t) + '</span>'; }
-  var CATN = { shell: 'shell', nav: 'navigation', files: 'files', view: 'viewing', perm: 'permissions', ops: 'operators', text: 'text', proc: 'processes', sys: 'system', mac: 'macOS', edit: 'editing', git: 'git', pkg: 'packages', 'net-info': 'net info', 'net-test': 'net test', 'net-dns': 'DNS', 'net-http': 'HTTP', 'net-port': 'ports', 'net-capture': 'capture', 'net-remote': 'remote', 'py-builtin': 'builtin', 'py-str': 'str', 'py-list': 'list', 'py-dict': 'dict', 'py-set': 'set', 'py-mod': 'module', 'py-lang': 'language', 'py-tool': 'tooling', 'web-html': 'HTML', 'web-css': 'CSS', 'web-js': 'JavaScript', 'web-dom': 'DOM', 'web-api': 'Web API', 'web-node': 'Node.js', 'web-npm': 'npm', 'web-xml': 'XML', 'web-tool': 'DevTools', 'web-http': 'HTTP', 'srv-svc': 'services', 'srv-admin': 'server admin', 'srv-web': 'web server', 'srv-api': 'API', 'srv-crypto': 'crypto & TLS', 'srv-cloud': 'cloud', 'srv-ctr': 'containers', 'sec-pcap': 'packet analysis', 'sec-mac': 'macOS security', 'sec-linux': 'Linux security', 'sec-audit': 'auditing' };
+  var CATN = { shell: 'shell', nav: 'navigation', files: 'files', view: 'viewing', perm: 'permissions', ops: 'operators', text: 'text', proc: 'processes', sys: 'system', mac: 'macOS', edit: 'editing', git: 'git', pkg: 'packages', 'net-info': 'net info', 'net-test': 'net test', 'net-dns': 'DNS', 'net-http': 'HTTP', 'net-port': 'ports', 'net-capture': 'capture', 'net-remote': 'remote', 'py-builtin': 'builtin', 'py-str': 'str', 'py-list': 'list', 'py-dict': 'dict', 'py-set': 'set', 'py-mod': 'module', 'py-lang': 'language', 'py-tool': 'tooling', 'web-html': 'HTML', 'web-css': 'CSS', 'web-js': 'JavaScript', 'web-dom': 'DOM', 'web-api': 'Web API', 'web-node': 'Node.js', 'web-npm': 'npm', 'web-xml': 'XML', 'web-tool': 'DevTools', 'web-http': 'HTTP', 'srv-svc': 'services', 'srv-admin': 'server admin', 'srv-web': 'web server', 'srv-api': 'API', 'srv-crypto': 'crypto & TLS', 'srv-cloud': 'cloud', 'srv-ctr': 'containers', 'sec-pcap': 'packet analysis', 'sec-mac': 'macOS security', 'sec-linux': 'Linux security', 'sec-audit': 'auditing', 'ios-exec': 'IOS exec', 'ios-show': 'IOS show', 'ios-sys': 'IOS system', 'ios-sec': 'IOS security', 'ios-if': 'IOS interface', 'ios-sw': 'IOS switching', 'ios-rt': 'IOS routing', 'ios-svc': 'IOS services', 'ios-file': 'IOS files' };
   function cmdId(c) { return c.id ? 'cmd-' + c.id : 'cmd-' + slug(c.name); }
-  function osLabel(os) { return os === 'mac' ? 'ships with macOS' : os === 'all' ? 'macOS + Linux' : os === 'py' ? 'Python' : os === 'browser' ? 'in the browser' : os === 'node' ? 'Node.js' : os === 'web' ? 'browser + Node.js' : os === 'linux' ? 'Linux servers' : os === 'docker' ? 'Docker or OrbStack' : os === 'wireshark' ? 'Wireshark (brew cask wireshark-app)' : /^brew:/.test(os) ? 'brew install ' + os.slice(5) : os; }
+  function osLabel(os) { return os === 'mac' ? 'ships with macOS' : os === 'all' ? 'macOS + Linux' : os === 'py' ? 'Python' : os === 'browser' ? 'in the browser' : os === 'node' ? 'Node.js' : os === 'web' ? 'browser + Node.js' : os === 'linux' ? 'Linux servers' : os === 'docker' ? 'Docker or OrbStack' : os === 'wireshark' ? 'Wireshark (brew cask wireshark-app)' : os === 'ios' ? 'Cisco IOS / IOS XE' : os === 'ios-sw' ? 'Catalyst switches' : os === 'ios-rt' ? 'routers and L3 switches' : /^brew:/.test(os) ? 'brew install ' + os.slice(5) : os; }
   var cmdIndex = {};
   function cardHTML(c) {
     var dom = /^net/.test(c.cat) ? 'net' : /^py/.test(c.cat) ? 'py' : /^web/.test(c.cat) ? 'web' : /^srv/.test(c.cat) ? 'srv' : /^sec/.test(c.cat) ? 'sec' : 'zsh';
     var isSh = function (t) { return /^(\$ |npm |npx |node |nvm |brew |curl |cd |mkdir |ls |cat |echo |open |xmllint |plutil |lsof |kill |export |which |git |python3 |cut |awk |printf |seq |grep |sort |head |tail |jq |xargs |sed |wc )/m.test(t) && !/^(const|let|var|function|import|export default|document|console)\b/m.test(t); };
     var isMk = function (t) { return /^\s*</.test(t); }, isCss = function (t) { return /^[^{}\n]*\{[^}]*:[^}]*\}/.test(t.trim()) && !/^(const|let|var|function|if|for)\b/.test(t.trim()); };
-    var hlEx = function (t) { return dom === 'py' ? hlPy(t) : dom === 'web' ? (isSh(t) ? hlSh(t) : isMk(t) ? hlMarkup(t) : isCss(t) ? hlCss(t) : hlJs(t)) : hlSh(t); };
-    var exLabel = function (t) { return dom === 'py' ? 'Python' : dom === 'web' ? (isSh(t) ? 'zsh' : isMk(t) ? 'HTML' : isCss(t) ? 'CSS' : 'JavaScript') : 'zsh'; };
-    var o = '<section class="card cat-' + dom + '" id="' + cmdId(c) + '"><div class="hd"><h3 class="nm">' + esc(c.name) + '</h3>' + badge(CATN[c.cat] || c.cat, 'dom') + badge(osLabel(c.os)) + (c.tags || []).map(function (t) { return badge(t, t === 'sudo' ? 'sudo' : ''); }).join('') + '</div>';
+    var ios = /^ios/.test(c.cat); if (ios) dom = 'net';
+    var hlEx = function (t) { return ios ? hlIos(t) : dom === 'py' ? hlPy(t) : dom === 'web' ? (isSh(t) ? hlSh(t) : isMk(t) ? hlMarkup(t) : isCss(t) ? hlCss(t) : hlJs(t)) : hlSh(t); };
+    var exLabel = function (t) { return ios ? 'Cisco IOS' : dom === 'py' ? 'Python' : dom === 'web' ? (isSh(t) ? 'zsh' : isMk(t) ? 'HTML' : isCss(t) ? 'CSS' : 'JavaScript') : 'zsh'; };
+    var o = '<section class="card cat-' + dom + (ios ? ' ios' : '') + '" id="' + cmdId(c) + '"><div class="hd"><h3 class="nm">' + esc(c.name) + '</h3>' + badge(CATN[c.cat] || c.cat, 'dom') + badge(osLabel(c.os)) + (c.tags || []).map(function (t) { return badge(t, t === 'sudo' ? 'sudo' : ''); }).join('') + '</div>';
     o += '<p class="sum">' + inl(c.sum) + '</p>';
     if (c.syntax) o += '<h6>Syntax</h6><div class="syn"><span>' + hlEx(c.syntax) + '</span>' + copyBtn(c.syntax) + '</div>';
     if (c.how && c.how.length) o += '<h6>How it works</h6>' + renderBlocks(c.how, {});
@@ -553,7 +576,7 @@
     $('#skip').addEventListener('click', function () { var h = $('#page h1') || $('#page'); if (h !== $('#page')) h.setAttribute('tabindex', '-1'); h.focus(); });
     window.addEventListener('hashchange', route); route();
   }
-  window.__core = { $: $, $$: $$, h: h, esc: esc, inl: inl, hlSh: hlSh, hlPy: hlPy, autoSize: autoSize, hlJs: hlJs, hlMarkup: hlMarkup, hlCss: hlCss, subst: subst, val: val, setVal: setVal, varDef: varDef, VARS: VARS, GROUPS: GROUPS, copyText: copyText, toast: toast, S: S, save: save, chip: chip, refreshChips: refreshChips, allCmds: allCmds, cardHTML: cardHTML, cmdId: cmdId, CH: CH, BYID: BYID, hydrate: hydrate, renderBlocks: renderBlocks, updateProgress: updateProgress, copyBtn: copyBtn, phHTML: phHTML, slug: slug, CATN: CATN, osLabel: osLabel };
+  window.__core = { $: $, $$: $$, h: h, esc: esc, inl: inl, hlSh: hlSh, hlIos: hlIos, hlPy: hlPy, autoSize: autoSize, hlJs: hlJs, hlMarkup: hlMarkup, hlCss: hlCss, subst: subst, val: val, setVal: setVal, varDef: varDef, VARS: VARS, GROUPS: GROUPS, copyText: copyText, toast: toast, S: S, save: save, chip: chip, refreshChips: refreshChips, allCmds: allCmds, cardHTML: cardHTML, cmdId: cmdId, CH: CH, BYID: BYID, hydrate: hydrate, renderBlocks: renderBlocks, updateProgress: updateProgress, copyBtn: copyBtn, phHTML: phHTML, slug: slug, CATN: CATN, osLabel: osLabel };
   window.__boot = boot;
 })();
 
