@@ -868,7 +868,7 @@ blocks = [
         ['`D`', 'EIGRP internal', '90'], ['`D EX`', 'EIGRP external', '170'],
         ['`O`, `O IA`', 'OSPF intra-/inter-area', '110'], ['`O E1`, `O E2`', 'OSPF external', '110'],
         ['`R`', 'RIP', '120'], ['`B`', 'BGP (eBGP / iBGP)', '20 / 200'], ['`i`', 'IS-IS', '115'],
-    ], 'Route codes in show ip route, lowest distance wins'),
+    ], 'Route codes, lowest distance wins'),
     CMD('ip route', 'ios-rt', 'ios-rt', 'Add a static route, including the default route.',
         'ip route PREFIX MASK {NEXT-HOP | EXIT-IF [NEXT-HOP]} [DISTANCE] [name TEXT] [permanent] [track N]',
         ['`0.0.0.0 0.0.0.0` is the default route. A route through an exit interface only works on point-to-point links; on Ethernet '
