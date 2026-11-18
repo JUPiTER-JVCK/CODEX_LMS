@@ -112,7 +112,7 @@ tests for `CodexCore` (table of contents, saved progress, search) on macOS or Li
 | `tools/lint_ascii.py`, `tools/fix_ascii.py` | find, and safely re-align, drifting box diagrams |
 | `test/blocks.py`, `test/labs.py`, `test/ascii.py`, `test/theme.py` | browser tests: runnable blocks and exercises, every lab, diagram rendering, theme switch |
 | `test/pcapfilters.py` | checks the Wireshark lab's display-filter engine against real `tshark` on the same captures |
-| `test/wsref_filters.py` | compiles every filter on the Wireshark cheat sheet with real `tshark` and `dumpcap`, and checks that the filters it calls wrong are really rejected |
+| `test/wsref_filters.py` | compiles every filter on the Wireshark cheat sheet with real `tshark` and libpcap, and checks that the filters it calls wrong are really rejected |
 | `dist/` | the built site: `index.html`, `toc.json` (contents for the Apple app) and the Python runtime in `py/` |
 | `src/app.add.css` | hides the page's own sidebar and toolbar when it runs inside the Apple app |
 | `apple/project.yml` | XcodeGen spec for the multiplatform app |

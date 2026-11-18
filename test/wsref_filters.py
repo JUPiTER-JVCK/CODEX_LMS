@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Compile every filter on the Wireshark cheat sheet (chapters/ch_7_wsref.py) with the real tools.
 
-Display filters must be accepted by tshark; capture filters must compile with dumpcap; and every filter the
+Display filters must be accepted by tshark; capture filters must compile with libpcap (as dumpcap would); and every filter the
 "mistakes" table calls wrong must really be rejected, while its fix is accepted. Exit 1 on any failure.
 """
-import importlib.util, os, subprocess, sys
+import ctypes, ctypes.util, importlib.util, os, subprocess, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'chapters'))
 spec = importlib.util.spec_from_file_location('wsref', os.path.join(ROOT, 'chapters/ch_7_wsref.py'))
@@ -20,12 +20,28 @@ def display_ok(f):
     return r.returncode == 0, r.stderr.strip().splitlines()[-1:] if r.returncode else ''
 
 
+class _Prog(ctypes.Structure):
+    _fields_ = [('bf_len', ctypes.c_uint), ('bf_insns', ctypes.c_void_p)]
+
+
+_pcap = ctypes.CDLL(ctypes.util.find_library('pcap') or 'libpcap.so.0.8')
+_pcap.pcap_open_dead.restype = ctypes.c_void_p
+_pcap.pcap_open_dead.argtypes = [ctypes.c_int, ctypes.c_int]
+_pcap.pcap_compile.argtypes = [ctypes.c_void_p, ctypes.POINTER(_Prog), ctypes.c_char_p, ctypes.c_int, ctypes.c_uint32]
+_pcap.pcap_geterr.restype = ctypes.c_char_p
+_pcap.pcap_geterr.argtypes = [ctypes.c_void_p]
+_pcap.pcap_freecode.argtypes = [ctypes.POINTER(_Prog)]
+_dead = _pcap.pcap_open_dead(1, 65535)  # DLT_EN10MB: Ethernet, as on en0
+
+
 def capture_ok(f):
-    # -d compiles the filter to BPF for the interface's link type and prints it; nothing is captured.
-    # dumpcap can exit 0 on a bad filter when its output is not a terminal, so require the compiled program.
-    r = subprocess.run(['dumpcap', '-i', 'lo', '-f', f, '-d'], capture_output=True, text=True)
-    ok = r.returncode == 0 and '(000)' in r.stdout and 'Invalid capture filter' not in r.stderr
-    return ok, '' if ok else r.stderr.strip()
+    # Compile with libpcap itself, the compiler dumpcap and tcpdump use. pcap_open_dead needs no capture
+    # permission, so this works for an unprivileged CI user (dumpcap -d has to open a device).
+    prog = _Prog()
+    if _pcap.pcap_compile(_dead, ctypes.byref(prog), f.encode(), 1, 0xffffffff) != 0:
+        return False, _pcap.pcap_geterr(_dead).decode()
+    _pcap.pcap_freecode(ctypes.byref(prog))
+    return True, ''
 
 
 bad = 0
@@ -41,7 +57,7 @@ for f in sorted(set(m.CAPTURE)):
         print('CAPTURE FILTER REJECTED', repr(f), err)
 if capture_ok('tcp prot 80')[0]:
     bad += 1
-    print('CHECKER BROKEN: dumpcap accepted an invalid capture filter')
+    print('CHECKER BROKEN: libpcap accepted an invalid capture filter')
 for wrong, fix, _ in m.BROKEN:
     if display_ok(wrong)[0]:
         bad += 1
