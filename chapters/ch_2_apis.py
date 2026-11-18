@@ -16,6 +16,33 @@ blocks = [
         ['**Webhooks**', 'the provider `POST`s to *your* URL when something happens', 'no polling; events arrive as they occur', 'payments, Git pushes, chat bots'],
         ['**WebSockets / SSE**', 'a long-lived connection that pushes messages', 'real-time updates', 'dashboards, chat, live prices'],
     ]),
+    P('''The difference between the styles is mostly *who speaks when* and *how long the connection lives*. Drawn as messages
+    between two programs (── one message, ══ a connection that stays open):'''),
+    ASCII('''
+      ⟪g:REST⟫        client   ── GET /devices/3 ─────────────────────────▶ server
+                  client   ◀───────────────────── 200 {"id": 3, ...} ── server
+                           one request, one response; each request stands alone
+
+      ⟪g:GraphQL⟫     client   ── POST /graphql {device(id:3){name}} ─────▶ server
+                  client   ◀────────────── {"device": {"name": ...}} ── server
+                           one URL for everything; the query names the fields it wants back
+
+      ⟪y:gRPC⟫        client   ══ HTTP/2, binary protobuf messages ═══════▶ server
+                  client   ◀═════════════════ responses, or a stream ══ server
+                           typed by a .proto file; many calls and streams share one connection
+
+      ⟪c:WebSocket⟫   client   ── GET, Upgrade: websocket ────────────────▶ server
+                  client   ◀══════════ messages either way ═══════════▶ server
+                           after "101 Switching Protocols" either side may send at any time
+
+      ⟪c:SSE⟫         client   ── GET, Accept: text/event-stream ─────────▶ server
+                  client   ◀══════════════ event ◀══ event ◀══ event ══ server
+                           the response never ends: the server pushes, the client only listens
+
+      ⟪m:Webhook⟫     provider ── POST /hooks/payments {event} ───────────▶ your app
+                  provider ◀──────────────────────────────────── 200 ── your app
+                           they call you when something happens; check the signature first
+    '''),
     P('''This chapter concentrates on REST, because it is the most common and because the other styles reuse the same ideas: URLs,
     methods, status codes, headers, authentication and JSON.'''),
 

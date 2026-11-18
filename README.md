@@ -62,6 +62,24 @@ respect reduced-motion settings.
 | How long to guess it? | Encryption, passwords | entropy vs fast and slow hashes |
 | Decode, forge, verify a JWT | APIs | the payload is readable; editing it breaks the signature |
 
+## Reference figures
+
+Diagrams drawn on the same monospace grid, each placed in the section it illustrates (`tools/add_figures.py`; the APIs one is in
+`chapters/ch_2_apis.py`):
+
+| Figure | Where you find it |
+|---|---|
+| What runs on what: application protocols over TLS, QUIC, TCP, UDP and IP | How Networks Work, layers |
+| One Ethernet frame on the wire, field by field, with the MTU marked | How Networks Work, encapsulation |
+| Wi-Fi bands: 2.4 GHz channel overlap to scale; 5 and 6 GHz U-NII blocks | How Networks Work, Wi-Fi |
+| A global IPv6 address split 48/16/64, and the IPv6 address family tree | Addressing, IPv6 |
+| Reading `ls -l`, rwx to octal, and where setuid, setgid and sticky show | Files, permissions |
+| The BPF capture-filter language on one screen | Packet Capture, BPF |
+| The troubleshooting loop: gather, choose a layer, isolate, fix and verify, write down | Troubleshooting, method |
+| Which observability tool sees which part of the machine (macOS, with Linux names) | System, looking at processes |
+| The most used commands as a map | Cheat Sheets |
+| REST, GraphQL, gRPC, WebSocket, SSE and webhooks as message sequences | APIs, kinds of web API |
+
 <table><tr>
 <td><img src="docs/screenshots/lab-bitmask-dark.png" alt="Bit mask lab"></td>
 <td><img src="docs/screenshots/lab-gates-light.png" alt="Logic gates lab"></td>
@@ -107,6 +125,7 @@ tests for `CodexCore` (table of contents, saved progress, search) on macOS or Li
 | `packages/labs/` | the DOM views for those labs; `npm run labs` bundles them into `src/ws-labs.js` |
 | `tools/chapters.py`, `tools/build.py` | build chapter JSON, then assemble the single-file page |
 | `tools/add_labs.py` | places each lab block inside its chapter in `data/book.json` (idempotent) |
+| `tools/add_figures.py` | places the reference figures (ASCII diagrams with a lead-in) inside their chapters, the same way |
 | `tools/lint_ascii.py`, `tools/fix_ascii.py` | find, and safely re-align, drifting box diagrams |
 | `test/blocks.py`, `test/labs.py`, `test/ascii.py`, `test/theme.py` | browser tests: runnable blocks and exercises, every lab, diagram rendering, theme switch |
 | `test/pcapfilters.py` | checks the Wireshark lab's display-filter engine against real `tshark` on the same captures |
