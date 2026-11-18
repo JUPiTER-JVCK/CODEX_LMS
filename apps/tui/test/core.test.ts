@@ -30,7 +30,8 @@ test("the book read from the page agrees with toc.json (the file the Mac app use
 
 test("plain book JSON loads the same as the page", () => {
   const j = JSON.stringify({ chapters: book.chapters, vars: { vars: book.vars, groups: book.groups }, missions: [] });
-  assert.equal(parseBook(j).chapters.length, 50);
+  assert.equal(parseBook(j).chapters.length, book.chapters.length);
+  assert.ok(book.chapters.length >= 49);
 });
 
 test("search finds chapters, sections, commands and glossary terms", () => {

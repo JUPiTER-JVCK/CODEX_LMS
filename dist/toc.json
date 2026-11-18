@@ -9489,8 +9489,85 @@
    ]
   },
   {
-   "id": "fixes",
+   "id": "wireshark-ref",
    "num": 49,
+   "title": "Wireshark Cheat Sheet",
+   "sub": "The window, both filter languages, the filters you will use most by protocol, shortcuts and tshark, with diagrams and corrections to common mistakes",
+   "part": "ref",
+   "time": 25,
+   "level": "basics",
+   "sections": [
+    {
+     "id": "window",
+     "text": "The Wireshark window",
+     "level": 2
+    },
+    {
+     "id": "two-filters",
+     "text": "Capture filters and display filters",
+     "level": 2
+    },
+    {
+     "id": "capture-syntax",
+     "text": "Capture filter syntax",
+     "level": 2
+    },
+    {
+     "id": "display-syntax",
+     "text": "Display filter syntax",
+     "level": 2
+    },
+    {
+     "id": "layers",
+     "text": "Where field names come from",
+     "level": 2
+    },
+    {
+     "id": "by-task",
+     "text": "Filters by task",
+     "level": 2
+    },
+    {
+     "id": "tcp",
+     "text": "The TCP conversation",
+     "level": 2
+    },
+    {
+     "id": "hunting",
+     "text": "Hunting filters",
+     "level": 2
+    },
+    {
+     "id": "keys",
+     "text": "Keyboard shortcuts",
+     "level": 2
+    },
+    {
+     "id": "tshark",
+     "text": "tshark one-liners",
+     "level": 2
+    },
+    {
+     "id": "myths",
+     "text": "Fixing popular cheat-sheet mistakes",
+     "level": 2
+    },
+    {
+     "id": "practise",
+     "text": "Practise",
+     "level": 2
+    }
+   ],
+   "cards": [],
+   "items": [
+    "wsref-ex-translate",
+    "wsref-ex-capture-or-display",
+    "wsref-check"
+   ]
+  },
+  {
+   "id": "fixes",
+   "num": 50,
    "title": "Fixes",
    "sub": "A problem-to-fix index for the errors you will actually hit on a Mac",
    "part": "ref",
