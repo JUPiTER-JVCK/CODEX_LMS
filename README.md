@@ -6,7 +6,8 @@ A hands-on, book-style course for learning on a Mac: macOS Terminal (zsh), netwo
 self-contained web page with runnable Python and JavaScript, a simulated terminal, interactive labs, exercises
 with automatic checks, quizzes and projects.
 
-- 49 chapters in 10 parts, 787 command cards, 270 exercises
+- 50 chapters in 10 parts, 856 command cards, 270 exercises
+- A Cisco IOS cheat sheet in the Reference part: modes, help keys, output filters, 69 IOS command cards with examples, and a DHCP & DNS lab infographic
 - Python runs in the browser (Pyodide); JavaScript runs in a sandbox with a built-in practice REST API
 - Light, dark and system themes; works on phones
 - Nothing is downloaded when you open it: the fonts are bundled in the page, and `test/offline.py` fails CI if a request ever leaves it

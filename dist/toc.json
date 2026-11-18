@@ -8969,8 +8969,528 @@
    ]
   },
   {
-   "id": "fixes",
+   "id": "cisco",
    "num": 48,
+   "title": "Cisco IOS Cheat Sheet",
+   "sub": "Modes, help keys, output filters and every everyday IOS command, from first login to VLANs, routing, ACLs, NAT, DHCP and DNS, with examples",
+   "part": "ref",
+   "time": 30,
+   "level": "basics",
+   "sections": [
+    {
+     "id": "glance",
+     "text": "At a glance: a worked lab",
+     "level": 2
+    },
+    {
+     "id": "modes",
+     "text": "CLI modes and prompts",
+     "level": 2
+    },
+    {
+     "id": "help",
+     "text": "Help, shortcuts and editing keys",
+     "level": 2
+    },
+    {
+     "id": "filters",
+     "text": "Filtering show output",
+     "level": 2
+    },
+    {
+     "id": "exec",
+     "text": "EXEC, files and saving",
+     "level": 2
+    },
+    {
+     "id": "system",
+     "text": "Initial setup and system",
+     "level": 2
+    },
+    {
+     "id": "security",
+     "text": "Passwords, users and SSH",
+     "level": 2
+    },
+    {
+     "id": "interfaces",
+     "text": "Interfaces",
+     "level": 2
+    },
+    {
+     "id": "switching",
+     "text": "VLANs and switching",
+     "level": 2
+    },
+    {
+     "id": "routing",
+     "text": "Routing",
+     "level": 2
+    },
+    {
+     "id": "acl",
+     "text": "Access control lists",
+     "level": 2
+    },
+    {
+     "id": "nat",
+     "text": "NAT",
+     "level": 2
+    },
+    {
+     "id": "dhcp",
+     "text": "DHCP and DNS services",
+     "level": 2
+    },
+    {
+     "id": "monitor",
+     "text": "Monitoring and management",
+     "level": 2
+    },
+    {
+     "id": "show",
+     "text": "Show commands by task",
+     "level": 2
+    },
+    {
+     "id": "troubleshoot",
+     "text": "Troubleshooting by symptom",
+     "level": 2
+    },
+    {
+     "id": "templates",
+     "text": "Starter templates",
+     "level": 2
+    },
+    {
+     "id": "practice",
+     "text": "Practice",
+     "level": 2
+    }
+   ],
+   "cards": [
+    {
+     "id": "cmd-enable",
+     "name": "enable",
+     "sum": "Move from user EXEC (`>`) to privileged EXEC (`#`); `disable` goes back.",
+     "cat": "ios-exec"
+    },
+    {
+     "id": "cmd-configure-terminal",
+     "name": "configure terminal",
+     "sum": "Enter global configuration mode; changes apply immediately to the running config.",
+     "cat": "ios-exec"
+    },
+    {
+     "id": "cmd-show-running-config",
+     "name": "show running-config",
+     "sum": "Print the configuration the device is using now.",
+     "cat": "ios-show"
+    },
+    {
+     "id": "cmd-copy",
+     "name": "copy",
+     "sum": "Copy configurations and files between RAM, NVRAM, flash and network servers.",
+     "cat": "ios-file"
+    },
+    {
+     "id": "cmd-dir",
+     "name": "dir",
+     "sum": "List files in flash or another file system; with friends to manage files.",
+     "cat": "ios-file"
+    },
+    {
+     "id": "cmd-reload",
+     "name": "reload",
+     "sum": "Restart the device, now or on a timer.",
+     "cat": "ios-exec"
+    },
+    {
+     "id": "cmd-show-version",
+     "name": "show version",
+     "sum": "IOS version, model, serial, uptime, memory, interfaces, licence and the configuration register.",
+     "cat": "ios-show"
+    },
+    {
+     "id": "cmd-ping-ios",
+     "name": "ping (IOS)",
+     "sum": "Send ICMP echo requests; IOS prints one symbol per packet.",
+     "cat": "ios-exec"
+    },
+    {
+     "id": "cmd-traceroute-ios",
+     "name": "traceroute (IOS)",
+     "sum": "List the routers on the path to a host, using UDP probes with rising TTL.",
+     "cat": "ios-exec"
+    },
+    {
+     "id": "cmd-ssh-client",
+     "name": "ssh (client)",
+     "sum": "Open an SSH (or Telnet) session from the router to another device.",
+     "cat": "ios-exec"
+    },
+    {
+     "id": "cmd-debug",
+     "name": "debug",
+     "sum": "Print live diagnostic messages for one feature; stop with undebug all.",
+     "cat": "ios-exec"
+    },
+    {
+     "id": "cmd-clock",
+     "name": "clock",
+     "sum": "Show and set the time and time zone (logs and certificates depend on it).",
+     "cat": "ios-sys"
+    },
+    {
+     "id": "cmd-hostname",
+     "name": "hostname",
+     "sum": "Name the device; the name becomes the prompt.",
+     "cat": "ios-sys"
+    },
+    {
+     "id": "cmd-banner",
+     "name": "banner",
+     "sum": "Text shown at connection or login. The first character is the delimiter that ends it.",
+     "cat": "ios-sys"
+    },
+    {
+     "id": "cmd-ip-domain-name",
+     "name": "ip domain-name",
+     "sum": "Set the device's domain and DNS servers for its own name lookups.",
+     "cat": "ios-sys"
+    },
+    {
+     "id": "cmd-ntp-server",
+     "name": "ntp server",
+     "sum": "Synchronise the clock with NTP; optionally serve time to others.",
+     "cat": "ios-sys"
+    },
+    {
+     "id": "cmd-service-timestamps",
+     "name": "service timestamps",
+     "sum": "Put an accurate date and time on log and debug messages.",
+     "cat": "ios-sys"
+    },
+    {
+     "id": "cmd-logging",
+     "name": "logging",
+     "sum": "Where log messages go and how much to keep.",
+     "cat": "ios-svc"
+    },
+    {
+     "id": "cmd-cdp-lldp",
+     "name": "cdp / lldp",
+     "sum": "Discover directly connected neighbours: Cisco Discovery Protocol and the standard LLDP.",
+     "cat": "ios-svc"
+    },
+    {
+     "id": "cmd-boot-system",
+     "name": "boot system",
+     "sum": "Choose which IOS image loads at boot; with config-register, control how the device starts.",
+     "cat": "ios-sys"
+    },
+    {
+     "id": "cmd-enable-secret",
+     "name": "enable secret",
+     "sum": "Set the password for privileged EXEC, stored as a hash.",
+     "cat": "ios-sec"
+    },
+    {
+     "id": "cmd-service-password-encryption",
+     "name": "service password-encryption",
+     "sum": "Obscure plaintext passwords in the config with type 7.",
+     "cat": "ios-sec"
+    },
+    {
+     "id": "cmd-username",
+     "name": "username",
+     "sum": "Create a local user account (for login local, SSH and AAA).",
+     "cat": "ios-sec"
+    },
+    {
+     "id": "cmd-line",
+     "name": "line",
+     "sum": "Configure how people log in on the console, vty (remote) and aux lines.",
+     "cat": "ios-sec"
+    },
+    {
+     "id": "cmd-crypto-key-generate-rsa",
+     "name": "crypto key generate rsa",
+     "sum": "Generate the host keys that turn on the SSH server.",
+     "cat": "ios-sec"
+    },
+    {
+     "id": "cmd-login-block-for",
+     "name": "login block-for",
+     "sum": "Slow down password guessing: block logins after repeated failures.",
+     "cat": "ios-sec"
+    },
+    {
+     "id": "cmd-aaa-new-model",
+     "name": "aaa new-model",
+     "sum": "Switch to AAA: central authentication, authorisation and accounting with RADIUS or TACACS+.",
+     "cat": "ios-sec"
+    },
+    {
+     "id": "cmd-interface",
+     "name": "interface",
+     "sum": "Enter configuration for one interface (or create a logical one).",
+     "cat": "ios-if"
+    },
+    {
+     "id": "cmd-ip-address",
+     "name": "ip address",
+     "sum": "Assign an IPv4 address and mask to a routed interface or SVI.",
+     "cat": "ios-if"
+    },
+    {
+     "id": "cmd-shutdown",
+     "name": "shutdown",
+     "sum": "Administratively disable an interface; no shutdown enables it.",
+     "cat": "ios-if"
+    },
+    {
+     "id": "cmd-interface-settings",
+     "name": "interface settings",
+     "sum": "Description, speed, duplex, MTU, bandwidth and other per-port settings.",
+     "cat": "ios-if"
+    },
+    {
+     "id": "cmd-show-ip-interface-brief",
+     "name": "show ip interface brief",
+     "sum": "Every interface on one line: address, admin status and line protocol.",
+     "cat": "ios-show"
+    },
+    {
+     "id": "cmd-show-interfaces",
+     "name": "show interfaces",
+     "sum": "Full counters and status for interfaces: errors, rates, duplex, drops.",
+     "cat": "ios-show"
+    },
+    {
+     "id": "cmd-vlan",
+     "name": "vlan",
+     "sum": "Create a VLAN and give it a name.",
+     "cat": "ios-sw"
+    },
+    {
+     "id": "cmd-switchport-mode-access",
+     "name": "switchport mode access",
+     "sum": "Make a port an access port in one data VLAN (plus an optional voice VLAN).",
+     "cat": "ios-sw"
+    },
+    {
+     "id": "cmd-switchport-trunk",
+     "name": "switchport trunk",
+     "sum": "Make a port an 802.1Q trunk carrying several VLANs.",
+     "cat": "ios-sw"
+    },
+    {
+     "id": "cmd-vtp",
+     "name": "vtp",
+     "sum": "VLAN Trunking Protocol: share the VLAN list between switches (or, usually, turn it off).",
+     "cat": "ios-sw"
+    },
+    {
+     "id": "cmd-spanning-tree",
+     "name": "spanning-tree",
+     "sum": "Loop prevention: STP mode, root bridge placement and edge-port protection.",
+     "cat": "ios-sw"
+    },
+    {
+     "id": "cmd-switchport-port-security",
+     "name": "switchport port-security",
+     "sum": "Limit which and how many MAC addresses may use an access port.",
+     "cat": "ios-sw"
+    },
+    {
+     "id": "cmd-errdisable-recovery",
+     "name": "errdisable recovery",
+     "sum": "Bring err-disabled ports back automatically, or see why a port was disabled.",
+     "cat": "ios-sw"
+    },
+    {
+     "id": "cmd-etherchannel",
+     "name": "etherchannel",
+     "sum": "Bundle several links into one logical Port-channel (LACP, PAgP or static).",
+     "cat": "ios-sw"
+    },
+    {
+     "id": "cmd-show-mac-address-table",
+     "name": "show mac address-table",
+     "sum": "Which MAC address the switch has learned on which port and VLAN.",
+     "cat": "ios-show"
+    },
+    {
+     "id": "cmd-monitor-session",
+     "name": "monitor session",
+     "sum": "SPAN: copy a port's or VLAN's traffic to another port for Wireshark.",
+     "cat": "ios-sw"
+    },
+    {
+     "id": "cmd-ip-routing-layer-3-switch",
+     "name": "ip routing (layer 3 switch)",
+     "sum": "Turn a multilayer switch into a router between its VLANs (SVIs).",
+     "cat": "ios-sw"
+    },
+    {
+     "id": "cmd-ip-route",
+     "name": "ip route",
+     "sum": "Add a static route, including the default route.",
+     "cat": "ios-rt"
+    },
+    {
+     "id": "cmd-show-ip-route",
+     "name": "show ip route",
+     "sum": "The routing table: what the router will do with each destination.",
+     "cat": "ios-show"
+    },
+    {
+     "id": "cmd-router-on-a-stick",
+     "name": "router-on-a-stick",
+     "sum": "Route between VLANs with one router port and dot1Q sub-interfaces.",
+     "cat": "ios-rt"
+    },
+    {
+     "id": "cmd-router-ospf",
+     "name": "router ospf",
+     "sum": "OSPF: the link-state IGP. Neighbours, areas and costs.",
+     "cat": "ios-rt"
+    },
+    {
+     "id": "cmd-router-eigrp",
+     "name": "router eigrp",
+     "sum": "EIGRP: Cisco's advanced distance-vector IGP.",
+     "cat": "ios-rt"
+    },
+    {
+     "id": "cmd-router-rip",
+     "name": "router rip",
+     "sum": "RIP version 2: the simple, hop-count IGP (15 hops max). Labs and tiny networks.",
+     "cat": "ios-rt"
+    },
+    {
+     "id": "cmd-router-bgp",
+     "name": "router bgp",
+     "sum": "BGP: routing between autonomous systems (ISPs, multi-homing, data centres).",
+     "cat": "ios-rt"
+    },
+    {
+     "id": "cmd-show-ip-protocols",
+     "name": "show ip protocols",
+     "sum": "Which routing protocols run, on which networks, with which timers, neighbours and filters.",
+     "cat": "ios-show"
+    },
+    {
+     "id": "cmd-redistribute",
+     "name": "redistribute",
+     "sum": "Import routes from one source (static, connected, another protocol) into a routing protocol.",
+     "cat": "ios-rt"
+    },
+    {
+     "id": "cmd-route-map",
+     "name": "route-map",
+     "sum": "An if-then policy: match conditions, set actions. Used by redistribution, BGP, PBR and NAT.",
+     "cat": "ios-rt"
+    },
+    {
+     "id": "cmd-standby-hsrp",
+     "name": "standby (HSRP)",
+     "sum": "HSRP: two routers share one virtual gateway address; one is active, one waits.",
+     "cat": "ios-rt"
+    },
+    {
+     "id": "cmd-ipv6-address",
+     "name": "ipv6 address",
+     "sum": "Enable IPv6 routing and give interfaces IPv6 addresses.",
+     "cat": "ios-rt"
+    },
+    {
+     "id": "cmd-access-list",
+     "name": "access-list",
+     "sum": "Numbered ACLs: standard (source only) and extended (full 5-tuple).",
+     "cat": "ios-sec"
+    },
+    {
+     "id": "cmd-ip-access-list",
+     "name": "ip access-list",
+     "sum": "Named ACLs, edited line by line with sequence numbers.",
+     "cat": "ios-sec"
+    },
+    {
+     "id": "cmd-ip-access-group",
+     "name": "ip access-group",
+     "sum": "Apply an ACL to an interface, inbound or outbound (one per direction per protocol).",
+     "cat": "ios-sec"
+    },
+    {
+     "id": "cmd-ip-nat",
+     "name": "ip nat",
+     "sum": "Network address translation: PAT (overload), static NAT and port forwarding.",
+     "cat": "ios-svc"
+    },
+    {
+     "id": "cmd-ip-dhcp-pool",
+     "name": "ip dhcp pool",
+     "sum": "Run a DHCP server on the router or switch.",
+     "cat": "ios-svc"
+    },
+    {
+     "id": "cmd-ip-helper-address",
+     "name": "ip helper-address",
+     "sum": "DHCP relay: forward client broadcasts to a DHCP server on another subnet.",
+     "cat": "ios-svc"
+    },
+    {
+     "id": "cmd-ip-dhcp-snooping",
+     "name": "ip dhcp snooping",
+     "sum": "Block rogue DHCP servers and build a binding table of which IP is on which port.",
+     "cat": "ios-sec"
+    },
+    {
+     "id": "cmd-ip-arp-inspection",
+     "name": "ip arp inspection",
+     "sum": "Dynamic ARP Inspection: drop ARP replies that do not match the DHCP snooping table.",
+     "cat": "ios-sec"
+    },
+    {
+     "id": "cmd-show-ip-arp",
+     "name": "show ip arp",
+     "sum": "The ARP table: IP address to MAC address, per interface.",
+     "cat": "ios-show"
+    },
+    {
+     "id": "cmd-snmp-server",
+     "name": "snmp-server",
+     "sum": "Let a monitoring system poll counters and receive traps.",
+     "cat": "ios-svc"
+    },
+    {
+     "id": "cmd-show-processes-cpu",
+     "name": "show processes cpu",
+     "sum": "CPU and memory use, overall and by process.",
+     "cat": "ios-show"
+    },
+    {
+     "id": "cmd-show-inventory",
+     "name": "show inventory",
+     "sum": "Hardware: chassis, modules, transceivers with product IDs and serial numbers.",
+     "cat": "ios-show"
+    },
+    {
+     "id": "cmd-ip-sla",
+     "name": "ip sla",
+     "sum": "Run a test (ping, HTTP, jitter) on a schedule and track the result, e.g. to fail over a route.",
+     "cat": "ios-svc"
+    }
+   ],
+   "items": [
+    "cisco-check"
+   ]
+  },
+  {
+   "id": "fixes",
+   "num": 49,
    "title": "Fixes",
    "sub": "A problem-to-fix index for the errors you will actually hit on a Mac",
    "part": "ref",
