@@ -39803,6 +39803,19 @@
      "line": 389
     },
     {
+     "t": "callout",
+     "kind": "tip",
+     "title": "Cookies in depth",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "This section is the wire format only. [Cookies, Tracking and Privacy](#cookies) goes on from here: each attribute with a lab that applies the browser's real rules, which requests carry a cookie back, how session cookies are stolen and defended, and who uses cookies to follow people across sites.",
+       "line": 1
+      }
+     ],
+     "line": 389
+    },
+    {
      "t": "h",
      "level": 3,
      "text": "Caching and conditional requests",
@@ -95957,6 +95970,19 @@
     {
      "t": "p",
      "text": "In a real browser, Chrome's Application > Storage > **Clear site data** wipes every store for the origin at once, the quickest way to test what a first-time visitor sees.",
+     "line": 845
+    },
+    {
+     "t": "callout",
+     "kind": "tip",
+     "title": "Cookies in depth",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "The cookie columns you see here (Domain, Path, Expires, HttpOnly, Secure, SameSite) are explained in [Cookies, Tracking and Privacy](#cookies), which starts with a lab that follows one login cookie through your own browser.",
+       "line": 1
+      }
+     ],
      "line": 845
     },
     {
