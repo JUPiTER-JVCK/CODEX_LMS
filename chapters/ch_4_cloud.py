@@ -466,4 +466,4 @@ CHAPTER = chapter('cloud', 'Cloud Computing: Compute, Storage, Networks and IAM'
                    'Plan VPC address space and predict reachability from routes, public IPs and security groups',
                    'Read and write IAM policies, and explain how explicit deny, allow and default deny combine',
                    'Describe infrastructure as code with Terraform or OpenTofu, and keep a learning account safe and cheap'],
-                  blocks, terms, file='41-cloud.gm')
+                  blocks, terms, file='40-cloud.gm')

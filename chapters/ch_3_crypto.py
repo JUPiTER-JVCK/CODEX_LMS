@@ -582,4 +582,4 @@ CHAPTER = chapter('crypto', 'Encryption: Hashes, Keys, Signatures and TLS',
                    'Encrypt and decrypt with AES-GCM, and explain why a reused nonce is catastrophic',
                    'Explain key exchange and signatures, and sign and verify files with your SSH key',
                    'Build a private CA, serve HTTPS with it, and read every step of a TLS 1.3 handshake'],
-                  blocks, terms, file='40-crypto.gm')
+                  blocks, terms, part='sec', file='41-crypto.gm')

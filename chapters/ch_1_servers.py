@@ -678,4 +678,4 @@ CHAPTER = chapter('servers', 'Server Basics: Services, Logs and Reverse Proxies'
                    'Keep a server running with a LaunchAgent on macOS or a systemd unit on Linux, and read its logs',
                    'Secure a fresh Linux server in the first fifteen minutes without locking yourself out',
                    'Name the failing layer from the symptom a client sees, and predict which nginx location answers a request'],
-                  blocks, terms, file='38-servers.gm')
+                  blocks, terms, file='39-servers.gm')
