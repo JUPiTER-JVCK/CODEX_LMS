@@ -1,12 +1,14 @@
 # CODEX_LMS
 
-A hands-on, book-style course for learning on a Mac: macOS Terminal (zsh), networking, Python, web development
-(HTML, CSS, JavaScript, DevTools, DOM, XML, Node.js), servers, APIs, encryption and cloud, and security
-(Wireshark packet analysis, hardening, log triage and incident response). It is one
+A hands-on, book-style course for learning on a Mac: macOS Terminal (zsh), networking (including VPNs and tunnels), Python, web development
+(HTML, CSS, JavaScript, DevTools, DOM, XML, cookies and tracking, Node.js), servers, APIs, encryption and cloud, and security
+(Wireshark packet analysis, nmap scanning, hardening, log triage and incident response). It is one
 self-contained web page with runnable Python and JavaScript, a simulated terminal, interactive labs, exercises
 with automatic checks, quizzes and projects.
 
-- 51 chapters in 10 parts, 856 command cards, 272 exercises
+- 54 chapters in 10 parts, 870 command cards, 292 exercises
+- A Cookies, Tracking and Privacy chapter in the Web part (what a cookie is, `Set-Cookie` attributes, sessions and their attacks, third-party cookies, fingerprinting, profiles and prediction, browser defences, cookie forensics), with nine interactive labs whose rules are checked against a real Chromium
+- A VPNs and Tunnels chapter in the Networking part (WireGuard, IPsec/IKEv2, OpenVPN, MTU, leaks) and an Nmap chapter in the Security part (scan types, host discovery, version and OS detection, NSE, ndiff, the defender's view), each with interactive diagrams
 - A Cisco IOS cheat sheet in the Reference part: modes, help keys, output filters, 69 IOS command cards with examples, and a DHCP & DNS lab infographic
 - Python runs in the browser (Pyodide); JavaScript runs in a sandbox with a built-in practice REST API
 - Light, dark and system themes; works on phones
@@ -64,6 +66,43 @@ respect reduced-motion settings.
 | How long to guess it? | Encryption, passwords | entropy vs fast and slow hashes |
 | Decode, forge, verify a JWT | APIs | the payload is readable; editing it breaks the signature |
 
+## VPN and nmap diagrams
+
+The VPNs and Tunnels chapter (Networking, after Remote Access with SSH) and the Nmap chapter (Security, after Wireshark) each carry five interactive diagrams, drawn as theme-aware SVG and HTML in `src/ws-9-vpn.js`
+and `src/ws-9-nmap.js`. Message sequences share one step-through component, `src/ws-9-seq.js`.
+
+| Diagram | Where you find it | What it shows |
+|---|---|---|
+| Who can see what | VPNs, what a VPN is for | no VPN, full tunnel, split tunnel and site-to-site: what is on each link, and what the café, the ISP, the VPN operator and the site can learn; HTTPS vs HTTP; a DNS leak |
+| Tunnel overhead and MTU | VPNs, overhead | WireGuard, IPsec ESP, OpenVPN and GRE headers drawn to scale; the tunnel MTU, TCP MSS and `ping -D -s` size; what happens when a packet is too big |
+| Cryptokey routing | VPNs, WireGuard | edit `AllowedIPs` and see which peer a packet goes to, which source addresses are accepted, and what happens when two peers claim a range |
+| Handshakes | VPNs, setting up a tunnel | WireGuard, IKEv2 and OpenVPN as step-through message sequences with the Wireshark filter for each |
+| Which VPN fits? | VPNs, choosing | three questions rank eight protocols |
+| Read an nmap command | Nmap, what nmap does | type a command: which of the eleven phases run, what each flag does, who must be root, probe count, scope check |
+| Host discovery | Nmap, host discovery | ARP, ICMP and TCP probes by privilege and distance |
+| One probe, one reply | Nmap, port states | 28 combinations of scan type and port condition, packet by packet, with the `--packet-trace` lines and the verdict |
+| Exposure map | Nmap, reading a result | the lab's `scan.txt` as a host-by-port grid, with the risk and the fix for each open port |
+| NSE categories | Nmap, scripting engine | 14 categories with real script counts, risk and examples |
+
+`wg show` is simulated in the practice terminal, so the VPN chapter's parsing exercises can be tried without a tunnel.
+
+## Cookie labs
+
+The Cookies, Tracking and Privacy chapter (Web development, after the DOM; pointers from HTTP and TLS, DevTools and Defending Your Mac and Servers) carries nine interactive labs in `src/ws-9-cookies.js` and
+`src/ws-9-cookies-track.js`. They share one rules engine, `src/ws-9-cookies-engine.js` (what a browser does with a `Set-Cookie` header and which requests carry a cookie back), which `test/cookie_rules.py` compares with a real Chromium.
+
+| Lab | Where you find it | What it shows |
+|---|---|---|
+| The cookie dance | What a cookie is | three step-through exchanges: a first visit, a login, a third-party image seen on two sites |
+| Set-Cookie workbench | Anatomy of a cookie | build a header; is it kept, and do seven kinds of request carry it back (same site, subdomain, plain http, image, link click, form POST) and can a script read it |
+| Who baked this cookie? | Who uses cookies | a sorting game with 14 real cookie names: necessary, preferences, analytics or advertising, and who uses each |
+| Delete it, edit it, steal it | A session cookie is a temporary password | a server-side session, a plain cookie and a signed cookie: log in, delete, tamper, replay in a stranger's browser |
+| Three attacks, three attributes | the same section | `HttpOnly`, `Secure` and `SameSite` against script theft, a forged request and Wi-Fi snooping |
+| From a random ID to a profile | What a website can learn | browse a made-up web; interests with confidence, an identity bridge by login, and what clearing cookies does not undo |
+| The tracker's-eye view | Third-party cookies | one tracker on three sites under third-party cookies allowed, blocked (Safari) and partitioned (Firefox), with a hashed-email shortcut |
+| Does deleting cookies end tracking? | Tracking without cookies | six tracking methods against six things you can do, with the reason for each of 36 cells |
+| One browser in a crowd | the same section | a made-up population of 100,000 browsers narrowed by device, browser, screen, time zone, language, fonts and graphics; plus the details your own browser gives away |
+
 ## Reference figures
 
 Diagrams drawn on the same monospace grid, each placed in the section it illustrates (`tools/add_figures.py`; the APIs one is in
@@ -119,6 +158,10 @@ tests for `CodexCore` (table of contents, saved progress, search) on macOS or Li
 | `src/ws-1..4-*.js`, `src/srv.add.css` | labs for chapters 38-41 |
 | `src/ws-5-pcap.js`, `ws-6-pcapcols.js`, `ws-7-pktlab.js`, `ws-8-triage.js`, `src/sec.add.css` | the Wireshark packet lab and the log-triage drill for chapters 42-43; `ws-5-pcap.js` is the packet engine (encoder, dissector, display-filter engine) |
 | `src/ws-labs.js`, `src/labs.add.css` | the 19 newer labs (**generated** from `packages/labs`) and their styles |
+| `chapters/ch_8_vpn.py`, `chapters/ch_8_nmap.py` | the VPNs and Tunnels chapter (`18a-vpn.gm`, Networking) and the Nmap chapter (`42a-nmap.gm`, Security) |
+| `src/ws-9-vpn.js`, `src/ws-9-nmap.js`, `src/ws-9-seq.js`, `src/vpn.add.css`, `src/nmap.add.css`, `src/seq.add.css` | their diagrams and labs; `ws-9-seq.js` is the shared step-through sequence diagram |
+| `chapters/ch_9_cookies.py` | the Cookies, Tracking and Privacy chapter (`35a-cookies.gm`, Web development) |
+| `src/ws-9-cookies-engine.js`, `src/ws-9-cookies.js`, `src/ws-9-cookies-track.js`, `src/cookies.add.css` | its rules engine (cookie parsing, which requests carry a cookie) and the nine labs |
 | `chapters/ch_7_wsref.py`, `src/ws-9-wsref.js`, `src/wsref.add.css` | the Wireshark Cheat Sheet in the Reference part and its pictures (window, filter pipeline, layers, TCP conversation, flags byte), drawn as theme-aware SVG |
 | `tools/pcapgen.js`, `tools/pcapcols.py` | write the lab captures as real `.pcap` files, and bake Wireshark's own column text into `src/ws-6-pcapcols.js` |
 | `src/sim.js`, `src/sbsrc.js` | simulated zsh, and the sandbox injected into every JavaScript playground |
@@ -128,9 +171,12 @@ tests for `CodexCore` (table of contents, saved progress, search) on macOS or Li
 | `packages/labs/` | the DOM views for those labs; `npm run labs` bundles them into `src/ws-labs.js` |
 | `tools/chapters.py`, `tools/build.py` | build chapter JSON, then assemble the single-file page |
 | `tools/add_labs.py` | places each lab block inside its chapter in `data/book.json` (idempotent) |
+| `tools/add_xrefs.py` | places the "Cookies in depth" pointers in the HTTP and DevTools chapters of `data/book.json` (idempotent; the Defending pointer is in its source) |
 | `tools/add_figures.py` | places the reference figures (ASCII diagrams with a lead-in) inside their chapters, the same way |
 | `tools/lint_ascii.py`, `tools/fix_ascii.py` | find, and safely re-align, drifting box diagrams |
 | `test/blocks.py`, `test/labs.py`, `test/ascii.py`, `test/theme.py` | browser tests: runnable blocks and exercises, every lab, diagram rendering, theme switch |
+| `test/netviz.py`, `test/netfilters.py` | the VPN and nmap diagrams (clicks, arithmetic, themes, phone width), and every filter and NSE script the two chapters name checked against real `tshark`, libpcap and nmap |
+| `test/cookie_rules.py`, `test/cookieviz.py` | the cookie rules engine against a real Chromium (what is stored, what is sent, what scripts can read), and every cookie lab driven by clicks, in both themes and at phone width |
 | `test/pcapfilters.py` | checks the Wireshark lab's display-filter engine against real `tshark` on the same captures |
 | `test/wsref_filters.py` | compiles every filter on the Wireshark cheat sheet with real `tshark` and libpcap, and checks that the filters it calls wrong are really rejected |
 | `dist/` | the built site: `index.html`, `toc.json` (contents for the Apple app) and the Python runtime in `py/` |
@@ -167,14 +213,18 @@ and Node 20.19+ for the labs.
     python3 tools/chapters.py      # chapters/*.py -> data/new/*.json
     python3 tools/build.py         # -> dist/index.html, dist/toc.json (and pub.html for the Claude artifact host)
     (cd dist && python3 -m http.server 8765 &)
-    python3 test/blocks.py servers apis crypto cloud wireshark defend
+    python3 test/blocks.py servers apis crypto cloud wireshark defend vpn nmap cookies
     python3 test/labs.py           # every lab: placement, interaction, no console errors
+    python3 test/netviz.py         # the VPN and nmap diagrams
+    python3 test/cookieviz.py      # the cookie labs
     python3 test/ascii.py          # diagrams and command output on a monospace grid (--hinting mimics a Linux CI renderer)
     python3 test/theme.py          # System / Light / Dark button, persistence, live OS changes
     python3 test/offline.py        # the page makes no request outside itself; the bundled fonts load
     python3 test/bundle.py FILE    # the single file: as a page, with Python, and under node
     python3 tools/lint_ascii.py    # box borders that do not line up
     python3 test/pcapfilters.py    # needs node and tshark (apt install tshark, or brew install wireshark)
+    python3 test/netfilters.py     # needs tshark and nmap (apt install tshark nmap)
+    python3 test/cookie_rules.py   # needs openssl and a Chromium; compares the cookie rules engine with the real browser
 
     npm install
     npm test                       # logic behind the labs

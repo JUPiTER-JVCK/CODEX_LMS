@@ -5,7 +5,8 @@ on:
   pull_request:
 jobs:
   classic-site:
-    runs-on: ubuntu-latest
+    # pinned: the tshark and nmap checks are written against the versions in 24.04 (tshark 4.2, nmap 7.94)
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
@@ -16,6 +17,8 @@ jobs:
         run: python tools/add_labs.py --check
       - name: Reference figures are placed in their chapters
         run: python tools/add_figures.py --check
+      - name: Cross-reference pointers are placed in their chapters
+        run: python tools/add_xrefs.py --check
       - name: Build
         run: |
           python tools/chapters.py
@@ -26,15 +29,20 @@ jobs:
         run: python tools/lint_ascii.py --quiet
       - name: Display filters match tshark
         run: |
-          sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y tshark
+          sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y tshark nmap
           python test/pcapfilters.py
           python test/wsref_filters.py
+          python test/netfilters.py
+      - name: Cookie rules match a real Chromium
+        run: python test/cookie_rules.py
       - name: Browser tests
         run: |
           (cd dist && python -m http.server 8765 &)
           sleep 2
-          python test/blocks.py servers apis crypto cloud wireshark defend wireshark-ref
+          python test/blocks.py servers apis crypto cloud wireshark defend wireshark-ref vpn nmap cookies
           python test/labs.py
+          python test/netviz.py
+          python test/cookieviz.py
           python test/ascii.py
           python test/theme.py
           python test/offline.py
