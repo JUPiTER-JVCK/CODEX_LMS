@@ -5,7 +5,8 @@ on:
   pull_request:
 jobs:
   classic-site:
-    runs-on: ubuntu-latest
+    # pinned: the tshark and nmap checks are written against the versions in 24.04 (tshark 4.2, nmap 7.94)
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
