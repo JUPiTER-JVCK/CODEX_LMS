@@ -55,6 +55,10 @@ blocks = [
     P('''MITRE ATT&CK is a public catalogue of real attacker techniques, organised by these tactics. Defenders use it as a shared
     vocabulary: "we can detect T1543.001, Launch Agent persistence, but not T1071.004, DNS command and control" is a precise statement of a
     gap. Browse it at attack.mitre.org; the macOS matrix is a good map of what to watch on your own machine.'''),
+    CALLOUT('note', 'Session cookies are credentials',
+            'The Credential access row lists **session cookies**, and it is worth taking literally: a stolen login cookie works like a password that skips the password prompt, and often the second factor too. '
+            'The attributes that protect one (`Secure`, `HttpOnly`, `SameSite`, a short lifetime) and the labs that show each attack are in [Cookies, Tracking and Privacy](#cookies), '
+            'which also covers the privacy side: who follows you across sites with cookies and without them.'),
 
     H2('What macOS already does for you', 'macos'),
     P('''A current Mac ships with layered protections. Most are on by default; your job is to keep them on, understand what each one stops,

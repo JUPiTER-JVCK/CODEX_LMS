@@ -7668,8 +7668,115 @@
    ]
   },
   {
-   "id": "xml",
+   "id": "cookies",
    "num": 37,
+   "title": "Cookies, Tracking and Privacy",
+   "sub": "What cookies are and how browsers and servers use them, who is reading them, and how tracking, profiling and prediction are built on top",
+   "part": "web",
+   "time": 90,
+   "level": "intermediate",
+   "sections": [
+    {
+     "id": "idea",
+     "text": "What a cookie is",
+     "level": 2
+    },
+    {
+     "id": "anatomy",
+     "text": "Anatomy of a cookie",
+     "level": 2
+    },
+    {
+     "id": "who",
+     "text": "Who uses cookies, and for what",
+     "level": 2
+    },
+    {
+     "id": "inspect",
+     "text": "Look at your own cookies",
+     "level": 2
+    },
+    {
+     "id": "guard",
+     "text": "A session cookie is a temporary password",
+     "level": 2
+    },
+    {
+     "id": "learn",
+     "text": "What a website can learn without a login",
+     "level": 2
+    },
+    {
+     "id": "third",
+     "text": "Third-party cookies and cross-site tracking",
+     "level": 2
+    },
+    {
+     "id": "beyond",
+     "text": "Tracking without cookies",
+     "level": 2
+    },
+    {
+     "id": "ml",
+     "text": "Joining the dots: identity, profiles and machine learning",
+     "level": 2
+    },
+    {
+     "id": "defend",
+     "text": "Reducing what is collected",
+     "level": 2
+    },
+    {
+     "id": "forensics",
+     "text": "Cookies on disk: a little forensics",
+     "level": 2
+    },
+    {
+     "id": "practice",
+     "text": "Practice",
+     "level": 2
+    },
+    {
+     "id": "next",
+     "text": "Glossary and next steps",
+     "level": 2
+    }
+   ],
+   "cards": [
+    {
+     "id": "cmd-curl-c",
+     "name": "curl -c",
+     "sum": "Keep cookies between curl calls: `-c FILE` saves the cookies a server sets, `-b FILE` sends them back, like a one-site browser.",
+     "cat": "net-http"
+    },
+    {
+     "id": "cmd-sqlite3",
+     "name": "sqlite3",
+     "sum": "Open a SQLite database file and run SQL on it: the tool for browser cookie stores, history files and many macOS app databases.",
+     "cat": "text"
+    }
+   ],
+   "items": [
+    "ck-ex-delete",
+    "ck-ex-audit",
+    "ck-ex-send",
+    "ck-ex-js-parse",
+    "ck-ex-sessions",
+    "ck-ex-interests",
+    "ck-ex-times",
+    "ck-ex-design",
+    "ck-ch-cookies-checkpoint",
+    "ck-pr-investigator#0",
+    "ck-pr-investigator#1",
+    "ck-pr-investigator#2",
+    "ck-pr-investigator#3",
+    "ck-pr-investigator#4",
+    "ck-pr-investigator#5"
+   ]
+  },
+  {
+   "id": "xml",
+   "num": 38,
    "title": "XML and Friends: Parsing, XPath, SVG, RSS and plists",
    "sub": "Read, query, build, validate and transform XML in the browser and in Terminal, and know when XML is the right format",
    "part": "web",
@@ -7838,7 +7945,7 @@
   },
   {
    "id": "node",
-   "num": 38,
+   "num": 39,
    "title": "Node.js: JavaScript on the Server",
    "sub": "Run JavaScript outside the browser: scripts in zsh pipelines, files and processes, a web server from scratch, npm, Express and tests",
    "part": "web",
@@ -8221,7 +8328,7 @@
   },
   {
    "id": "servers",
-   "num": 39,
+   "num": 40,
    "title": "Server Basics: Services, Logs and Reverse Proxies",
    "sub": "Run servers on your Mac, look inside the request loop, keep services alive with launchd and systemd, read logs, and route requests with nginx",
    "part": "srv",
@@ -8321,7 +8428,7 @@
   },
   {
    "id": "apis",
-   "num": 40,
+   "num": 41,
    "title": "APIs: Calling, Designing and Securing Web APIs",
    "sub": "Call REST APIs from curl, JavaScript and Python, read every status and header, authenticate safely, page, retry and rate-limit, and verify webhooks",
    "part": "srv",
@@ -8384,7 +8491,7 @@
   },
   {
    "id": "crypto",
-   "num": 41,
+   "num": 42,
    "title": "Encryption: Hashes, Keys, Signatures and TLS",
    "sub": "Break a classical cipher, use hashes, MACs, AES-GCM and signatures correctly, build your own certificate authority and read a TLS 1.3 handshake",
    "part": "srv",
@@ -8465,7 +8572,7 @@
   },
   {
    "id": "cloud",
-   "num": 42,
+   "num": 43,
    "title": "Cloud Computing: Compute, Storage, Networks and IAM",
    "sub": "Choose between VMs, containers and functions, plan a VPC, lock down access with IAM, describe it all as code and keep the bill under control",
    "part": "srv",
@@ -8545,7 +8652,7 @@
   },
   {
    "id": "wireshark",
-   "num": 43,
+   "num": 44,
    "title": "Wireshark: Packet Analysis for Security",
    "sub": "Master display filters, follow conversations, read statistics, and investigate clear-text credentials, scans, ARP spoofing, DNS exfiltration and TLS",
    "part": "sec",
@@ -8639,7 +8746,7 @@
   },
   {
    "id": "nmap",
-   "num": 44,
+   "num": 45,
    "title": "Nmap: Scanning Your Network Like an Auditor",
    "sub": "How scans work and what each reply means, host discovery, service and OS detection, NSE scripts, saving and comparing results, and how a scan looks to the defender",
    "part": "sec",
@@ -8781,7 +8888,7 @@
   },
   {
    "id": "defend",
-   "num": 45,
+   "num": 46,
    "title": "Defending Your Mac and Servers",
    "sub": "Think in threats, check every macOS protection from Terminal, audit and baseline your machine, harden Linux servers, triage logs and respond to incidents",
    "part": "sec",
@@ -8877,7 +8984,7 @@
   },
   {
    "id": "capstone",
-   "num": 46,
+   "num": 47,
    "title": "Capstone: netkit",
    "sub": "Build one tested, installable command that combines subnet maths, ping, DNS, port scan and log analysis",
    "part": "proj",
@@ -8968,7 +9075,7 @@
   },
   {
    "id": "web-capstone",
-   "num": 47,
+   "num": 48,
    "title": "Capstone: a LAN Dashboard, Front to Back",
    "sub": "Build, test, debug and share a full-stack app: Express API, JSON file store, TCP port checks, XML and RSS feeds, and a plain-JavaScript dashboard",
    "part": "proj",
@@ -9045,7 +9152,7 @@
   },
   {
    "id": "next",
-   "num": 48,
+   "num": 49,
    "title": "Where to Go From Here",
    "sub": "A map of what you can do now, what to learn next, and a routine that gets you there",
    "part": "proj",
@@ -9131,7 +9238,7 @@
   },
   {
    "id": "cheats",
-   "num": 49,
+   "num": 50,
    "title": "Cheat Sheets",
    "sub": "One-page lookup tables for the shell, networking, HTTP, permissions, Python, pip, git and web development",
    "part": "ref",
@@ -9239,7 +9346,7 @@
   },
   {
    "id": "cisco",
-   "num": 50,
+   "num": 51,
    "title": "Cisco IOS Cheat Sheet",
    "sub": "Modes, help keys, output filters and every everyday IOS command, from first login to VLANs, routing, ACLs, NAT, DHCP and DNS, with examples",
    "part": "ref",
@@ -9759,7 +9866,7 @@
   },
   {
    "id": "wireshark-ref",
-   "num": 51,
+   "num": 52,
    "title": "Wireshark Cheat Sheet",
    "sub": "The window, both filter languages, the filters you will use most by protocol, shortcuts and tshark, with diagrams and corrections to common mistakes",
    "part": "ref",
@@ -9836,7 +9943,7 @@
   },
   {
    "id": "fixes",
-   "num": 52,
+   "num": 53,
    "title": "Fixes",
    "sub": "A problem-to-fix index for the errors you will actually hit on a Mac",
    "part": "ref",
