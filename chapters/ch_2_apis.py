@@ -574,4 +574,4 @@ CHAPTER = chapter('apis', 'APIs: Calling, Designing and Securing Web APIs',
                    'Explain API keys, bearer tokens, JWTs and OAuth with PKCE, and keep secrets out of code and history',
                    'Page through large collections, retry only what is safe, and respect rate limits with backoff',
                    'Design a predictable REST API with one error format and an OpenAPI description, and verify signed webhooks'],
-                  blocks, terms, file='39-apis.gm')
+                  blocks, terms, part='web', file='38-apis.gm')

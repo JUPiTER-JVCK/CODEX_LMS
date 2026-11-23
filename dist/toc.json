@@ -8327,8 +8327,71 @@
    ]
   },
   {
-   "id": "servers",
+   "id": "apis",
    "num": 40,
+   "title": "APIs: Calling, Designing and Securing Web APIs",
+   "sub": "Call REST APIs from curl, JavaScript and Python, read every status and header, authenticate safely, page, retry and rate-limit, and verify webhooks",
+   "part": "web",
+   "time": 120,
+   "level": "intermediate",
+   "sections": [
+    {
+     "id": "kinds",
+     "text": "Kinds of web API",
+     "level": 2
+    },
+    {
+     "id": "rest",
+     "text": "Resources, methods and status codes",
+     "level": 2
+    },
+    {
+     "id": "fetch",
+     "text": "Calling an API from code",
+     "level": 2
+    },
+    {
+     "id": "auth",
+     "text": "Authentication and authorization",
+     "level": 2
+    },
+    {
+     "id": "paging",
+     "text": "Pagination, filtering and idempotency",
+     "level": 2
+    },
+    {
+     "id": "limits",
+     "text": "Rate limits, retries and backoff",
+     "level": 2
+    },
+    {
+     "id": "design",
+     "text": "Designing an API other people can use",
+     "level": 2
+    },
+    {
+     "id": "webhooks",
+     "text": "Webhooks: APIs that call you",
+     "level": 2
+    }
+   ],
+   "cards": [],
+   "items": [
+    "apis-ex-get-json-or-throw",
+    "apis-ex-backoff-schedule",
+    "apis-ex-verify-a-webhook",
+    "apis-ch-apis-checkpoint",
+    "apis-pr-devices-a-command-line-client#0",
+    "apis-pr-devices-a-command-line-client#1",
+    "apis-pr-devices-a-command-line-client#2",
+    "apis-pr-devices-a-command-line-client#3",
+    "apis-pr-devices-a-command-line-client#4"
+   ]
+  },
+  {
+   "id": "servers",
+   "num": 41,
    "title": "Server Basics: Services, Logs and Reverse Proxies",
    "sub": "Run servers on your Mac, look inside the request loop, keep services alive with launchd and systemd, read logs, and route requests with nginx",
    "part": "srv",
@@ -8427,152 +8490,8 @@
    ]
   },
   {
-   "id": "apis",
-   "num": 41,
-   "title": "APIs: Calling, Designing and Securing Web APIs",
-   "sub": "Call REST APIs from curl, JavaScript and Python, read every status and header, authenticate safely, page, retry and rate-limit, and verify webhooks",
-   "part": "srv",
-   "time": 120,
-   "level": "intermediate",
-   "sections": [
-    {
-     "id": "kinds",
-     "text": "Kinds of web API",
-     "level": 2
-    },
-    {
-     "id": "rest",
-     "text": "Resources, methods and status codes",
-     "level": 2
-    },
-    {
-     "id": "fetch",
-     "text": "Calling an API from code",
-     "level": 2
-    },
-    {
-     "id": "auth",
-     "text": "Authentication and authorization",
-     "level": 2
-    },
-    {
-     "id": "paging",
-     "text": "Pagination, filtering and idempotency",
-     "level": 2
-    },
-    {
-     "id": "limits",
-     "text": "Rate limits, retries and backoff",
-     "level": 2
-    },
-    {
-     "id": "design",
-     "text": "Designing an API other people can use",
-     "level": 2
-    },
-    {
-     "id": "webhooks",
-     "text": "Webhooks: APIs that call you",
-     "level": 2
-    }
-   ],
-   "cards": [],
-   "items": [
-    "apis-ex-get-json-or-throw",
-    "apis-ex-backoff-schedule",
-    "apis-ex-verify-a-webhook",
-    "apis-ch-apis-checkpoint",
-    "apis-pr-devices-a-command-line-client#0",
-    "apis-pr-devices-a-command-line-client#1",
-    "apis-pr-devices-a-command-line-client#2",
-    "apis-pr-devices-a-command-line-client#3",
-    "apis-pr-devices-a-command-line-client#4"
-   ]
-  },
-  {
-   "id": "crypto",
-   "num": 42,
-   "title": "Encryption: Hashes, Keys, Signatures and TLS",
-   "sub": "Break a classical cipher, use hashes, MACs, AES-GCM and signatures correctly, build your own certificate authority and read a TLS 1.3 handshake",
-   "part": "srv",
-   "time": 120,
-   "level": "intermediate",
-   "sections": [
-    {
-     "id": "vocab",
-     "text": "Four tools that are often confused",
-     "level": 2
-    },
-    {
-     "id": "classical",
-     "text": "Why classical ciphers fail",
-     "level": 2
-    },
-    {
-     "id": "hashes",
-     "text": "Hashes: fingerprints for data",
-     "level": 2
-    },
-    {
-     "id": "passwords",
-     "text": "Passwords need slow hashes",
-     "level": 2
-    },
-    {
-     "id": "macs",
-     "text": "MACs: integrity with a shared key",
-     "level": 2
-    },
-    {
-     "id": "aes",
-     "text": "Symmetric encryption: AES-GCM",
-     "level": 2
-    },
-    {
-     "id": "pubkey",
-     "text": "Public-key cryptography: key exchange and signatures",
-     "level": 2
-    },
-    {
-     "id": "tls",
-     "text": "Certificates and TLS",
-     "level": 2
-    },
-    {
-     "id": "secrets",
-     "text": "Secrets in daily work",
-     "level": 2
-    }
-   ],
-   "cards": [
-    {
-     "id": "cmd-openssl-req",
-     "name": "openssl req",
-     "sum": "Create keys, certificate signing requests and self-signed or CA-signed certificates.",
-     "cat": "srv-crypto"
-    },
-    {
-     "id": "cmd-ssh-keygen-y",
-     "name": "ssh-keygen -Y",
-     "sum": "Sign files with an SSH key and verify those signatures, with no extra tools.",
-     "cat": "srv-crypto"
-    }
-   ],
-   "items": [
-    "crypto-ex-crack-caesar",
-    "crypto-ex-pick-the-primitive",
-    "crypto-ex-sha256-in-the-browser",
-    "crypto-ch-encryption-checkpoint",
-    "crypto-pr-vault-an-encrypted-notes-file#0",
-    "crypto-pr-vault-an-encrypted-notes-file#1",
-    "crypto-pr-vault-an-encrypted-notes-file#2",
-    "crypto-pr-vault-an-encrypted-notes-file#3",
-    "crypto-pr-vault-an-encrypted-notes-file#4"
-   ]
-  },
-  {
    "id": "cloud",
-   "num": 43,
+   "num": 42,
    "title": "Cloud Computing: Compute, Storage, Networks and IAM",
    "sub": "Choose between VMs, containers and functions, plan a VPC, lock down access with IAM, describe it all as code and keep the bill under control",
    "part": "srv",
@@ -8648,6 +8567,87 @@
     "cloud-pr-ship-the-lab-api#2",
     "cloud-pr-ship-the-lab-api#3",
     "cloud-pr-ship-the-lab-api#4"
+   ]
+  },
+  {
+   "id": "crypto",
+   "num": 43,
+   "title": "Encryption: Hashes, Keys, Signatures and TLS",
+   "sub": "Break a classical cipher, use hashes, MACs, AES-GCM and signatures correctly, build your own certificate authority and read a TLS 1.3 handshake",
+   "part": "sec",
+   "time": 120,
+   "level": "intermediate",
+   "sections": [
+    {
+     "id": "vocab",
+     "text": "Four tools that are often confused",
+     "level": 2
+    },
+    {
+     "id": "classical",
+     "text": "Why classical ciphers fail",
+     "level": 2
+    },
+    {
+     "id": "hashes",
+     "text": "Hashes: fingerprints for data",
+     "level": 2
+    },
+    {
+     "id": "passwords",
+     "text": "Passwords need slow hashes",
+     "level": 2
+    },
+    {
+     "id": "macs",
+     "text": "MACs: integrity with a shared key",
+     "level": 2
+    },
+    {
+     "id": "aes",
+     "text": "Symmetric encryption: AES-GCM",
+     "level": 2
+    },
+    {
+     "id": "pubkey",
+     "text": "Public-key cryptography: key exchange and signatures",
+     "level": 2
+    },
+    {
+     "id": "tls",
+     "text": "Certificates and TLS",
+     "level": 2
+    },
+    {
+     "id": "secrets",
+     "text": "Secrets in daily work",
+     "level": 2
+    }
+   ],
+   "cards": [
+    {
+     "id": "cmd-openssl-req",
+     "name": "openssl req",
+     "sum": "Create keys, certificate signing requests and self-signed or CA-signed certificates.",
+     "cat": "srv-crypto"
+    },
+    {
+     "id": "cmd-ssh-keygen-y",
+     "name": "ssh-keygen -Y",
+     "sum": "Sign files with an SSH key and verify those signatures, with no extra tools.",
+     "cat": "srv-crypto"
+    }
+   ],
+   "items": [
+    "crypto-ex-crack-caesar",
+    "crypto-ex-pick-the-primitive",
+    "crypto-ex-sha256-in-the-browser",
+    "crypto-ch-encryption-checkpoint",
+    "crypto-pr-vault-an-encrypted-notes-file#0",
+    "crypto-pr-vault-an-encrypted-notes-file#1",
+    "crypto-pr-vault-an-encrypted-notes-file#2",
+    "crypto-pr-vault-an-encrypted-notes-file#3",
+    "crypto-pr-vault-an-encrypted-notes-file#4"
    ]
   },
   {
