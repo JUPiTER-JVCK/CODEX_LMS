@@ -3338,8 +3338,135 @@
    ]
   },
   {
-   "id": "troubleshoot",
+   "id": "vpn",
    "num": 19,
+   "title": "VPNs and Tunnels: WireGuard, IPsec and OpenVPN",
+   "sub": "What a VPN protects and what it does not, how a tunnel wraps and sizes packets, and how to build, read and check a WireGuard tunnel from your Mac",
+   "part": "net",
+   "time": 80,
+   "level": "intermediate",
+   "sections": [
+    {
+     "id": "what",
+     "text": "What a VPN is for",
+     "level": 2
+    },
+    {
+     "id": "tunnel",
+     "text": "Tunnelling: a packet inside a packet",
+     "level": 2
+    },
+    {
+     "id": "mtu",
+     "text": "Overhead and the MTU problem",
+     "level": 2
+    },
+    {
+     "id": "wireguard",
+     "text": "WireGuard",
+     "level": 2
+    },
+    {
+     "id": "handshakes",
+     "text": "Setting up a tunnel, step by step",
+     "level": 2
+    },
+    {
+     "id": "ipsec",
+     "text": "IPsec and IKEv2",
+     "level": 2
+    },
+    {
+     "id": "openvpn",
+     "text": "OpenVPN and TLS VPNs",
+     "level": 2
+    },
+    {
+     "id": "choose",
+     "text": "Choosing a VPN",
+     "level": 2
+    },
+    {
+     "id": "leaks",
+     "text": "Leaks, kill switches and how to check",
+     "level": 2
+    },
+    {
+     "id": "wire",
+     "text": "Seeing a VPN on the wire",
+     "level": 2
+    },
+    {
+     "id": "safety",
+     "text": "Running a VPN safely",
+     "level": 2
+    },
+    {
+     "id": "practice",
+     "text": "Practice",
+     "level": 2
+    },
+    {
+     "id": "sim",
+     "text": "Try it in the practice terminal",
+     "level": 2
+    },
+    {
+     "id": "next",
+     "text": "Glossary and next steps",
+     "level": 2
+    }
+   ],
+   "cards": [
+    {
+     "id": "cmd-wg-genkey",
+     "name": "wg genkey",
+     "sum": "Create a WireGuard private key. `wg pubkey` turns it into the public key and `wg genpsk` makes an optional pre-shared key.",
+     "cat": "net-vpn"
+    },
+    {
+     "id": "cmd-wg",
+     "name": "wg",
+     "sum": "Show and change the state of WireGuard interfaces: peers, handshakes and transfer counters.",
+     "cat": "net-vpn"
+    },
+    {
+     "id": "cmd-wg-quick",
+     "name": "wg-quick",
+     "sum": "Bring a WireGuard tunnel up or down from a config file: it creates the interface, sets addresses, routes and DNS and runs your hooks.",
+     "cat": "net-vpn"
+    },
+    {
+     "id": "cmd-scutil-nc",
+     "name": "scutil --nc",
+     "sum": "List, start, stop and inspect the VPN services configured in macOS (IKEv2, L2TP/IPsec and VPN apps that use the system framework).",
+     "cat": "net-vpn"
+    },
+    {
+     "id": "cmd-openvpn",
+     "name": "openvpn",
+     "sum": "Start an OpenVPN client or server from a config file.",
+     "cat": "net-vpn"
+    }
+   ],
+   "items": [
+    "vpn-ex-who-can-see",
+    "vpn-ex-wg-mtu",
+    "vpn-ex-allowed-ips",
+    "vpn-ex-parse-wg-show",
+    "vpn-ex-diagnose",
+    "vpn-ch-vpns-and-tunnels-checkpoint",
+    "vpn-pr-road-warrior#0",
+    "vpn-pr-road-warrior#1",
+    "vpn-pr-road-warrior#2",
+    "vpn-pr-road-warrior#3",
+    "vpn-pr-road-warrior#4",
+    "vpn-pr-road-warrior#5"
+   ]
+  },
+  {
+   "id": "troubleshoot",
+   "num": 20,
    "title": "Troubleshooting a Network",
    "sub": "Find the broken layer in five minutes, fix it, and build netdoctor.zsh to do the walking for you",
    "part": "net",
@@ -3467,7 +3594,7 @@
   },
   {
    "id": "py-start",
-   "num": 20,
+   "num": 21,
    "title": "Python Start: Interpreter, Environments & PyCharm",
    "sub": "Install, run, isolate and debug your first Python programs in Terminal and PyCharm",
    "part": "py",
@@ -3596,7 +3723,7 @@
   },
   {
    "id": "py-basics",
-   "num": 21,
+   "num": 22,
    "title": "Python Basics: Numbers, Text & Operators",
    "sub": "Values, types, strings, bytes and the operators that connect them, with a reference card for every built-in and string method",
    "part": "py",
@@ -4045,7 +4172,7 @@
   },
   {
    "id": "py-flow",
-   "num": 22,
+   "num": 23,
    "title": "Python Flow: Decisions, Loops & Functions",
    "sub": "Make programs choose, repeat and reuse code, and package it as a command-line script",
    "part": "py",
@@ -4257,7 +4384,7 @@
   },
   {
    "id": "py-data",
-   "num": 23,
+   "num": 24,
    "title": "Python Data Structures: Lists, Dicts, Sets & Collections",
    "sub": "Store, group, count and sort data with the right container, then summarize a web log in a few lines",
    "part": "py",
@@ -4691,7 +4818,7 @@
   },
   {
    "id": "py-files",
-   "num": 24,
+   "num": 25,
    "title": "Python Files, Text & Regular Expressions",
    "sub": "Read and write files, parse CSV, JSON, dates and logs with re, and make Python behave in a shell pipeline",
    "part": "py",
@@ -4998,7 +5125,7 @@
   },
   {
    "id": "py-errors",
-   "num": 25,
+   "num": 26,
    "title": "Errors, Debugging & Testing",
    "sub": "Handle failures on purpose, read any traceback, step through code with pdb and PyCharm, and prove your functions work with tests",
    "part": "py",
@@ -5205,7 +5332,7 @@
   },
   {
    "id": "py-modules",
-   "num": 26,
+   "num": 27,
    "title": "Modules, Packages & Command-Line Tools",
    "sub": "Split code into modules and packages, isolate dependencies with venv and pip, and ship real tools with argparse",
    "part": "py",
@@ -5335,7 +5462,7 @@
   },
   {
    "id": "py-oop",
-   "num": 27,
+   "num": 28,
    "title": "Classes, Objects & Idiomatic Python",
    "sub": "Model hosts, ports and networks as types, then use dunder methods, dataclasses, generators, decorators and context managers",
    "part": "py",
@@ -5612,7 +5739,7 @@
   },
   {
    "id": "py-net",
-   "num": 28,
+   "num": 29,
    "title": "Python for Networking",
    "sub": "Sockets, struct, threads and subprocess: write your own client, server, scanner and monitor",
    "part": "py",
@@ -5856,7 +5983,7 @@
   },
   {
    "id": "web-intro",
-   "num": 29,
+   "num": 30,
    "title": "How the Web Works: Browsers, Servers and Your First Page",
    "sub": "What a browser and a web server do on every page load, how URLs and origins work, and a first site you write, serve and inspect on your Mac",
    "part": "web",
@@ -5967,7 +6094,7 @@
   },
   {
    "id": "html",
-   "num": 30,
+   "num": 31,
    "title": "HTML: Structure, Semantics and Forms",
    "sub": "Write documents that browsers, screen readers and servers all understand: the skeleton, the parse tree, semantic elements, links, images, tables and forms that send data",
    "part": "web",
@@ -6112,7 +6239,7 @@
   },
   {
    "id": "css",
-   "num": 31,
+   "num": 32,
    "title": "CSS: Selectors, the Cascade, the Box Model and Layout",
    "sub": "Attach styles, target exactly the elements you mean, predict which rule wins, size boxes, and lay out a responsive dashboard with a dark theme",
    "part": "web",
@@ -6351,7 +6478,7 @@
   },
   {
    "id": "js-basics",
-   "num": 32,
+   "num": 33,
    "title": "JavaScript Fundamentals",
    "sub": "Values, types, operators, strings, arrays, objects and JSON, with the traps that catch Python programmers",
    "part": "web",
@@ -6740,7 +6867,7 @@
   },
   {
    "id": "js-deeper",
-   "num": 33,
+   "num": 34,
    "title": "JavaScript in Depth: Functions, Objects, Modules and Async",
    "sub": "Closures, this, prototypes and classes, iterators, errors, modules, the event loop, promises, fetch and regular expressions",
    "part": "web",
@@ -7076,7 +7203,7 @@
   },
   {
    "id": "devtools",
-   "num": 34,
+   "num": 35,
    "title": "Browser DevTools and the Console",
    "sub": "Open the developer tools in Safari and Chrome, drive any page from the Console, read the Network waterfall, inspect storage, and debug JavaScript with breakpoints instead of guesses",
    "part": "web",
@@ -7274,7 +7401,7 @@
   },
   {
    "id": "dom",
-   "num": 35,
+   "num": 36,
    "title": "The DOM: Selecting, Changing and Listening",
    "sub": "Treat a page as a live tree of objects you can query, rewrite and wire to events, without opening an XSS hole",
    "part": "web",
@@ -7542,7 +7669,7 @@
   },
   {
    "id": "xml",
-   "num": 36,
+   "num": 37,
    "title": "XML and Friends: Parsing, XPath, SVG, RSS and plists",
    "sub": "Read, query, build, validate and transform XML in the browser and in Terminal, and know when XML is the right format",
    "part": "web",
@@ -7711,7 +7838,7 @@
   },
   {
    "id": "node",
-   "num": 37,
+   "num": 38,
    "title": "Node.js: JavaScript on the Server",
    "sub": "Run JavaScript outside the browser: scripts in zsh pipelines, files and processes, a web server from scratch, npm, Express and tests",
    "part": "web",
@@ -8094,7 +8221,7 @@
   },
   {
    "id": "servers",
-   "num": 38,
+   "num": 39,
    "title": "Server Basics: Services, Logs and Reverse Proxies",
    "sub": "Run servers on your Mac, look inside the request loop, keep services alive with launchd and systemd, read logs, and route requests with nginx",
    "part": "srv",
@@ -8194,7 +8321,7 @@
   },
   {
    "id": "apis",
-   "num": 39,
+   "num": 40,
    "title": "APIs: Calling, Designing and Securing Web APIs",
    "sub": "Call REST APIs from curl, JavaScript and Python, read every status and header, authenticate safely, page, retry and rate-limit, and verify webhooks",
    "part": "srv",
@@ -8257,7 +8384,7 @@
   },
   {
    "id": "crypto",
-   "num": 40,
+   "num": 41,
    "title": "Encryption: Hashes, Keys, Signatures and TLS",
    "sub": "Break a classical cipher, use hashes, MACs, AES-GCM and signatures correctly, build your own certificate authority and read a TLS 1.3 handshake",
    "part": "srv",
@@ -8338,7 +8465,7 @@
   },
   {
    "id": "cloud",
-   "num": 41,
+   "num": 42,
    "title": "Cloud Computing: Compute, Storage, Networks and IAM",
    "sub": "Choose between VMs, containers and functions, plan a VPC, lock down access with IAM, describe it all as code and keep the bill under control",
    "part": "srv",
@@ -8418,7 +8545,7 @@
   },
   {
    "id": "wireshark",
-   "num": 42,
+   "num": 43,
    "title": "Wireshark: Packet Analysis for Security",
    "sub": "Master display filters, follow conversations, read statistics, and investigate clear-text credentials, scans, ARP spoofing, DNS exfiltration and TLS",
    "part": "sec",
@@ -8511,8 +8638,150 @@
    ]
   },
   {
+   "id": "nmap",
+   "num": 44,
+   "title": "Nmap: Scanning Your Network Like an Auditor",
+   "sub": "How scans work and what each reply means, host discovery, service and OS detection, NSE scripts, saving and comparing results, and how a scan looks to the defender",
+   "part": "sec",
+   "time": 100,
+   "level": "intermediate",
+   "sections": [
+    {
+     "id": "phases",
+     "text": "What nmap does, in order",
+     "level": 2
+    },
+    {
+     "id": "discovery",
+     "text": "Host discovery: is anything there?",
+     "level": 2
+    },
+    {
+     "id": "scans",
+     "text": "Port states and scan types",
+     "level": 2
+    },
+    {
+     "id": "targets",
+     "text": "Choosing targets, ports and speed",
+     "level": 2
+    },
+    {
+     "id": "versions",
+     "text": "Service and OS detection",
+     "level": 2
+    },
+    {
+     "id": "nse",
+     "text": "The Nmap Scripting Engine",
+     "level": 2
+    },
+    {
+     "id": "output",
+     "text": "Output you can keep, parse and compare",
+     "level": 2
+    },
+    {
+     "id": "audit",
+     "text": "Reading a result like an auditor",
+     "level": 2
+    },
+    {
+     "id": "firewalls",
+     "text": "Testing your own firewall",
+     "level": 2
+    },
+    {
+     "id": "defender",
+     "text": "Seeing a scan from the other side",
+     "level": 2
+    },
+    {
+     "id": "recipes",
+     "text": "Recipes and habits",
+     "level": 2
+    },
+    {
+     "id": "practice",
+     "text": "Practice",
+     "level": 2
+    },
+    {
+     "id": "sim",
+     "text": "Try it in the practice terminal",
+     "level": 2
+    },
+    {
+     "id": "next",
+     "text": "Glossary and next steps",
+     "level": 2
+    }
+   ],
+   "cards": [
+    {
+     "id": "cmd-nmap-sn",
+     "name": "nmap -sn",
+     "sum": "Find the live hosts on a network without scanning their ports (a \"ping scan\").",
+     "cat": "sec-scan"
+    },
+    {
+     "id": "cmd-nmap-su",
+     "name": "nmap -sU",
+     "sum": "Scan UDP ports. Slower and less certain than TCP, and needs root.",
+     "cat": "sec-scan"
+    },
+    {
+     "id": "cmd-nmap-packet-trace",
+     "name": "nmap --packet-trace",
+     "sum": "Print every packet nmap sends and receives, in one line each: the best way to learn what a scan really does.",
+     "cat": "sec-scan"
+    },
+    {
+     "id": "cmd-nmap-sv",
+     "name": "nmap -sV",
+     "sum": "Identify the program and version behind each open port by talking to it.",
+     "cat": "sec-scan"
+    },
+    {
+     "id": "cmd-nmap-o",
+     "name": "nmap -O",
+     "sum": "Guess the operating system and device type from how the TCP/IP stack answers.",
+     "cat": "sec-scan"
+    },
+    {
+     "id": "cmd-nmap-script",
+     "name": "nmap --script",
+     "sum": "Run NSE scripts by name, by category or by pattern, against the hosts and ports found.",
+     "cat": "sec-scan"
+    },
+    {
+     "id": "cmd-ndiff",
+     "name": "ndiff",
+     "sum": "Compare two nmap XML files and show what changed: hosts that appeared or vanished, ports that opened or closed, services that changed.",
+     "cat": "sec-scan"
+    }
+   ],
+   "items": [
+    "nmap-ex-pick-the-scan",
+    "nmap-ex-read-the-states",
+    "nmap-ex-parse-xml",
+    "nmap-ex-greppable",
+    "nmap-ex-scan-size",
+    "nmap-ex-diff-scans",
+    "nmap-ex-who-has-445",
+    "nmap-ch-nmap-checkpoint",
+    "nmap-pr-exposure-report#0",
+    "nmap-pr-exposure-report#1",
+    "nmap-pr-exposure-report#2",
+    "nmap-pr-exposure-report#3",
+    "nmap-pr-exposure-report#4",
+    "nmap-pr-exposure-report#5",
+    "nmap-pr-exposure-report#6"
+   ]
+  },
+  {
    "id": "defend",
-   "num": 43,
+   "num": 45,
    "title": "Defending Your Mac and Servers",
    "sub": "Think in threats, check every macOS protection from Terminal, audit and baseline your machine, harden Linux servers, triage logs and respond to incidents",
    "part": "sec",
@@ -8608,7 +8877,7 @@
   },
   {
    "id": "capstone",
-   "num": 44,
+   "num": 46,
    "title": "Capstone: netkit",
    "sub": "Build one tested, installable command that combines subnet maths, ping, DNS, port scan and log analysis",
    "part": "proj",
@@ -8699,7 +8968,7 @@
   },
   {
    "id": "web-capstone",
-   "num": 45,
+   "num": 47,
    "title": "Capstone: a LAN Dashboard, Front to Back",
    "sub": "Build, test, debug and share a full-stack app: Express API, JSON file store, TCP port checks, XML and RSS feeds, and a plain-JavaScript dashboard",
    "part": "proj",
@@ -8776,7 +9045,7 @@
   },
   {
    "id": "next",
-   "num": 46,
+   "num": 48,
    "title": "Where to Go From Here",
    "sub": "A map of what you can do now, what to learn next, and a routine that gets you there",
    "part": "proj",
@@ -8862,7 +9131,7 @@
   },
   {
    "id": "cheats",
-   "num": 47,
+   "num": 49,
    "title": "Cheat Sheets",
    "sub": "One-page lookup tables for the shell, networking, HTTP, permissions, Python, pip, git and web development",
    "part": "ref",
@@ -8970,7 +9239,7 @@
   },
   {
    "id": "cisco",
-   "num": 48,
+   "num": 50,
    "title": "Cisco IOS Cheat Sheet",
    "sub": "Modes, help keys, output filters and every everyday IOS command, from first login to VLANs, routing, ACLs, NAT, DHCP and DNS, with examples",
    "part": "ref",
@@ -9490,7 +9759,7 @@
   },
   {
    "id": "wireshark-ref",
-   "num": 49,
+   "num": 51,
    "title": "Wireshark Cheat Sheet",
    "sub": "The window, both filter languages, the filters you will use most by protocol, shortcuts and tshark, with diagrams and corrections to common mistakes",
    "part": "ref",
@@ -9567,7 +9836,7 @@
   },
   {
    "id": "fixes",
-   "num": 50,
+   "num": 52,
    "title": "Fixes",
    "sub": "A problem-to-fix index for the errors you will actually hit on a Mac",
    "part": "ref",

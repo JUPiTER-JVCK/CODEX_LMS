@@ -1145,7 +1145,7 @@ var SIM = (function () {
   C.clear = function () { return { out: '\x1b[clear]' }; };
   C.exit = function () { return { out: '' }; };
   C.read = function (a, c) { var v = a.filter(function (x) { return x[0] !== '-'; })[0] || 'REPLY'; var l = c.in.split('\n')[0]; c.sh.vars[v] = l; return { code: c.in === '' ? 1 : 0 }; };
-  var BINP = { ping: '/sbin/ping', ifconfig: '/sbin/ifconfig', route: '/sbin/route', netstat: '/usr/sbin/netstat', arp: '/usr/sbin/arp', lsof: '/usr/sbin/lsof', traceroute: '/usr/sbin/traceroute', scutil: '/usr/sbin/scutil', ipconfig: '/usr/sbin/ipconfig', networksetup: '/usr/sbin/networksetup', nmap: '/opt/homebrew/bin/nmap', tree: '/opt/homebrew/bin/tree' };
+  var BINP = { ping: '/sbin/ping', ifconfig: '/sbin/ifconfig', route: '/sbin/route', netstat: '/usr/sbin/netstat', arp: '/usr/sbin/arp', lsof: '/usr/sbin/lsof', traceroute: '/usr/sbin/traceroute', scutil: '/usr/sbin/scutil', ipconfig: '/usr/sbin/ipconfig', networksetup: '/usr/sbin/networksetup', nmap: '/opt/homebrew/bin/nmap', wg: '/opt/homebrew/bin/wg', tree: '/opt/homebrew/bin/tree' };
   'ls cat cp mv rm mkdir rmdir echo pwd sleep date ps chmod ln sh kill test dd df'.split(' ').forEach(function (n) { BINP[n] = '/bin/' + n; });
   var BUILTIN = /^(cd|echo|pwd|export|alias|type|source|read|set|unset|history|exit|true|false|test|printf|command|which|\[|\[\[|setopt)$/;
   C.type = C.which = C.command = function (a, c) {
@@ -1679,6 +1679,39 @@ var SIM = (function () {
     if (/^\d+\.\d+\.\d+\.\d+$/.test(h)) { var nm = REV[h] || LAN[h]; return nm ? { out: h.split('.').reverse().join('.') + '.in-addr.arpa domain name pointer ' + nm + '.\n' } : { out: 'Host ' + h.split('.').reverse().join('.') + '.in-addr.arpa. not found: 3(NXDOMAIN)\n', code: 1 }; }
     var ip = resolve(h); if (!ip) return { out: 'Host ' + h + ' not found: 3(NXDOMAIN)\n', code: 1 };
     return { out: h + ' has address ' + ip + '\n' + (isLan(ip) ? '' : h + ' has IPv6 address 2606:2800:21f:cb07:6820:80da:af6b:8b2c\n' + h + ' mail is handled by 10 mail.' + h + '.\n') };
+  };
+  // VPN chapter: a canned WireGuard tunnel, so the practice terminal can run wg show and its script-friendly forms
+  var WGK = { me: '8n3mF0xqQ2s9Wk1pYb6L4cTzJd7VhE5oAuRgNiXwM0I=' };
+  var WGP = [
+    { key: 'Vv2rT9kQe4yHb0sZxJd1LmN6cUa8PfWoG3iEtXq7RhA=', ep: '203.0.113.7:51820', ips: '10.8.0.0/24, 192.168.1.0/24', ago: 72, rx: 5641134, tx: 32998400, ka: 25 },
+    { key: 'kP4wZ0tYb9xQe2sVv7LmN1cUa6HfRoG8iEtXq3JdBhA=', ep: '198.51.100.4:42011', ips: '10.8.0.3/32', ago: 7449, rx: 1229, tx: 3174 },
+    { key: 'Zq8nB3yTe6xWk1sVv5LmP2cUa9HfRoG4iEtXq7JdKhA=', ips: '10.8.0.4/32', ago: 0, rx: 0, tx: 0 }
+  ];
+  function wgBytes(n) { if (n < 1024) return n + ' B'; var u = ['KiB', 'MiB', 'GiB'], i = -1; do { n /= 1024; i++; } while (n >= 1024 && i < 2); return n.toFixed(2) + ' ' + u[i]; }
+  function wgAgo(sec) {
+    var parts = [], d = Math.floor(sec / 86400), h = Math.floor(sec % 86400 / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
+    [[d, 'day'], [h, 'hour'], [m, 'minute'], [s, 'second']].forEach(function (x) { if (x[0]) parts.push(x[0] + ' ' + x[1] + (x[0] === 1 ? '' : 's')); });
+    return parts.join(', ') + ' ago';
+  }
+  C.wg = function (a) {
+    var sub = a[0] || 'show';
+    if (sub === 'genkey' || sub === 'genpsk') { var k = ''; var al = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'; for (var i = 0; i < 43; i++) k += al[Math.floor(Math.random() * 64)]; return { out: k + '=\n' }; }
+    if (sub !== 'show') return { err: 'wg: the simulator knows only show, genkey and genpsk\n', code: 1 };
+    var ifc = a[1], field = a[2];
+    if (ifc === 'interfaces') return { out: 'utun4\n' };
+    if (ifc && ifc !== 'all' && ifc !== 'utun4' && ifc !== 'wg0') return { err: 'Unable to access interface: No such file or directory\n', code: 1 };
+    if (field === 'peers') return { out: WGP.map(function (p) { return p.key + '\n'; }).join('') };
+    if (field === 'transfer') return { out: WGP.map(function (p) { return p.key + '\t' + p.rx + '\t' + p.tx + '\n'; }).join('') };
+    if (field === 'latest-handshakes') { var now = Math.floor(NOW.getTime() / 1000); return { out: WGP.map(function (p) { return p.key + '\t' + (p.ago ? now - p.ago : 0) + '\n'; }).join('') }; }
+    if (field === 'endpoints') return { out: WGP.map(function (p) { return p.key + '\t' + (p.ep || '(none)') + '\n'; }).join('') };
+    if (field === 'allowed-ips') return { out: WGP.map(function (p) { return p.key + '\t' + p.ips.replace(/, /g, ' ') + '\n'; }).join('') };
+    if (field === 'listening-port') return { out: '58214\n' };
+    if (field === 'public-key') return { out: WGK.me + '\n' };
+    var o = 'interface: utun4\n  public key: ' + WGK.me + '\n  private key: (hidden)\n  listening port: 58214\n';
+    WGP.forEach(function (p) {
+      o += '\npeer: ' + p.key + '\n' + (p.ep ? '  endpoint: ' + p.ep + '\n' : '') + '  allowed ips: ' + p.ips + '\n' + (p.ago ? '  latest handshake: ' + wgAgo(p.ago) + '\n  transfer: ' + wgBytes(p.rx) + ' received, ' + wgBytes(p.tx) + ' sent\n' : '') + (p.ka ? '  persistent keepalive: every ' + p.ka + ' seconds\n' : '');
+    });
+    return { out: o };
   };
   C.scutil = function (a) {
     if (a[0] === '--dns') return { out: 'DNS configuration\n\nresolver #1\n  search domain[0] : lan\n  nameserver[0] : 192.168.1.1\n  if_index : 14 (en0)\n  flags    : Request A records\n  reach    : 0x00020002 (Reachable,Directly Reachable Address)\n\nresolver #2\n  domain   : local\n  options  : mdns\n  timeout  : 5\n  flags    : Request A records\n  order    : 300000\n' };
