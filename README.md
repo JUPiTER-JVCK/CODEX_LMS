@@ -1,12 +1,13 @@
 # CODEX_LMS
 
-A hands-on, book-style course for learning on a Mac: macOS Terminal (zsh), networking, Python, web development
+A hands-on, book-style course for learning on a Mac: macOS Terminal (zsh), networking (including VPNs and tunnels), Python, web development
 (HTML, CSS, JavaScript, DevTools, DOM, XML, Node.js), servers, APIs, encryption and cloud, and security
-(Wireshark packet analysis, hardening, log triage and incident response). It is one
+(Wireshark packet analysis, nmap scanning, hardening, log triage and incident response). It is one
 self-contained web page with runnable Python and JavaScript, a simulated terminal, interactive labs, exercises
 with automatic checks, quizzes and projects.
 
-- 51 chapters in 10 parts, 856 command cards, 272 exercises
+- 53 chapters in 10 parts, 868 command cards, 284 exercises
+- A VPNs and Tunnels chapter in the Networking part (WireGuard, IPsec/IKEv2, OpenVPN, MTU, leaks) and an Nmap chapter in the Security part (scan types, host discovery, version and OS detection, NSE, ndiff, the defender's view), each with interactive diagrams
 - A Cisco IOS cheat sheet in the Reference part: modes, help keys, output filters, 69 IOS command cards with examples, and a DHCP & DNS lab infographic
 - Python runs in the browser (Pyodide); JavaScript runs in a sandbox with a built-in practice REST API
 - Light, dark and system themes; works on phones
@@ -64,6 +65,26 @@ respect reduced-motion settings.
 | How long to guess it? | Encryption, passwords | entropy vs fast and slow hashes |
 | Decode, forge, verify a JWT | APIs | the payload is readable; editing it breaks the signature |
 
+## VPN and nmap diagrams
+
+The VPNs and Tunnels chapter (Networking, after Remote Access with SSH) and the Nmap chapter (Security, after Wireshark) each carry five interactive diagrams, drawn as theme-aware SVG and HTML in `src/ws-9-vpn.js`
+and `src/ws-9-nmap.js`. Message sequences share one step-through component, `src/ws-9-seq.js`.
+
+| Diagram | Where you find it | What it shows |
+|---|---|---|
+| Who can see what | VPNs, what a VPN is for | no VPN, full tunnel, split tunnel and site-to-site: what is on each link, and what the café, the ISP, the VPN operator and the site can learn; HTTPS vs HTTP; a DNS leak |
+| Tunnel overhead and MTU | VPNs, overhead | WireGuard, IPsec ESP, OpenVPN and GRE headers drawn to scale; the tunnel MTU, TCP MSS and `ping -D -s` size; what happens when a packet is too big |
+| Cryptokey routing | VPNs, WireGuard | edit `AllowedIPs` and see which peer a packet goes to, which source addresses are accepted, and what happens when two peers claim a range |
+| Handshakes | VPNs, setting up a tunnel | WireGuard, IKEv2 and OpenVPN as step-through message sequences with the Wireshark filter for each |
+| Which VPN fits? | VPNs, choosing | three questions rank eight protocols |
+| Read an nmap command | Nmap, what nmap does | type a command: which of the eleven phases run, what each flag does, who must be root, probe count, scope check |
+| Host discovery | Nmap, host discovery | ARP, ICMP and TCP probes by privilege and distance |
+| One probe, one reply | Nmap, port states | 28 combinations of scan type and port condition, packet by packet, with the `--packet-trace` lines and the verdict |
+| Exposure map | Nmap, reading a result | the lab's `scan.txt` as a host-by-port grid, with the risk and the fix for each open port |
+| NSE categories | Nmap, scripting engine | 14 categories with real script counts, risk and examples |
+
+`wg show` is simulated in the practice terminal, so the VPN chapter's parsing exercises can be tried without a tunnel.
+
 ## Reference figures
 
 Diagrams drawn on the same monospace grid, each placed in the section it illustrates (`tools/add_figures.py`; the APIs one is in
@@ -119,6 +140,8 @@ tests for `CodexCore` (table of contents, saved progress, search) on macOS or Li
 | `src/ws-1..4-*.js`, `src/srv.add.css` | labs for chapters 38-41 |
 | `src/ws-5-pcap.js`, `ws-6-pcapcols.js`, `ws-7-pktlab.js`, `ws-8-triage.js`, `src/sec.add.css` | the Wireshark packet lab and the log-triage drill for chapters 42-43; `ws-5-pcap.js` is the packet engine (encoder, dissector, display-filter engine) |
 | `src/ws-labs.js`, `src/labs.add.css` | the 19 newer labs (**generated** from `packages/labs`) and their styles |
+| `chapters/ch_8_vpn.py`, `chapters/ch_8_nmap.py` | the VPNs and Tunnels chapter (`18a-vpn.gm`, Networking) and the Nmap chapter (`42a-nmap.gm`, Security) |
+| `src/ws-9-vpn.js`, `src/ws-9-nmap.js`, `src/ws-9-seq.js`, `src/vpn.add.css`, `src/nmap.add.css`, `src/seq.add.css` | their diagrams and labs; `ws-9-seq.js` is the shared step-through sequence diagram |
 | `chapters/ch_7_wsref.py`, `src/ws-9-wsref.js`, `src/wsref.add.css` | the Wireshark Cheat Sheet in the Reference part and its pictures (window, filter pipeline, layers, TCP conversation, flags byte), drawn as theme-aware SVG |
 | `tools/pcapgen.js`, `tools/pcapcols.py` | write the lab captures as real `.pcap` files, and bake Wireshark's own column text into `src/ws-6-pcapcols.js` |
 | `src/sim.js`, `src/sbsrc.js` | simulated zsh, and the sandbox injected into every JavaScript playground |
@@ -131,6 +154,7 @@ tests for `CodexCore` (table of contents, saved progress, search) on macOS or Li
 | `tools/add_figures.py` | places the reference figures (ASCII diagrams with a lead-in) inside their chapters, the same way |
 | `tools/lint_ascii.py`, `tools/fix_ascii.py` | find, and safely re-align, drifting box diagrams |
 | `test/blocks.py`, `test/labs.py`, `test/ascii.py`, `test/theme.py` | browser tests: runnable blocks and exercises, every lab, diagram rendering, theme switch |
+| `test/netviz.py`, `test/netfilters.py` | the VPN and nmap diagrams (clicks, arithmetic, themes, phone width), and every filter and NSE script the two chapters name checked against real `tshark`, libpcap and nmap |
 | `test/pcapfilters.py` | checks the Wireshark lab's display-filter engine against real `tshark` on the same captures |
 | `test/wsref_filters.py` | compiles every filter on the Wireshark cheat sheet with real `tshark` and libpcap, and checks that the filters it calls wrong are really rejected |
 | `dist/` | the built site: `index.html`, `toc.json` (contents for the Apple app) and the Python runtime in `py/` |
@@ -167,14 +191,16 @@ and Node 20.19+ for the labs.
     python3 tools/chapters.py      # chapters/*.py -> data/new/*.json
     python3 tools/build.py         # -> dist/index.html, dist/toc.json (and pub.html for the Claude artifact host)
     (cd dist && python3 -m http.server 8765 &)
-    python3 test/blocks.py servers apis crypto cloud wireshark defend
+    python3 test/blocks.py servers apis crypto cloud wireshark defend vpn nmap
     python3 test/labs.py           # every lab: placement, interaction, no console errors
+    python3 test/netviz.py         # the VPN and nmap diagrams
     python3 test/ascii.py          # diagrams and command output on a monospace grid (--hinting mimics a Linux CI renderer)
     python3 test/theme.py          # System / Light / Dark button, persistence, live OS changes
     python3 test/offline.py        # the page makes no request outside itself; the bundled fonts load
     python3 test/bundle.py FILE    # the single file: as a page, with Python, and under node
     python3 tools/lint_ascii.py    # box borders that do not line up
     python3 test/pcapfilters.py    # needs node and tshark (apt install tshark, or brew install wireshark)
+    python3 test/netfilters.py     # needs tshark and nmap (apt install tshark nmap)
 
     npm install
     npm test                       # logic behind the labs

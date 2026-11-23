@@ -2,6 +2,7 @@
 "034fb17870aa5c7d": "A and B fit in 127 bits: True\nsame secret on both sides: True",
 "0ceefbaf929a221f": "GET /health -> 200 OK {\"status\": \"ok\"}\nPOST /health -> 405 Method Not Allowed {\"error\": \"use GET\"}\nGET /missing -> 404 Not Found {\"error\": \"no route for /missing\"}",
 "169373e900012c89": "base64: aHVudGVyMg== -> hunter2\nsha256: f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7\nsha256 of a 1 MB file is still 64 hex characters",
+"1de744cb9f7f9c74": "192.168.1.50:22/tcp  ssh           OpenSSH 9.2p1\n192.168.1.50:80/tcp  http          nginx 1.22.1\n192.168.1.60:22/tcp  ssh           OpenSSH 8.4\n192.168.1.60:445/tcp  microsoft-ds",
 "21385891876e13f3": "{'statusCode': 200, 'headers': {'Content-Type': 'application/json'}, 'body': '{\"message\": \"hello, lab\", \"path\": \"/hello\"}'}\n{\"message\": \"hello, world\", \"path\": \"/hello\"}\n400",
 "268b886893edb752": "{ alg: 'HS256', typ: 'JWT' }\n{ sub: 'learner', role: 'admin', exp: 1795000000 }\nexpires 2026-11-18T11:06:40.000Z\nsignature bytes: 21 (meaningless until a server verifies them)",
 "2b7c2f0d3ed4643b": "public-a   10.20.0.0/20     4091 usable\npublic-b   10.20.16.0/20    4091 usable\nprivate-a  10.20.64.0/20    4091 usable\nprivate-b  10.20.80.0/20    4091 usable\ndata-a     10.20.128.0/20   4091 usable\ndata-b     10.20.144.0/20   4091 usable\nspare /20 blocks for later: 10\noverlaps home LAN 192.168.1.0/24? False",
