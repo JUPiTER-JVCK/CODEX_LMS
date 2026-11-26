@@ -178,6 +178,93 @@ def PROJECT(id, title, level, time, skills, *blocks):
     return {'t': 'project', 'id': id, 'title': title, 'level': level, 'time': time, 'skills': list(skills), 'blocks': bl, 'line': _ln()}
 
 
+def STEP(title, py, js, notes=None, error_js='', allow_error=False):
+    """The code stepper: a short program in Python and JavaScript, stepped one line at a time (see chapters/codetrace.py).
+
+    py and js are the same program written line for line. notes maps a Python line number to the sentence shown while
+    that line is about to run; {name} in a note is replaced by the value of that variable at that moment, {n} by how many
+    times the line has run so far. The key 'end' is the note for the last step, ('ret', line) the note for a function
+    handing back its answer.
+    """
+    import re as _re
+    from codetrace import trace_python, js_line_map
+    py, js = d(py), d(js)
+    tr = trace_python(py, allow_error=allow_error)
+    visits = {}
+    notes = notes or {}
+
+    def plain(v):
+        if isinstance(v, dict) and 's' in v:
+            return v['s']
+        if isinstance(v, dict) and 'f' in v:
+            return repr(v['f'])
+        if isinstance(v, bool):
+            return 'true' if v else 'false'
+        return str(v)
+    steps = tr['steps']
+    for i, s in enumerate(steps):
+        ln = s['ln']
+        visits[ln] = visits.get(ln, 0) + 1
+        key = ('ret', ln) if s.get('k') == 'ret' else ('end' if ln == 0 else ln)
+        text = notes.get(key)
+        if text is None and s.get('k') != 'ret' and ln:
+            text = notes.get(ln)
+        if not text:
+            continue
+        # {name} means the value the line is about to give it, so look in the next step first, then in this one
+        here = s['st'][-1] if s['st'] else {'fn': 'global', 'v': {}}
+        after = steps[i + 1]['st'] if i + 1 < len(steps) else []
+        scopes = [f['v'] for f in reversed(after) if f['fn'] == here['fn']] + [here['v']] + [f['v'] for f in reversed(s['st'])]
+
+        def sub(m, n=visits[ln], scopes=scopes):
+            k = m.group(1)
+            if k == 'n':
+                return str(n)
+            for sc in scopes:
+                if k in sc:
+                    return plain(sc[k])
+            return m.group(0)
+        s['nt'] = _re.sub(r'\{([A-Za-z_]\w*)\}', sub, text)
+    args = {'title': title, 'py': py, 'js': js, 'jm': js_line_map(py, js), 'steps': tr['steps']}
+    if error_js:
+        args['err_js'] = error_js
+    return {'t': 'widget', 'name': 'codestep', 'args': args, 'line': _ln()}
+
+
+def TRY(title, py, js):
+    """Two editable, runnable versions of one small program. Both must print the same thing (test/code_pairs.py)."""
+    from codetrace import trace_python
+    py, js = d(py), d(js)
+    out = trace_python(py)['out'].rstrip('\n')
+    return {'t': 'widget', 'name': 'codetry', 'args': {'title': title, 'py': py, 'js': js, 'out': out}, 'line': _ln()}
+
+
+def BITGRID(id, title, goal, grid, win, py, js, sol_py, sol_js, hint='', tools=None, energy=None, more=()):
+    """Bit's grid world: write Python or JavaScript, press Run, watch Bit act it out (src/ws-code-d-grid.js).
+
+    grid rows: # wall  . floor  G goal pad  D dock  B battery  P parcel  and exactly one of ^ > v < for Bit and the way it faces.
+    win: {'at': 'G'|'D', 'collect': 'all'|n, 'deliver': 'all'|n, 'says': [text], 'minEnergy': n, 'maxLines': n}
+    tools: which commands the reference lists (name prefixes: move turn front onb onp ond ong take put battery say)
+    more: further maps (same format) the same program must also solve; the learner can switch between them and press "Check all maps"
+    """
+    def rows_of(text):
+        rows = [r.rstrip() for r in d(text).split('\n')]
+        assert len({len(r) for r in rows}) == 1, 'grid rows must all be the same length: ' + id
+        assert sum(r.count(c) for r in rows for c in '^>v<') == 1, 'grid needs exactly one of ^ > v < : ' + id
+        assert all(c in '#.GDBP^>v<' for r in rows for c in r), 'unknown grid character: ' + id
+        return rows
+    rows = rows_of(grid)
+    a = {'id': id, 'title': title, 'goal': goal, 'grid': rows, 'win': win, 'py': d(py), 'js': d(js), 'sol_py': d(sol_py), 'sol_js': d(sol_js),
+         'tools': tools or ['move', 'turn']}
+    if hint:
+        a['hint'] = hint
+    if energy is not None:
+        a['energy'] = energy
+    if more:
+        a['more'] = [rows_of(m) for m in more]
+    return {'t': 'widget', 'name': 'bitgrid', 'args': a, 'line': _ln()}
+
+
 def chapter(id, title, sub, after, time, goals, blocks, terms, level='intermediate', part='srv', file=None):
     return {'id': id, 'title': title, 'sub': sub, 'part': part, 'num': '', 'time': time, 'level': level, 'goals': goals,
             'file': file or (id + '.gm'), 'blocks': blocks, 'terms': [{'term': a, 'def': b, 'line': _ln()} for a, b in terms], 'after': after}

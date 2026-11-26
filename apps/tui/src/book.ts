@@ -17,7 +17,7 @@ export interface Book {
 }
 
 const DEFAULT_PARTS: [string, string][] = [
-  ["start", "Start here"], ["found", "Foundations"], ["zsh", "The shell (zsh)"], ["net", "Networking"], ["py", "Python"],
+  ["start", "Start here"], ["found", "Foundations"], ["code", "Learn to Code"], ["zsh", "The shell (zsh)"], ["net", "Networking"], ["py", "Python"],
   ["web", "Web development"], ["srv", "Servers, APIs & Cloud"], ["sec", "Security"], ["proj", "Projects"], ["ref", "Reference"],
 ];
 
