@@ -106,6 +106,18 @@ with sync_playwright() as p:
     bg.get_by_role('button', name='▶ Run').click()
     bg.locator('.cxg-msg.bad').wait_for(timeout=30000)
     check('bumped into a wall' in bg.locator('.cxg-res').inner_text(), 'a crash is explained')
+    # ---- a phone-sized screen: nothing sticks out, in either theme ----
+    pg.set_viewport_size({'width': 390, 'height': 800})
+    for theme in ('light', 'dark'):
+        pg.evaluate("t => document.documentElement.setAttribute('data-theme', t)", theme)
+        for cid in chapters:
+            pg.goto('http://localhost:8765/index.html#' + cid)
+            pg.wait_for_timeout(300)
+            pg.evaluate("window.__code.lang.set('both')")
+            wide = pg.evaluate("""() => [...document.querySelectorAll('.cxs, .cxt, .cxg')].filter(e => e.getBoundingClientRect().right > innerWidth + 1).length""")
+            page = pg.evaluate("document.documentElement.scrollWidth - innerWidth")
+            check(wide == 0, '%s (%s, 390px): %d widgets are wider than the screen' % (cid, theme, wide))
+            check(page <= 1, '%s (%s, 390px): the page scrolls sideways by %dpx' % (cid, theme, page))
     b.close()
 print('%d missions, %d steppers, %d paired editors; page errors: %s; problems: %d' % (nmissions, nsteps, ntries, errs, bad))
 sys.exit(1 if (bad or errs) else 0)
