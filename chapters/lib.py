@@ -178,12 +178,22 @@ def PROJECT(id, title, level, time, skills, *blocks):
     return {'t': 'project', 'id': id, 'title': title, 'level': level, 'time': time, 'skills': list(skills), 'blocks': bl, 'line': _ln()}
 
 
+def LOOP(first, again, done, body):
+    """A note for a loop's header line: `first` on the first visit, `again` when the body is about to run, `done` when the loop is over."""
+    def note(c):
+        if c['n'] == 1 and c['next'] == body:
+            return first
+        return again if c['next'] == body else done
+    return note
+
+
 def STEP(title, py, js, notes=None, error_js='', allow_error=False):
     """The code stepper: a short program in Python and JavaScript, stepped one line at a time (see chapters/codetrace.py).
 
     py and js are the same program written line for line. notes maps a Python line number to the sentence shown while
     that line is about to run; {name} in a note is replaced by the value of that variable at that moment, {n} by how many
-    times the line has run so far. The key 'end' is the note for the last step, ('ret', line) the note for a function
+    times the line has run so far. A note may also be a list (one sentence per visit to the line, the last repeating) or a
+    function of {'n': visit number, 'next': the line that runs next}, which is how a loop header says "again" or "done". The key 'end' is the note for the last step, ('ret', line) the note for a function
     handing back its answer.
     """
     import re as _re
@@ -209,6 +219,11 @@ def STEP(title, py, js, notes=None, error_js='', allow_error=False):
         text = notes.get(key)
         if text is None and s.get('k') != 'ret' and ln:
             text = notes.get(ln)
+        if isinstance(text, (list, tuple)):          # one sentence per visit to the line; the last one repeats
+            text = text[min(visits[ln], len(text)) - 1]
+        elif callable(text):                         # a function of what is happening: {'n': visit, 'next': next line, 'v': values}
+            nxt = steps[i + 1]['ln'] if i + 1 < len(steps) else 0
+            text = text({'n': visits[ln], 'next': nxt})
         if not text:
             continue
         # {name} means the value the line is about to give it, so look in the next step first, then in this one
