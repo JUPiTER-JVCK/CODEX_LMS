@@ -149,7 +149,7 @@ export class InputParser {
     if (fin === "u") { // kitty / CSI-u: code point and modifiers
       const cp = params[0] ?? 0;
       const m = modsOf(params[1]);
-      const ch = cp === 13 ? "enter" : cp === 9 ? "tab" : cp === 27 ? "escape" : cp === 127 ? "backspace" : String.fromCodePoint(cp);
+      const ch = cp === 13 ? "enter" : cp === 9 ? "tab" : cp === 27 ? "escape" : cp === 127 ? "backspace" : cp === 32 ? "space" : String.fromCodePoint(cp);
       out.push(key(ch, m, cp >= 32 && cp !== 127 ? String.fromCodePoint(cp) : undefined));
       return len;
     }

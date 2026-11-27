@@ -48,7 +48,8 @@ export function clipWidth(s: string, max: number): string {
 export function ellipsize(s: string, max: number): string {
   if (max <= 0) return "";
   if (strWidth(s) <= max) return s;
-  return clipWidth(s, Math.max(0, max - 1)) + "…";
+  // No space before the ellipsis: "How This Book …" reads as a gap, "How This Book…" as a cut.
+  return clipWidth(s, Math.max(0, max - 1)).replace(/\s+$/, "") + "…";
 }
 
 export function padEnd(s: string, w: number): string {

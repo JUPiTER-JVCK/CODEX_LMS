@@ -14,7 +14,7 @@ import { SAMPLE_SECRET, b64urlEncode, decodeToken, makeToken, sampleToken, utf8 
 import { SAMPLES, dissect, hexToBytes } from "@codex/widgets";
 import { register } from "./labs.ts";
 import { chip, frame, input } from "./lablib.ts";
-import { editField, field } from "./textedit.ts";
+import { editFieldEx, field } from "./textedit.ts";
 import { ellipsize, strWidth, type Style } from "./text.ts";
 import { rect } from "./ui.ts";
 
@@ -32,7 +32,7 @@ register("pathlookup", {
     r.steps.forEach((s, k) => T(c, i.x, i.y + 2 + k, `${s.winner ? "▶" : " "} ${s.dir.padEnd(34)} ${s.winner ? "found here: this one runs" : s.shadowed ? "also here, but shadowed" : s.hit ? "" : "not here"}`, { fg: s.winner ? "ok" : s.shadowed ? "warn" : "mute", b: s.winner }));
     T(c, i.x, i.y + 3 + r.steps.length, r.found ? `result: ${r.found}` : "command not found", { fg: r.found ? "ok" : "bad", b: true });
   },
-  key: (e, st) => editField(st.f, e),
+  key: (e, st) => editFieldEx(st.f, e).handled,
 });
 
 // ---- semver ----
@@ -46,7 +46,7 @@ register("semver", {
     if (!info.ok) T(c, i.x, i.y + 2, info.error ?? "not a valid range", { fg: "warn" });
     SAMPLE_VERSIONS.forEach((v, k) => { const ok = info.ok && satisfies(v, st.f.text.trim()); T(c, i.x, i.y + 3 + k, `${ok ? "✓" : "✗"} ${v}`, { fg: ok ? "ok" : "dim", b: ok }); });
   },
-  key: (e, st) => editField(st.f, e),
+  key: (e, st) => editFieldEx(st.f, e).handled,
 });
 
 // ---- password cracking time ----
@@ -88,7 +88,7 @@ register("avalanche", {
     T(c, i.x, i.y + 5, `${r.diff} of 256 bits differ (${r.pct}%). Ideal is about 50%.`, { fg: r.diff > 100 ? "ok" : "warn", b: true });
     for (let row = 0; row < 8; row++) { let s = ""; for (let k = 0; k < 32; k++) s += r.changed[row * 32 + k] ? "█" : "·"; T(c, i.x, i.y + 7 + row, s, { fg: "accent" }); }
   },
-  key(e, st) { if (e.key === "tab") { st.which = 1 - st.which; return true; } return editField(st.which ? st.b : st.a, e); },
+  key(e, st) { if (e.key === "tab") { st.which = 1 - st.which; return true; } return editFieldEx(st.which ? st.b : st.a, e).handled; },
 });
 
 // ---- TTL and traceroute ----

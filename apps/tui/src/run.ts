@@ -38,7 +38,7 @@ export async function runInteractive(book: Book, o: RunOptions): Promise<number>
   const store = new Store(o.state ?? statePath());
   let quitting = false;
   const app = new App(book, store, { copy: (t) => clipboard(term, t), quit: () => quit() }, {
-    cols: term.cols, rows: term.rows, theme: o.theme, splash: o.splash,
+    cols: term.cols, rows: term.rows, theme: o.theme, splash: o.splash, colorMode: term.colorMode,
   });
   const quit = () => {
     if (quitting) return;
@@ -68,7 +68,10 @@ export async function runInteractive(book: Book, o: RunOptions): Promise<number>
   };
   const request = () => { if (!queued) { queued = true; setImmediate(() => draw()); } };
 
-  term.on((e) => { app.handle(e); request(); });
+  term.on((e) => {
+    if (e.type === "focus") { if (e.focused) draw(true); return; } // back from another tmux pane or window: repaint everything
+    if (app.handle(e)) request();                                     // a pointer moving over nothing needs no frame
+  });
   term.onResize(() => { app.resize(term.cols, term.rows); draw(true); });
   process.on("SIGCONT", () => draw(true));
   draw(true);

@@ -74,6 +74,8 @@ const CALLOUT: Record<string, { icon: string; label: string; fg: string }> = {
   mac: { icon: "⌘", label: "On your Mac", fg: "an5" }, warn: { icon: "▲", label: "Warning", fg: "warn" }, danger: { icon: "✖", label: "Danger", fg: "bad" },
   note: { icon: "●", label: "Note", fg: "mute" }, why: { icon: "?", label: "Why", fg: "an1" }, deep: { icon: "◆", label: "Going deeper", fg: "an5" },
 };
+/** Prose (paragraphs, list items) never runs wider than this, however wide the window is; code, tables and diagrams keep the full width. */
+export const PROSE_W = 80;
 const CHIPS = ["an1", "an2", "an3", "an4", "an5", "an6", "an7", "an8"];
 
 const txt = (t: string, st: Style = {}): Span => ({ t, ...st });
@@ -104,7 +106,7 @@ function boxed(inner: DocLine[], w: number, color: string, title: Span[], right:
 }
 
 function paragraph(b: Block, w: number, ctx: LayoutCtx, B: Builder, base: Style = { fg: "fg" }) {
-  for (const l of wrapSpans(inline(b.text, ctx.vars, base), w)) B.push({ spans: l });
+  for (const l of wrapSpans(inline(b.text, ctx.vars, base), Math.min(w, PROSE_W))) B.push({ spans: l });
 }
 
 function listLines(items: any[], ordered: boolean, w: number, ctx: LayoutCtx, B: Builder, depth: number) {
@@ -113,7 +115,7 @@ function listLines(items: any[], ordered: boolean, w: number, ctx: LayoutCtx, B:
     const bullet = ordered ? `${i + 1}.` : depth ? "◦" : "•";
     const pre = spaces(depth * 2) + bullet + " ";
     const pw = strWidth(pre);
-    wrapSpans(inline(text, ctx.vars, { fg: "fg" }), Math.max(8, w - pw)).forEach((l, j) =>
+    wrapSpans(inline(text, ctx.vars, { fg: "fg" }), Math.max(8, Math.min(w, PROSE_W) - pw)).forEach((l, j) =>
       B.push({ spans: [txt(j === 0 ? pre : spaces(pw), { fg: "accent" }), ...l] }));
     if (typeof it !== "string" && it.children?.length) listLines(it.children, false, w, ctx, B, depth + 1);
   });
@@ -175,7 +177,7 @@ function cmdCard(b: Block, w: number, ctx: LayoutCtx, B: Builder, key: string) {
 function tableBlock(b: Block, w: number, ctx: LayoutCtx, B: Builder) {
   const head: string[] = b.head, rows: string[][] = b.rows, cols = head.length;
   B.gap();
-  if (b.title) B.push({ spans: [txt(b.title, { fg: "mute", b: true })] });
+  if (b.title) for (const l of wrapSpans([txt(b.title, { fg: "mute", b: true })], w)) B.push({ spans: l });
   const cell = (s: string, hd: boolean): Span[] => inline(s, ctx.vars, hd ? { fg: "accent", b: true } : { fg: "fg" });
   const avail = w - (cols + 1) - 2 * cols;
   if (avail < cols * 7) { // too narrow for a grid: one small card per row
@@ -399,23 +401,36 @@ function block(b: Block, w: number, ctx: LayoutCtx, B: Builder, key: string) {
   }
 }
 
+/** Lay short labels out in as few lines as fit `w`, breaking only between labels (never inside one). */
+export function flowLabels(labels: string[], w: number, sep: string): string[] {
+  const lines: string[] = [];
+  let cur = "";
+  for (const l of labels) {
+    if (!cur) cur = ellipsize(l, w);
+    else if (strWidth(cur + sep + l) <= w) cur += sep + l;
+    else { lines.push(cur); cur = ellipsize(l, w); }
+  }
+  if (cur) lines.push(cur);
+  return lines;
+}
+
 export function layoutChapter(c: Chapter, ctx: LayoutCtx): Doc {
   const w = Math.max(24, ctx.width);
   const B = new Builder();
   // header
   const ids = itemIds(c);
   const done = ids.filter((i) => ctx.isDone(i)).length;
-  const meta = [c.num >= 0 ? `CHAPTER ${String(c.num).padStart(2, "0")}` : "TOOLS", ctx.partTitle?.toUpperCase(), c.time ? `${c.time} MIN` : "", c.level?.toUpperCase()].filter(Boolean).join("  ·  ");
+  const meta = flowLabels([c.num >= 0 ? `CHAPTER ${String(c.num).padStart(2, "0")}` : "TOOLS", ctx.partTitle?.toUpperCase() ?? "", c.time ? `${c.time} MIN` : "", c.level?.toUpperCase() ?? ""].filter(Boolean), w, w >= 60 ? "  ·  " : " · ");
   B.push({ spans: [] });
-  B.push({ spans: [txt(meta, { fg: "dim", b: true })] });
+  for (const m of meta) B.push({ spans: [txt(m, { fg: "dim", b: true })] });
   for (const l of wrapSpans([txt(c.title, { fg: "fg", b: true })], w)) B.push({ spans: l });
-  for (const l of wrapSpans([txt(c.sub || "", { fg: "mute" })], w)) B.push({ spans: l });
+  for (const l of wrapSpans([txt(c.sub || "", { fg: "mute" })], Math.min(w, PROSE_W))) B.push({ spans: l });
   B.push({ spans: [txt("━".repeat(Math.min(w, 16)), { fg: "accent" })] });
   if (ids.length) B.push({ spans: [txt(`${done}/${ids.length} practice items done`, { fg: done === ids.length ? "ok" : "dim" })] });
   if (c.goals.length) {
     B.gap();
     B.push({ spans: [txt("In this chapter", { fg: "dim", b: true })] });
-    for (const g of c.goals) wrapSpans(inline(g, ctx.vars, { fg: "fg" }), w - 2).forEach((l, j) => B.push({ spans: [txt(j === 0 ? "› " : "  ", { fg: "accent" }), ...l] }));
+    for (const g of c.goals) wrapSpans(inline(g, ctx.vars, { fg: "fg" }), Math.min(w, PROSE_W) - 2).forEach((l, j) => B.push({ spans: [txt(j === 0 ? "› " : "  ", { fg: "accent" }), ...l] }));
   }
   c.blocks.forEach((b, i) => block(b, w, ctx, B, c.id + ":" + i));
   if (c.terms.length) {

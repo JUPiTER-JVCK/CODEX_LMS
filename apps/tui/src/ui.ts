@@ -1,7 +1,7 @@
 // Immediate-mode drawing: a painter that resolves theme tokens, and a hit map rebuilt every frame.
 
 import { Screen, A_BOLD, A_DIM, A_INV, A_ITALIC, A_UNDER } from "./screen.ts";
-import { type Theme } from "./theme.ts";
+import { mix, type Theme } from "./theme.ts";
 import { type Span, type Style, strWidth } from "./text.ts";
 
 export interface Rect { x: number; y: number; w: number; h: number }
@@ -93,6 +93,25 @@ export class Painter {
       const i = y * this.scr.w + x;
       this.scr.at[i] |= attrs;
       if (bg) this.scr.bg[i] = rgb;
+    }
+  }
+
+  /** A text cursor: the cell under it, inverted, so it shows with any colour depth (and with none). */
+  cursor(x: number, y: number, ch = " ") { this.text(x, y, ch, { inv: true }); }
+
+  /**
+   * Push what is already drawn in `r` into the background (a scrim behind a dialog or an open drawer):
+   * text colours move toward their own background; where colour is unavailable `attr` adds the dim attribute instead.
+   */
+  dim(r: Rect, t = 0.6, attr = false) {
+    const c = this.clip;
+    const x0 = Math.max(c.x, r.x), y0 = Math.max(c.y, r.y);
+    const x1 = Math.min(c.x + c.w, r.x + r.w), y1 = Math.min(c.y + c.h, r.y + r.h);
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+      const i = y * this.scr.w + x;
+      const f = this.scr.fg[i], b = this.scr.bg[i];
+      if (f >= 0 && b >= 0) this.scr.fg[i] = mix(f, b, t);
+      if (attr) this.scr.at[i] |= A_DIM;
     }
   }
 

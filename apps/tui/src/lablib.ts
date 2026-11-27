@@ -8,7 +8,7 @@ import { CRON_PRESETS, explain, nextRuns } from "@codex/widgets";
 import { TIERS, scaled } from "@codex/widgets";
 import { subnetFromCidr } from "@codex/widgets";
 import { register, type LabCtx } from "./labs.ts";
-import { editField, field, type TextField } from "./textedit.ts";
+import { editFieldEx, field, type TextField } from "./textedit.ts";
 import { ellipsize, strWidth, type Style } from "./text.ts";
 import { rect, type Rect } from "./ui.ts";
 import { A_UNDER } from "./screen.ts";
@@ -39,7 +39,7 @@ export function chip(c: LabCtx, x: number, y: number, label: string, id: string,
 export function input(c: LabCtx, x: number, y: number, w: number, f: TextField) {
   c.p.fill(rect(x, y, w, 1), "codeBg");
   c.p.text(x + 1, y, ellipsize(f.text, w - 2), { fg: "fg", bg: "codeBg" });
-  if (c.focus) c.p.text(x + 1 + strWidth(f.text.slice(0, f.cur)), y, f.text[f.cur] ?? " ", { fg: "accentInk", bg: "accent" });
+  if (c.focus) c.p.cursor(x + 1 + strWidth(f.text.slice(0, f.cur)), y, f.text[f.cur] ?? " ");
 }
 
 const bitChip = (b: number) => (b ? " 1 " : " 0 ");
@@ -146,7 +146,7 @@ register("utf8", {
       c.p.text(i.x + 18, y, ellipsize(ch.bin.join(" ") + "  (" + ch.bytes.map((b) => b.toString(16).padStart(2, "0")).join(" ") + ")", i.w - 18), { fg: "mute", bg: "panel" });
     });
   },
-  key(e, st, ctl) { if (editField(st.f, e)) { ctl.relayout(); return true; } return false; },
+  key(e, st, ctl) { const r = editFieldEx(st.f, e); if (r.changed) ctl.relayout(); return r.handled; },
 });
 
 // ---- cron ----
@@ -163,7 +163,7 @@ register("cron", {
     let x = i.x + 30;
     CRON_PRESETS.slice(0, 4).forEach(([e, l], k) => { if (x + strWidth(l) + 3 < i.x + i.w) x = chip(c, x, i.y + 5 + k, l, "c" + k, () => { st.f = field(e); }); });
   },
-  key(e, st) { return editField(st.f, e); },
+  key(e, st) { return editFieldEx(st.f, e).handled; },
 });
 
 // ---- latency ladder ----
@@ -201,5 +201,5 @@ register("subnet", {
     c.p.text(i.x + strWidth(dot(net, 0)) + (s.prefix % 8 === 0 && s.prefix < 32 ? 1 : 0), i.y + 8, dot(host, s.prefix).replace(/^\./, ""), { fg: "warn", bg: "panel", b: true });
     c.p.text(i.x, i.y + 9, `${s.networkBits} network bits (blue), ${s.hostBits} host bits (amber)`, { fg: "dim", bg: "panel" });
   },
-  key(e, st) { return editField(st.f, e); },
+  key(e, st) { return editFieldEx(st.f, e).handled; },
 });
