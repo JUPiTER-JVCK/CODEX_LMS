@@ -4,10 +4,11 @@ import { InputParser, type InputEvent } from "./input.ts";
 import { detectColorMode, type ColorMode } from "./theme.ts";
 import { StringDecoder } from "node:string_decoder";
 
-const ENTER = "\x1b[?1049h\x1b[?25l\x1b[?7l\x1b[?2004h\x1b[?1004h";
+// \x1b[22;0t / \x1b[23;0t save and restore the window title, so quitting does not leave "CODEX_LMS" in the tab.
+const ENTER = "\x1b[22;0t\x1b[?1049h\x1b[?25l\x1b[?7l\x1b[?2004h\x1b[?1004h";
 const MOUSE_ON = "\x1b[?1000h\x1b[?1002h\x1b[?1003h\x1b[?1006h";
 const MOUSE_OFF = "\x1b[?1006l\x1b[?1003l\x1b[?1002l\x1b[?1000l";
-const LEAVE = "\x1b[0m\x1b[?1004l\x1b[?2004l\x1b[?7h\x1b[?25h\x1b[?1049l";
+const LEAVE = "\x1b[0m\x1b[?1004l\x1b[?2004l\x1b[?7h\x1b[?25h\x1b[?1049l\x1b[23;0t";
 
 export interface TermOptions { mouse: boolean; title?: string }
 

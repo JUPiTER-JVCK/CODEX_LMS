@@ -95,8 +95,17 @@ test("mouse: the wheel scrolls the reader, shift+wheel pans diagrams", () => {
   assert.equal(app.scroll, 6);
   send("\x1b[<64;80;20M");
   assert.equal(app.scroll, 3);
+  // a chapter with a diagram wider than the page (which chapter that is depends on the book, so look for one)
+  const wide = book.chapters.find((c) => { app.go(c.id); return (app as any).maxPan() > 0; });
+  assert.ok(wide, "some chapter has a diagram wider than the page");
+  const room = (app as any).maxPan() as number;
+  app.render();
   send("\x1b[<69;80;20M"); // shift+wheel down
-  assert.equal(app.hscroll, 8);
+  assert.equal(app.hscroll, Math.min(8, room));
+  for (let i = 0; i < 400; i++) send("\x1b[<69;80;20M");
+  assert.equal(app.hscroll, room, "panning stops where the widest diagram ends, instead of sliding into blank space");
+  send("\x1b[<68;80;20M");
+  assert.equal(app.hscroll, Math.max(0, room - 8));
 });
 
 test("mouse: clicking a chapter in the sidebar opens it", () => {

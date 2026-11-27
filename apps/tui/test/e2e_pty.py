@@ -124,6 +124,40 @@ def main():
         check(t.p.poll() == 0, 'q quits with exit code 0 (got %r)' % t.p.poll())
         raw = t.raw.decode('utf8', 'replace')
         check('\x1b[?1049l' in raw and '\x1b[?25h' in raw and '\x1b[?1000l' in raw, 'the terminal is put back: main screen, cursor, mouse off')
+        check('\x1b[22;0t' in raw and raw.rindex('\x1b[23;0t') > raw.rindex('\x1b[?1049l'), 'the window title is saved on the way in and restored on the way out')
+    finally:
+        t.close()
+
+    # a narrow window: the contents list is a drawer over a dimmed page, and the keyboard and mouse belong to it
+    t = Term(80, 24)
+    try:
+        t.wait('Search')
+        check('CONTENTS' not in t.text(), 'a window narrower than 100 columns starts with the contents list closed')
+        t.send('b')
+        check('CONTENTS' in t.text(), 'b opens it as a drawer')
+        t.send('j'); t.send('j')
+        t.send('\x1b', 0.5)
+        check('CONTENTS' not in t.text(), 'esc closes the drawer')
+        t.send('b'); t.click(70, 12)
+        check('CONTENTS' not in t.text(), 'a click on the page behind the drawer closes it')
+        n = len(t.raw)
+        t.send('\x1b[I', 0.5)
+        check(len(t.raw) - n > 800, 'coming back to the window repaints the whole screen')
+        t.send('?', 0.4)
+        check('Keys' in t.text() and '? help' in t.screen.display[-1], 'the help dialog leaves the footer visible on 24 rows')
+    finally:
+        t.close()
+
+    # a docked contents list must not turn into a drawer covering the page when the window narrows
+    t = Term(130, 30)
+    try:
+        check(t.wait('CONTENTS'), 'a wide window docks the contents list')
+        Term.set_size(t.fd, 90, 30); os.killpg(t.p.pid, signal.SIGWINCH); t.pump(0.8)
+        check('CONTENTS' not in t.text() and 'CHAPTER 00' in t.text(), 'narrowing the window closes it instead of covering the page')
+        Term.set_size(t.fd, 130, 30); os.killpg(t.p.pid, signal.SIGWINCH); t.pump(0.8)
+        check('CONTENTS' in t.text(), 'and widening it brings the list back')
+        Term.set_size(t.fd, 26, 12); os.killpg(t.p.pid, signal.SIGWINCH); t.pump(0.8)
+        check('Window too small' in t.text(), 'a window too small to use says so')
     finally:
         t.close()
 
