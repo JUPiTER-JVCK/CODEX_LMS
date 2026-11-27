@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   var B = window.__BOOK, VARS = B.vars.vars, GROUPS = B.vars.groups, CH = B.chapters;
-  var PARTS = [['start', 'Start here'], ['found', 'Foundations'], ['zsh', 'The shell (zsh)'], ['net', 'Networking'], ['py', 'Python'], ['web', 'Web development'], ['srv', 'Servers, APIs & Cloud'], ['sec', 'Security'], ['proj', 'Projects'], ['ref', 'Reference']];
+  var PARTS = [['start', 'Start here'], ['found', 'Foundations'], ['code', 'Learn to Code'], ['zsh', 'The shell (zsh)'], ['net', 'Networking'], ['py', 'Python'], ['web', 'Web development'], ['srv', 'Servers, APIs & Cloud'], ['sec', 'Security'], ['proj', 'Projects'], ['ref', 'Reference']];
   var KEY = 'ppp-v1';
   var $ = function (s, r) { return (r || document).querySelector(s); }, $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -359,7 +359,7 @@
     PARTS.forEach(function (p) {
       var list = chapterList().filter(function (c) { return c.part === p[0]; });
       if (!list.length) return;
-      o += '<div class="navgrp dom-' + p[0] + '" style="--dom:var(--c-' + ({ start: 'found', found: 'found', zsh: 'zsh', net: 'net', py: 'py', web: 'web', srv: 'srv', sec: 'sec', proj: 'found', ref: 'ref' })[p[0]] + ')">' + p[1] + '</div>';
+      o += '<div class="navgrp dom-' + p[0] + '" style="--dom:var(--c-' + ({ start: 'found', found: 'found', code: 'code', zsh: 'zsh', net: 'net', py: 'py', web: 'web', srv: 'srv', sec: 'sec', proj: 'found', ref: 'ref' })[p[0]] + ')">' + p[1] + '</div>';
       list.forEach(function (c) { o += '<a class="navl dom-' + p[0] + '" data-nav="' + c.id + '" href="#' + c.id + '"><span class="n">' + (c.special ? '' : String(c.idx).padStart(2, '0')) + '</span><span>' + esc(c.title) + '</span><span class="ck"></span></a>'; });
     });
     $('#side').innerHTML = o; updateProgress();

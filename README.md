@@ -1,12 +1,13 @@
 # CODEX_LMS
 
-A hands-on, book-style course for learning on a Mac: macOS Terminal (zsh), networking (including VPNs and tunnels), Python, web development
+A hands-on, book-style course for learning on a Mac: how to write code at all (Python and JavaScript side by side, with a robot you can watch), macOS Terminal (zsh), networking (including VPNs and tunnels), Python, web development
 (HTML, CSS, JavaScript, DevTools, DOM, XML, cookies and tracking, Node.js), servers, APIs, encryption and cloud, and security
 (Wireshark packet analysis, nmap scanning, hardening, log triage and incident response). It is one
 self-contained web page with runnable Python and JavaScript, a simulated terminal, interactive labs, exercises
 with automatic checks, quizzes and projects.
 
-- 54 chapters in 10 parts, 870 command cards, 292 exercises
+- 64 chapters in 11 parts, 870 command cards, 327 exercises
+- A **Learn to Code** part right after Foundations, for readers who have never programmed: ten short chapters in which every idea is shown as a picture of the program running, tried in editable Python and JavaScript side by side, and used to steer a small robot called Bit (see below)
 - A Cookies, Tracking and Privacy chapter in the Web part (what a cookie is, `Set-Cookie` attributes, sessions and their attacks, third-party cookies, fingerprinting, profiles and prediction, browser defences, cookie forensics), with nine interactive labs whose rules are checked against a real Chromium
 - A VPNs and Tunnels chapter in the Networking part (WireGuard, IPsec/IKEv2, OpenVPN, MTU, leaks) and an Nmap chapter in the Security part (scan types, host discovery, version and OS detection, NSE, ndiff, the defender's view), each with interactive diagrams
 - A Cisco IOS cheat sheet in the Reference part: modes, help keys, output filters, 69 IOS command cards with examples, and a DHCP & DNS lab infographic
@@ -37,6 +38,39 @@ in-page Python needs to be served over HTTP.
 | Light | Dark |
 |---|---|
 | ![](docs/screenshots/chapter-light.png) | ![](docs/screenshots/chapter-dark.png) |
+
+## Learn to Code
+
+A ten-chapter part between Foundations and the shell (`chapters/ch_code_*.py`). It follows one robot, **Bit**, who lives on a grid and does exactly what the program says. Every idea comes three ways: **see it**
+(a stepper that runs a short program one line at a time), **try it** (editable code in the page) and **why it exists** (the problem the idea was invented to solve). Every example is written in Python and in
+JavaScript, line for line; a switch at the top of each widget shows one language or both, and the choice is remembered.
+
+| Chapter | Bit learns | The idea |
+|---|---|---|
+| Meet Bit | to move and turn | a program is exact instructions run in order; bugs; reading code |
+| Boxes with Labels | to remember | variables, the kinds of value, arithmetic, joining text, names |
+| Decisions | to look before stepping | comparisons, `if`/`elif`/`else`, `and`/`or`/`not`, sensors |
+| Loops | to repeat | `for`, `while`, accumulators, nesting, `break`, endless loops |
+| Functions | to learn new skills | define and call, parameters, `return`, scope, the call stack |
+| Lists | to carry many things | indexes, adding and removing, going through, filtering, aliasing |
+| Dictionaries | to look things up | keys and values, counting, nested data, JSON, sets |
+| Errors and Debugging | to find its own bugs | the three kinds of problem, reading errors, off-by-one, tests |
+| Objects and Classes | to be one of a fleet | classes, methods, `self` and `this` |
+| Capstone: Bit's Delivery Run | to work a shift | three delivery runs and a small project that uses everything |
+
+The pieces behind it:
+
+| Widget | Source | What it does |
+|---|---|---|
+| `codestep` | `src/ws-code-b-step.js` | steps a program line by line: highlighted line, variables drawn as pictures (number tiles, switches, shelves, cards), the call stack, what was printed, a sentence of narration, and a gutter that marks the path taken |
+| `codetry` | `src/ws-code-c-try.js` | the same program in Python and JavaScript, both editable and runnable; "Run both and compare" shows that they print the same thing |
+| `bitgrid` | `src/ws-code-d-grid.js` | Bit's world: the learner's own code runs in either language and Bit acts it out. Missions can have several maps and a "Check all maps" button, so a solution has to be general, and some limit the number of lines |
+
+Authoring helpers are in `chapters/lib.py`: `STEP(...)`, `TRY(...)` and `BITGRID(...)`. A stepper's trace is recorded at build time by really running the Python version under `sys.settrace`
+(`chapters/codetrace.py`), so the pictures cannot drift from what the code does; the JavaScript version is lined up with it line for line, and the build refuses a pair that does not line up.
+
+`test/code_pairs.py` runs every JavaScript example with `node` and checks that it prints what the Python version printed. `test/codeviz.py` checks every mission in a real browser: the solution wins
+on every map in Python and in JavaScript and both leave the same log of events, the starter code does not already win, the steppers and editors work, and nothing overflows a 390 px screen.
 
 ## Interactive labs
 

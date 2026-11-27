@@ -10,6 +10,10 @@
    "title": "Foundations"
   },
   {
+   "id": "code",
+   "title": "Learn to Code"
+  },
+  {
    "id": "zsh",
    "title": "The shell (zsh)"
   },
@@ -837,8 +841,664 @@
    ]
   },
   {
-   "id": "zsh-basics",
+   "id": "code-hello",
    "num": 6,
+   "title": "Meet Bit: Your First Programs",
+   "sub": "What code is for, how to read it, and how to make a robot do exactly what you say, in Python and in JavaScript",
+   "part": "code",
+   "time": 40,
+   "level": "basics",
+   "sections": [
+    {
+     "id": "code",
+     "text": "What code is, really",
+     "level": 2
+    },
+    {
+     "id": "bit",
+     "text": "Meet Bit",
+     "level": 2
+    },
+    {
+     "id": "first",
+     "text": "Your first program",
+     "level": 2
+    },
+    {
+     "id": "watch",
+     "text": "Watch a program run",
+     "level": 2
+    },
+    {
+     "id": "moves",
+     "text": "Bit’s first moves",
+     "level": 2
+    },
+    {
+     "id": "bugs",
+     "text": "Bugs happen",
+     "level": 2
+    },
+    {
+     "id": "two",
+     "text": "Two languages, one idea",
+     "level": 2
+    },
+    {
+     "id": "practice",
+     "text": "Practice",
+     "level": 2
+    },
+    {
+     "id": "next",
+     "text": "Where this goes next",
+     "level": 2
+    }
+   ],
+   "cards": [],
+   "items": [
+    "code-1-ex-three-lines",
+    "code-1-ex-countdown",
+    "code-1-ex-recipe",
+    "code-1-ch-checkpoint"
+   ]
+  },
+  {
+   "id": "code-vars",
+   "num": 7,
+   "title": "Boxes with Labels: Variables and Values",
+   "sub": "Giving a program a memory: variables, the kinds of value, arithmetic, joining text and choosing good names",
+   "part": "code",
+   "time": 45,
+   "level": "basics",
+   "sections": [
+    {
+     "id": "why",
+     "text": "Why programs need memory",
+     "level": 2
+    },
+    {
+     "id": "box",
+     "text": "A box with a label",
+     "level": 2
+    },
+    {
+     "id": "kinds",
+     "text": "Kinds of values",
+     "level": 2
+    },
+    {
+     "id": "use",
+     "text": "Using the boxes",
+     "level": 2
+    },
+    {
+     "id": "change",
+     "text": "Changing a box",
+     "level": 2
+    },
+    {
+     "id": "names",
+     "text": "Choosing good names",
+     "level": 2
+    },
+    {
+     "id": "bit",
+     "text": "Bit remembers",
+     "level": 2
+    },
+    {
+     "id": "practice",
+     "text": "Practice",
+     "level": 2
+    },
+    {
+     "id": "next",
+     "text": "Where this goes next",
+     "level": 2
+    }
+   ],
+   "cards": [],
+   "items": [
+    "code-2-ex-swap",
+    "code-2-ex-sentence",
+    "code-2-ex-trace",
+    "code-2-ch-checkpoint"
+   ]
+  },
+  {
+   "id": "code-decide",
+   "num": 8,
+   "title": "Decisions: if, else and True/False",
+   "sub": "Making a program choose: comparisons, if, else, elif, and, or, not, and a robot that looks before it steps",
+   "part": "code",
+   "time": 45,
+   "level": "basics",
+   "sections": [
+    {
+     "id": "why",
+     "text": "Programs that react",
+     "level": 2
+    },
+    {
+     "id": "questions",
+     "text": "Questions with yes/no answers",
+     "level": 2
+    },
+    {
+     "id": "if",
+     "text": "if: do it only when",
+     "level": 2
+    },
+    {
+     "id": "else",
+     "text": "else: two paths",
+     "level": 2
+    },
+    {
+     "id": "elif",
+     "text": "Several branches: elif",
+     "level": 2
+    },
+    {
+     "id": "logic",
+     "text": "And, or, not",
+     "level": 2
+    },
+    {
+     "id": "sensors",
+     "text": "Bit looks before it steps",
+     "level": 2
+    },
+    {
+     "id": "practice",
+     "text": "Practice",
+     "level": 2
+    },
+    {
+     "id": "next",
+     "text": "Where this goes next",
+     "level": 2
+    }
+   ],
+   "cards": [],
+   "items": [
+    "code-3-ex-ladder",
+    "code-3-ex-can-deliver",
+    "code-3-ex-trace",
+    "code-3-ch-checkpoint"
+   ]
+  },
+  {
+   "id": "code-loops",
+   "num": 9,
+   "title": "Loops: Doing Something Again and Again",
+   "sub": "Repeating instructions with for and while, counting and adding up, nesting loops, stopping early, and making one short program cover any size of corridor",
+   "part": "code",
+   "time": 50,
+   "level": "basics",
+   "sections": [
+    {
+     "id": "why",
+     "text": "Doing things again and again",
+     "level": 2
+    },
+    {
+     "id": "for",
+     "text": "Repeat a known number of times: for",
+     "level": 2
+    },
+    {
+     "id": "while",
+     "text": "Repeat while something is true: while",
+     "level": 2
+    },
+    {
+     "id": "total",
+     "text": "Adding things up",
+     "level": 2
+    },
+    {
+     "id": "nested",
+     "text": "Loops inside loops",
+     "level": 2
+    },
+    {
+     "id": "break",
+     "text": "Stopping early: break",
+     "level": 2
+    },
+    {
+     "id": "bit",
+     "text": "Bit runs loops",
+     "level": 2
+    },
+    {
+     "id": "practice",
+     "text": "Practice",
+     "level": 2
+    },
+    {
+     "id": "next",
+     "text": "Where this goes next",
+     "level": 2
+    }
+   ],
+   "cards": [],
+   "items": [
+    "code-4-ex-countdown",
+    "code-4-ex-table",
+    "code-4-ex-sum",
+    "code-4-ex-trace",
+    "code-4-ch-checkpoint"
+   ]
+  },
+  {
+   "id": "code-funcs",
+   "num": 10,
+   "title": "Functions: Teaching Bit New Skills",
+   "sub": "Naming a group of instructions: defining and calling, parameters, return values, scope and the call stack, and why good programs are built from small named pieces",
+   "part": "code",
+   "time": 50,
+   "level": "basics",
+   "sections": [
+    {
+     "id": "why",
+     "text": "Naming a sequence of steps",
+     "level": 2
+    },
+    {
+     "id": "define",
+     "text": "Define it, then call it",
+     "level": 2
+    },
+    {
+     "id": "params",
+     "text": "Inputs: parameters",
+     "level": 2
+    },
+    {
+     "id": "return",
+     "text": "Answers: return",
+     "level": 2
+    },
+    {
+     "id": "scope",
+     "text": "Where boxes live",
+     "level": 2
+    },
+    {
+     "id": "stack",
+     "text": "Functions that call functions",
+     "level": 2
+    },
+    {
+     "id": "bit",
+     "text": "Bit learns new skills",
+     "level": 2
+    },
+    {
+     "id": "good",
+     "text": "Writing good functions",
+     "level": 2
+    },
+    {
+     "id": "practice",
+     "text": "Practice",
+     "level": 2
+    },
+    {
+     "id": "next",
+     "text": "Where this goes next",
+     "level": 2
+    }
+   ],
+   "cards": [],
+   "items": [
+    "code-5-ex-area",
+    "code-5-ex-grade",
+    "code-5-ex-even",
+    "code-5-ex-scope",
+    "code-5-ch-checkpoint"
+   ]
+  },
+  {
+   "id": "code-lists",
+   "num": 11,
+   "title": "Lists: Many Values Under One Name",
+   "sub": "Collections in code: indexes, adding and removing, going through every item, building new lists, why two names can share one list, and a robot driven by a list",
+   "part": "code",
+   "time": 50,
+   "level": "basics",
+   "sections": [
+    {
+     "id": "why",
+     "text": "Many values, one name",
+     "level": 2
+    },
+    {
+     "id": "shelf",
+     "text": "A shelf of boxes",
+     "level": 2
+    },
+    {
+     "id": "change",
+     "text": "Changing a list",
+     "level": 2
+    },
+    {
+     "id": "each",
+     "text": "Doing something with every item",
+     "level": 2
+    },
+    {
+     "id": "filter",
+     "text": "Searching and filtering",
+     "level": 2
+    },
+    {
+     "id": "alias",
+     "text": "Two names, one list",
+     "level": 2
+    },
+    {
+     "id": "nested",
+     "text": "Lists of lists",
+     "level": 2
+    },
+    {
+     "id": "bit",
+     "text": "Bit follows a list",
+     "level": 2
+    },
+    {
+     "id": "practice",
+     "text": "Practice",
+     "level": 2
+    },
+    {
+     "id": "next",
+     "text": "Where this goes next",
+     "level": 2
+    }
+   ],
+   "cards": [],
+   "items": [
+    "code-6-ex-total",
+    "code-6-ex-longest",
+    "code-6-ex-evens",
+    "code-6-ex-alias",
+    "code-6-ch-checkpoint"
+   ]
+  },
+  {
+   "id": "code-dicts",
+   "num": 12,
+   "title": "Look-up Tables: Dictionaries and Objects",
+   "sub": "Storing and finding data by name: dictionaries, counting, nested data, JSON and sets, and choosing the right collection",
+   "part": "code",
+   "time": 50,
+   "level": "basics",
+   "sections": [
+    {
+     "id": "why",
+     "text": "Looking things up by name",
+     "level": 2
+    },
+    {
+     "id": "lookup",
+     "text": "Labels instead of positions",
+     "level": 2
+    },
+    {
+     "id": "change",
+     "text": "Adding, changing, removing",
+     "level": 2
+    },
+    {
+     "id": "loop",
+     "text": "Going through a dictionary",
+     "level": 2
+    },
+    {
+     "id": "count",
+     "text": "Counting with a dictionary",
+     "level": 2
+    },
+    {
+     "id": "nested",
+     "text": "Data inside data",
+     "level": 2
+    },
+    {
+     "id": "sets",
+     "text": "Sets: have I seen this?",
+     "level": 2
+    },
+    {
+     "id": "bit",
+     "text": "Bit keeps records",
+     "level": 2
+    },
+    {
+     "id": "choose",
+     "text": "List or dictionary?",
+     "level": 2
+    },
+    {
+     "id": "practice",
+     "text": "Practice",
+     "level": 2
+    },
+    {
+     "id": "next",
+     "text": "Where this goes next",
+     "level": 2
+    }
+   ],
+   "cards": [],
+   "items": [
+    "code-7-ex-count-letters",
+    "code-7-ex-cheapest",
+    "code-7-ex-total",
+    "code-7-ex-choose",
+    "code-7-ch-checkpoint"
+   ]
+  },
+  {
+   "id": "code-debug",
+   "num": 13,
+   "title": "When Things Go Wrong: Errors and Debugging",
+   "sub": "The three kinds of problem, reading error messages, the off-by-one error, a method for finding bugs, and tests that catch them for you",
+   "part": "code",
+   "time": 50,
+   "level": "basics",
+   "sections": [
+    {
+     "id": "why",
+     "text": "Why it is never \"the computer is wrong\"",
+     "level": 2
+    },
+    {
+     "id": "kinds",
+     "text": "Three kinds of problem",
+     "level": 2
+    },
+    {
+     "id": "read",
+     "text": "Reading an error message",
+     "level": 2
+    },
+    {
+     "id": "offbyone",
+     "text": "The off-by-one error",
+     "level": 2
+    },
+    {
+     "id": "loop",
+     "text": "The debugging loop",
+     "level": 2
+    },
+    {
+     "id": "tests",
+     "text": "Tests: make the computer check",
+     "level": 2
+    },
+    {
+     "id": "bit",
+     "text": "Bit hunts bugs",
+     "level": 2
+    },
+    {
+     "id": "practice",
+     "text": "Practice",
+     "level": 2
+    },
+    {
+     "id": "next",
+     "text": "Where this goes next",
+     "level": 2
+    }
+   ],
+   "cards": [],
+   "items": [
+    "code-8-ex-largest",
+    "code-8-ex-one-to",
+    "code-8-ex-classify",
+    "code-8-ch-checkpoint"
+   ]
+  },
+  {
+   "id": "code-objects",
+   "num": 14,
+   "title": "Blueprints: Objects and Classes",
+   "sub": "Keeping data and actions together: classes and objects, attributes, methods, self and this, and when a class is better than a dictionary",
+   "part": "code",
+   "time": 50,
+   "level": "basics",
+   "sections": [
+    {
+     "id": "why",
+     "text": "Data and actions that belong together",
+     "level": 2
+    },
+    {
+     "id": "problem",
+     "text": "The problem: things in pieces",
+     "level": 2
+    },
+    {
+     "id": "class",
+     "text": "A class is a blueprint; an object is the thing built",
+     "level": 2
+    },
+    {
+     "id": "methods",
+     "text": "Methods: actions that belong to the object",
+     "level": 2
+    },
+    {
+     "id": "many",
+     "text": "Many objects, one blueprint",
+     "level": 2
+    },
+    {
+     "id": "choose",
+     "text": "Dictionary or class?",
+     "level": 2
+    },
+    {
+     "id": "bit",
+     "text": "Bit’s fleet",
+     "level": 2
+    },
+    {
+     "id": "practice",
+     "text": "Practice",
+     "level": 2
+    },
+    {
+     "id": "next",
+     "text": "Where this goes next",
+     "level": 2
+    }
+   ],
+   "cards": [],
+   "items": [
+    "code-9-ex-counter",
+    "code-9-ex-rectangle",
+    "code-9-ex-drain",
+    "code-9-ex-design",
+    "code-9-ch-checkpoint"
+   ]
+  },
+  {
+   "id": "code-capstone",
+   "num": 15,
+   "title": "Capstone: Bit’s Delivery Run",
+   "sub": "Use every idea from the part together: three delivery runs for Bit and a small project that builds a delivery report with a class, a list, a dictionary and tests",
+   "part": "code",
+   "time": 70,
+   "level": "basics",
+   "sections": [
+    {
+     "id": "job",
+     "text": "The job",
+     "level": 2
+    },
+    {
+     "id": "run1",
+     "text": "Run 1: one delivery",
+     "level": 2
+    },
+    {
+     "id": "run2",
+     "text": "Run 2: two parcels",
+     "level": 2
+    },
+    {
+     "id": "run3",
+     "text": "Run 3: round the ring",
+     "level": 2
+    },
+    {
+     "id": "project",
+     "text": "Project: the delivery log",
+     "level": 2
+    },
+    {
+     "id": "read",
+     "text": "What you can read now",
+     "level": 2
+    },
+    {
+     "id": "next",
+     "text": "Where to go next",
+     "level": 2
+    },
+    {
+     "id": "practice",
+     "text": "Practice",
+     "level": 2
+    }
+   ],
+   "cards": [],
+   "items": [
+    "code-10-pr-delivery-log#0",
+    "code-10-pr-delivery-log#1",
+    "code-10-pr-delivery-log#2",
+    "code-10-pr-delivery-log#3",
+    "code-10-pr-delivery-log#4",
+    "code-10-pr-delivery-log#5",
+    "code-10-ex-fizzbuzz",
+    "code-10-ex-palindrome",
+    "code-10-ex-plan",
+    "code-10-ch-checkpoint"
+   ]
+  },
+  {
+   "id": "zsh-basics",
+   "num": 16,
    "title": "zsh Fundamentals",
    "sub": "How the shell reads a line, finds a program, expands what you type, remembers it and starts up",
    "part": "zsh",
@@ -1092,7 +1752,7 @@
   },
   {
    "id": "files",
-   "num": 7,
+   "num": 17,
    "title": "Files, Folders & Permissions",
    "sub": "Navigate the macOS filesystem, move and find things, archive and verify them, and control who can touch what",
    "part": "zsh",
@@ -1442,7 +2102,7 @@
   },
   {
    "id": "pipes",
-   "num": 8,
+   "num": 18,
    "title": "Streams, Redirection & Pipes",
    "sub": "How commands pass data to each other, and how you wire them together",
    "part": "zsh",
@@ -1568,7 +2228,7 @@
   },
   {
    "id": "text",
-   "num": 9,
+   "num": 19,
    "title": "The Text-Processing Toolkit",
    "sub": "grep, sort, sed, awk, jq and friends: reshape any text into the answer you need",
    "part": "zsh",
@@ -1793,7 +2453,7 @@
   },
   {
    "id": "scripting",
-   "num": 10,
+   "num": 20,
    "title": "Shell Scripting in zsh",
    "sub": "Variables, tests, loops, functions and options: turn one-liners into tools, and build netcheck.zsh",
    "part": "zsh",
@@ -2054,7 +2714,7 @@
   },
   {
    "id": "system",
-   "num": 11,
+   "num": 21,
    "title": "System, Processes & macOS Tools",
    "sub": "See what your Mac is running, stop it safely, and query hardware, disks, logs and settings from the shell",
    "part": "zsh",
@@ -2360,7 +3020,7 @@
   },
   {
    "id": "net-local",
-   "num": 12,
+   "num": 22,
    "title": "See Your Own Network",
    "sub": "Read every field macOS tells you about interfaces, addresses, routes, neighbours and DNS, and pipe it into variables",
    "part": "net",
@@ -2507,7 +3167,7 @@
   },
   {
    "id": "net-reach",
-   "num": 13,
+   "num": 23,
    "title": "Reachability, Latency & Path",
    "sub": "Measure whether a host answers, how long it takes, where the packets travel and how big they can be",
    "part": "net",
@@ -2617,7 +3277,7 @@
   },
   {
    "id": "dns",
-   "num": 14,
+   "num": 24,
    "title": "DNS: Names, Records & Resolvers",
    "sub": "Resolve names with dig, nslookup, host and the macOS resolver, read every record type, and spot DNS problems fast",
    "part": "net",
@@ -2751,7 +3411,7 @@
   },
   {
    "id": "http",
-   "num": 15,
+   "num": 25,
    "title": "HTTP and TLS",
    "sub": "Read, send and time web requests by hand with curl, and inspect the certificates behind https",
    "part": "net",
@@ -2905,7 +3565,7 @@
   },
   {
    "id": "ports",
-   "num": 16,
+   "num": 26,
    "title": "Ports and Scanning",
    "sub": "See which programs listen on your Mac, test ports with nc, and map your own LAN with nmap, ethically",
    "part": "net",
@@ -3055,7 +3715,7 @@
   },
   {
    "id": "capture",
-   "num": 17,
+   "num": 27,
    "title": "Packet Capture",
    "sub": "Record your own traffic with tcpdump and Wireshark, read it line by line, and filter it down to the packets you care about",
    "part": "net",
@@ -3176,7 +3836,7 @@
   },
   {
    "id": "ssh",
-   "num": 18,
+   "num": 28,
    "title": "Remote Access with SSH",
    "sub": "Log in, copy files and tunnel traffic to another machine over an encrypted channel, with keys instead of passwords",
    "part": "net",
@@ -3339,7 +3999,7 @@
   },
   {
    "id": "vpn",
-   "num": 19,
+   "num": 29,
    "title": "VPNs and Tunnels: WireGuard, IPsec and OpenVPN",
    "sub": "What a VPN protects and what it does not, how a tunnel wraps and sizes packets, and how to build, read and check a WireGuard tunnel from your Mac",
    "part": "net",
@@ -3466,7 +4126,7 @@
   },
   {
    "id": "troubleshoot",
-   "num": 20,
+   "num": 30,
    "title": "Troubleshooting a Network",
    "sub": "Find the broken layer in five minutes, fix it, and build netdoctor.zsh to do the walking for you",
    "part": "net",
@@ -3594,7 +4254,7 @@
   },
   {
    "id": "py-start",
-   "num": 21,
+   "num": 31,
    "title": "Python Start: Interpreter, Environments & PyCharm",
    "sub": "Install, run, isolate and debug your first Python programs in Terminal and PyCharm",
    "part": "py",
@@ -3723,7 +4383,7 @@
   },
   {
    "id": "py-basics",
-   "num": 22,
+   "num": 32,
    "title": "Python Basics: Numbers, Text & Operators",
    "sub": "Values, types, strings, bytes and the operators that connect them, with a reference card for every built-in and string method",
    "part": "py",
@@ -4172,7 +4832,7 @@
   },
   {
    "id": "py-flow",
-   "num": 23,
+   "num": 33,
    "title": "Python Flow: Decisions, Loops & Functions",
    "sub": "Make programs choose, repeat and reuse code, and package it as a command-line script",
    "part": "py",
@@ -4384,7 +5044,7 @@
   },
   {
    "id": "py-data",
-   "num": 24,
+   "num": 34,
    "title": "Python Data Structures: Lists, Dicts, Sets & Collections",
    "sub": "Store, group, count and sort data with the right container, then summarize a web log in a few lines",
    "part": "py",
@@ -4818,7 +5478,7 @@
   },
   {
    "id": "py-files",
-   "num": 25,
+   "num": 35,
    "title": "Python Files, Text & Regular Expressions",
    "sub": "Read and write files, parse CSV, JSON, dates and logs with re, and make Python behave in a shell pipeline",
    "part": "py",
@@ -5125,7 +5785,7 @@
   },
   {
    "id": "py-errors",
-   "num": 26,
+   "num": 36,
    "title": "Errors, Debugging & Testing",
    "sub": "Handle failures on purpose, read any traceback, step through code with pdb and PyCharm, and prove your functions work with tests",
    "part": "py",
@@ -5332,7 +5992,7 @@
   },
   {
    "id": "py-modules",
-   "num": 27,
+   "num": 37,
    "title": "Modules, Packages & Command-Line Tools",
    "sub": "Split code into modules and packages, isolate dependencies with venv and pip, and ship real tools with argparse",
    "part": "py",
@@ -5462,7 +6122,7 @@
   },
   {
    "id": "py-oop",
-   "num": 28,
+   "num": 38,
    "title": "Classes, Objects & Idiomatic Python",
    "sub": "Model hosts, ports and networks as types, then use dunder methods, dataclasses, generators, decorators and context managers",
    "part": "py",
@@ -5739,7 +6399,7 @@
   },
   {
    "id": "py-net",
-   "num": 29,
+   "num": 39,
    "title": "Python for Networking",
    "sub": "Sockets, struct, threads and subprocess: write your own client, server, scanner and monitor",
    "part": "py",
@@ -5983,7 +6643,7 @@
   },
   {
    "id": "web-intro",
-   "num": 30,
+   "num": 40,
    "title": "How the Web Works: Browsers, Servers and Your First Page",
    "sub": "What a browser and a web server do on every page load, how URLs and origins work, and a first site you write, serve and inspect on your Mac",
    "part": "web",
@@ -6094,7 +6754,7 @@
   },
   {
    "id": "html",
-   "num": 31,
+   "num": 41,
    "title": "HTML: Structure, Semantics and Forms",
    "sub": "Write documents that browsers, screen readers and servers all understand: the skeleton, the parse tree, semantic elements, links, images, tables and forms that send data",
    "part": "web",
@@ -6239,7 +6899,7 @@
   },
   {
    "id": "css",
-   "num": 32,
+   "num": 42,
    "title": "CSS: Selectors, the Cascade, the Box Model and Layout",
    "sub": "Attach styles, target exactly the elements you mean, predict which rule wins, size boxes, and lay out a responsive dashboard with a dark theme",
    "part": "web",
@@ -6478,7 +7138,7 @@
   },
   {
    "id": "js-basics",
-   "num": 33,
+   "num": 43,
    "title": "JavaScript Fundamentals",
    "sub": "Values, types, operators, strings, arrays, objects and JSON, with the traps that catch Python programmers",
    "part": "web",
@@ -6867,7 +7527,7 @@
   },
   {
    "id": "js-deeper",
-   "num": 34,
+   "num": 44,
    "title": "JavaScript in Depth: Functions, Objects, Modules and Async",
    "sub": "Closures, this, prototypes and classes, iterators, errors, modules, the event loop, promises, fetch and regular expressions",
    "part": "web",
@@ -7203,7 +7863,7 @@
   },
   {
    "id": "devtools",
-   "num": 35,
+   "num": 45,
    "title": "Browser DevTools and the Console",
    "sub": "Open the developer tools in Safari and Chrome, drive any page from the Console, read the Network waterfall, inspect storage, and debug JavaScript with breakpoints instead of guesses",
    "part": "web",
@@ -7401,7 +8061,7 @@
   },
   {
    "id": "dom",
-   "num": 36,
+   "num": 46,
    "title": "The DOM: Selecting, Changing and Listening",
    "sub": "Treat a page as a live tree of objects you can query, rewrite and wire to events, without opening an XSS hole",
    "part": "web",
@@ -7669,7 +8329,7 @@
   },
   {
    "id": "cookies",
-   "num": 37,
+   "num": 47,
    "title": "Cookies, Tracking and Privacy",
    "sub": "What cookies are and how browsers and servers use them, who is reading them, and how tracking, profiling and prediction are built on top",
    "part": "web",
@@ -7776,7 +8436,7 @@
   },
   {
    "id": "xml",
-   "num": 38,
+   "num": 48,
    "title": "XML and Friends: Parsing, XPath, SVG, RSS and plists",
    "sub": "Read, query, build, validate and transform XML in the browser and in Terminal, and know when XML is the right format",
    "part": "web",
@@ -7945,7 +8605,7 @@
   },
   {
    "id": "node",
-   "num": 39,
+   "num": 49,
    "title": "Node.js: JavaScript on the Server",
    "sub": "Run JavaScript outside the browser: scripts in zsh pipelines, files and processes, a web server from scratch, npm, Express and tests",
    "part": "web",
@@ -8328,7 +8988,7 @@
   },
   {
    "id": "apis",
-   "num": 40,
+   "num": 50,
    "title": "APIs: Calling, Designing and Securing Web APIs",
    "sub": "Call REST APIs from curl, JavaScript and Python, read every status and header, authenticate safely, page, retry and rate-limit, and verify webhooks",
    "part": "web",
@@ -8391,7 +9051,7 @@
   },
   {
    "id": "servers",
-   "num": 41,
+   "num": 51,
    "title": "Server Basics: Services, Logs and Reverse Proxies",
    "sub": "Run servers on your Mac, look inside the request loop, keep services alive with launchd and systemd, read logs, and route requests with nginx",
    "part": "srv",
@@ -8491,7 +9151,7 @@
   },
   {
    "id": "cloud",
-   "num": 42,
+   "num": 52,
    "title": "Cloud Computing: Compute, Storage, Networks and IAM",
    "sub": "Choose between VMs, containers and functions, plan a VPC, lock down access with IAM, describe it all as code and keep the bill under control",
    "part": "srv",
@@ -8571,7 +9231,7 @@
   },
   {
    "id": "crypto",
-   "num": 43,
+   "num": 53,
    "title": "Encryption: Hashes, Keys, Signatures and TLS",
    "sub": "Break a classical cipher, use hashes, MACs, AES-GCM and signatures correctly, build your own certificate authority and read a TLS 1.3 handshake",
    "part": "sec",
@@ -8652,7 +9312,7 @@
   },
   {
    "id": "wireshark",
-   "num": 44,
+   "num": 54,
    "title": "Wireshark: Packet Analysis for Security",
    "sub": "Master display filters, follow conversations, read statistics, and investigate clear-text credentials, scans, ARP spoofing, DNS exfiltration and TLS",
    "part": "sec",
@@ -8746,7 +9406,7 @@
   },
   {
    "id": "nmap",
-   "num": 45,
+   "num": 55,
    "title": "Nmap: Scanning Your Network Like an Auditor",
    "sub": "How scans work and what each reply means, host discovery, service and OS detection, NSE scripts, saving and comparing results, and how a scan looks to the defender",
    "part": "sec",
@@ -8888,7 +9548,7 @@
   },
   {
    "id": "defend",
-   "num": 46,
+   "num": 56,
    "title": "Defending Your Mac and Servers",
    "sub": "Think in threats, check every macOS protection from Terminal, audit and baseline your machine, harden Linux servers, triage logs and respond to incidents",
    "part": "sec",
@@ -8984,7 +9644,7 @@
   },
   {
    "id": "capstone",
-   "num": 47,
+   "num": 57,
    "title": "Capstone: netkit",
    "sub": "Build one tested, installable command that combines subnet maths, ping, DNS, port scan and log analysis",
    "part": "proj",
@@ -9075,7 +9735,7 @@
   },
   {
    "id": "web-capstone",
-   "num": 48,
+   "num": 58,
    "title": "Capstone: a LAN Dashboard, Front to Back",
    "sub": "Build, test, debug and share a full-stack app: Express API, JSON file store, TCP port checks, XML and RSS feeds, and a plain-JavaScript dashboard",
    "part": "proj",
@@ -9152,7 +9812,7 @@
   },
   {
    "id": "next",
-   "num": 49,
+   "num": 59,
    "title": "Where to Go From Here",
    "sub": "A map of what you can do now, what to learn next, and a routine that gets you there",
    "part": "proj",
@@ -9238,7 +9898,7 @@
   },
   {
    "id": "cheats",
-   "num": 50,
+   "num": 60,
    "title": "Cheat Sheets",
    "sub": "One-page lookup tables for the shell, networking, HTTP, permissions, Python, pip, git and web development",
    "part": "ref",
@@ -9346,7 +10006,7 @@
   },
   {
    "id": "cisco",
-   "num": 51,
+   "num": 61,
    "title": "Cisco IOS Cheat Sheet",
    "sub": "Modes, help keys, output filters and every everyday IOS command, from first login to VLANs, routing, ACLs, NAT, DHCP and DNS, with examples",
    "part": "ref",
@@ -9866,7 +10526,7 @@
   },
   {
    "id": "wireshark-ref",
-   "num": 52,
+   "num": 62,
    "title": "Wireshark Cheat Sheet",
    "sub": "The window, both filter languages, the filters you will use most by protocol, shortcuts and tshark, with diagrams and corrections to common mistakes",
    "part": "ref",
@@ -9943,7 +10603,7 @@
   },
   {
    "id": "fixes",
-   "num": 53,
+   "num": 63,
    "title": "Fixes",
    "sub": "A problem-to-fix index for the errors you will actually hit on a Mac",
    "part": "ref",
