@@ -175,7 +175,7 @@ function cmdCard(b: Block, w: number, ctx: LayoutCtx, B: Builder, key: string) {
 function tableBlock(b: Block, w: number, ctx: LayoutCtx, B: Builder) {
   const head: string[] = b.head, rows: string[][] = b.rows, cols = head.length;
   B.gap();
-  if (b.title) B.push({ spans: [txt(b.title, { fg: "mute", b: true })] });
+  if (b.title) for (const l of wrapSpans([txt(b.title, { fg: "mute", b: true })], w, 0)) B.push({ spans: l });
   const cell = (s: string, hd: boolean): Span[] => inline(s, ctx.vars, hd ? { fg: "accent", b: true } : { fg: "fg" });
   const avail = w - (cols + 1) - 2 * cols;
   if (avail < cols * 7) { // too narrow for a grid: one small card per row

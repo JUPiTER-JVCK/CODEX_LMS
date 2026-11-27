@@ -28,6 +28,19 @@
      "line": 15
     },
     {
+     "t": "callout",
+     "kind": "tip",
+     "title": "New to programming?",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "If you have never written code, the **Learn to Code** part comes right after Foundations. [Meet Bit](#code-hello) starts with what a program is and takes you, in ten short chapters, to a small project, with Python and JavaScript side by side and a robot you can watch. Do it before the shell chapters, or skip it if you already code.",
+       "line": 1
+      }
+     ],
+     "line": 15
+    },
+    {
      "t": "h",
      "level": 2,
      "text": "What you need",
@@ -381,14 +394,14 @@
     },
     {
      "t": "p",
-     "text": "The book has eight parts that build on each other, then two capstones and two reference chapters. You can jump around, but the order is chosen so that each chapter only uses what came before it.",
+     "text": "The book has nine parts that build on each other, then two capstones and two reference chapters. You can jump around, but the order is chosen so that each chapter only uses what came before it.",
      "line": 137
     },
     {
      "t": "code",
      "lang": "ascii",
      "attrs": {},
-     "code": "  ⟪c:START⟫ 00-01 ──▶ ⟪g:FOUNDATIONS⟫ 02-05 ──▶ ⟪y:ZSH⟫ 06-11 ──▶ ⟪b:NETWORK⟫ 12-19\n    tools, lab        bits, layers,        the command     see, probe, capture,\n                      subnets, logic       line, pipes     tunnel and fix networks\n                                                                   │   \n  ⟪r:WEB⟫ 29-37 ◀──────────────────────── ⟪m:PYTHON⟫ 20-28 ◀───────────────┘\n    HTML, CSS, JavaScript,   scripts, scanners, parsers and tools\n    DevTools, DOM, XML, Node\n        │\n        └──▶ ⟪c:SERVERS, APIs & CLOUD⟫ 38-41 ──▶ ⟪r:SECURITY⟫ 42-43 ──▶ ⟪r:PROJECTS⟫ 44-46\n               services, logs, nginx, APIs,        Wireshark, hardening,   netkit, LAN dashboard,\n               encryption and TLS, cloud           triage, response        roadmap",
+     "code": "  ⟪c:START⟫ 00-01 ──▶ ⟪g:FOUNDATIONS⟫ 02-05 ──▶ ⟪m:LEARN TO CODE⟫ 06-15 ──▶ ⟪y:ZSH⟫ 16-21 ──┐\n  tools, lab      bits, layers,         boxes to objects,       the command │\n                  subnets, logic        in two languages        line, pipes │\n  ┌─────────────────────────────────────────────────────────────────────────┘\n  └▶ ⟪b:NETWORK⟫ 22-30 ──▶ ⟪m:PYTHON⟫ 31-39 ──▶ ⟪r:WEB⟫ 40-50 ──┐\n     see, probe,       scripts and      HTML, CSS   │\n     capture, tunnel,  scanners         DOM, XML    │\n  ┌─────────────────────────────────────────────────┘\n  └▶ ⟪c:SERVERS, APIs & CLOUD⟫ 51-52 ──▶ ⟪r:SECURITY⟫ 53-56 ──▶ ⟪r:PROJECTS⟫ 57-59\n     services, logs,                 Wireshark, nmap,   netkit, LAN dashboard,\n     nginx, cloud                    hardening, triage  roadmap",
      "line": 139
     },
     {
@@ -408,6 +421,11 @@
        "Foundations",
        "[How computers work](#computers), [How networks work](#networks), [Addressing and subnets](#addressing), [Thinking like a programmer](#thinking)",
        "Convert between binary, hex and decimal, name every layer a packet passes through, compute a subnet by hand, trace a program on paper and use git"
+      ],
+      [
+       "Learn to Code",
+       "[Meet Bit](#code-hello), [Boxes with labels](#code-vars), [Decisions](#code-decide), [Loops](#code-loops), [Functions](#code-funcs), [Lists](#code-lists), [Dictionaries](#code-dicts), [Debugging](#code-debug), [Objects](#code-objects), [Capstone: Bit’s delivery run](#code-capstone)",
+       "Write and debug small programs in Python and JavaScript, and say why each idea exists (optional if you already code)"
       ],
       [
        "zsh",
@@ -12812,7 +12830,7 @@
     },
     {
      "t": "p",
-     "text": "Next: [Your first zsh session](#zsh-basics) starts the shell part of the book: how the shell reads a command line, finds programs and expands what you type.",
+     "text": "Next: [Meet Bit](#code-hello) starts the **Learn to Code** part, where you write real programs in Python and JavaScript with a robot you can watch, one idea at a time. If you already code, skip to [Your first zsh session](#zsh-basics), which starts the shell part of the book: how the shell reads a command line, finds programs and expands what you type.",
      "line": 1215
     }
    ],
@@ -25640,6 +25658,19 @@
     },
     {
      "t": "callout",
+     "kind": "tip",
+     "title": "The ideas, from scratch",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Variables, decisions, loops and functions are taught from the beginning, with pictures of the program running, in the [Learn to Code](#code-hello) part. If a shell construct here is new, it can help to meet the idea there first.",
+       "line": 1
+      }
+     ],
+     "line": 14
+    },
+    {
+     "t": "callout",
      "kind": "try",
      "title": "Work in a scratch folder",
      "blocks": [
@@ -34929,7 +34960,7 @@
    "blocks": [
     {
      "t": "p",
-     "text": "[Chapter 12](#net-local) was about what your Mac is. This chapter is about whether it can *reach* something else, how quickly, and by which route. The tools are small and old (`ping` dates from 1983) but they answer the first question in every network investigation: is the problem here, at the next hop, or far away? You will send probes, learn how the probes work so you can interpret the silence as well as the answers, and finish with `latency-log`, a recorder you can leave running while you work.",
+     "text": "[See Your Own Network](#net-local) was about what your Mac is. This chapter is about whether it can *reach* something else, how quickly, and by which route. The tools are small and old (`ping` dates from 1983) but they answer the first question in every network investigation: is the problem here, at the next hop, or far away? You will send probes, learn how the probes work so you can interpret the silence as well as the answers, and finish with `latency-log`, a recorder you can leave running while you work.",
      "line": 13
     },
     {
@@ -51306,6 +51337,19 @@
     },
     {
      "t": "callout",
+     "kind": "tip",
+     "title": "Already met Python?",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "If you did the [Learn to Code](#code-hello) part you have already written Python: variables, decisions, loops, functions, lists, dictionaries and a class. This part starts with the interpreter and your tools and goes much deeper into each of those. If you skipped that part and the next chapters move quickly, its first few chapters are an easy way in.",
+       "line": 1
+      }
+     ],
+     "line": 13
+    },
+    {
+     "t": "callout",
      "kind": "try",
      "title": "Two places to run Python in this book",
      "blocks": [
@@ -53307,6 +53351,19 @@
     {
      "t": "p",
      "text": "Every program is values and operations on values. In this chapter you will learn Python's core value types (numbers, booleans, `None`, text and raw bytes), the operators that combine them, and the reference tools you will keep reopening: a card for each built-in function and each string method. The running theme is networking data: addresses as integers, masks as bit patterns, MAC addresses as hex strings, protocol text as bytes.",
+     "line": 13
+    },
+    {
+     "t": "callout",
+     "kind": "tip",
+     "title": "The gentle version",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "The ideas in this chapter (boxes with labels, the kinds of value, joining text) are introduced slowly, with pictures, in [Boxes with Labels](#code-vars). Read that first if the types and operators feel like too much at once.",
+       "line": 1
+      }
+     ],
      "line": 13
     },
     {
@@ -57347,6 +57404,19 @@
     },
     {
      "t": "callout",
+     "kind": "tip",
+     "title": "The gentle version",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Decisions, loops and functions are each taught from scratch, with a stepper that shows the program running, in [Decisions](#code-decide), [Loops](#code-loops) and [Functions](#code-funcs). They cover the same ground at a slower pace.",
+       "line": 1
+      }
+     ],
+     "line": 13
+    },
+    {
+     "t": "callout",
      "kind": "try",
      "title": "Think in a flowchart first",
      "blocks": [
@@ -59649,6 +59719,19 @@
     {
      "t": "p",
      "text": "Programs are mostly data moving between containers: a list of log lines becomes a dict of counts, which becomes a ranked list, which becomes a report. Picking the right container decides whether the code is three lines or thirty, and whether it is fast or crawls on a million records. In this chapter you will learn the five built-in containers, the comprehension syntax that builds them, the sorting tools, and the `collections` module that adds counting and grouping. The examples are all network data: requests per IP, ports per host, ping times, two inventories to merge. You finish by writing the analysis core of `loganalyzer.py`.",
+     "line": 14
+    },
+    {
+     "t": "callout",
+     "kind": "tip",
+     "title": "The gentle version",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "[Lists](#code-lists) and [Dictionaries](#code-dicts) show the same containers as pictures, including why two names can point at one list, which is the root of many aliasing bugs. Start there if the choices below feel abstract.",
+       "line": 1
+      }
+     ],
      "line": 14
     },
     {
@@ -66526,6 +66609,19 @@
     },
     {
      "t": "callout",
+     "kind": "tip",
+     "title": "The gentle version",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "[When Things Go Wrong](#code-debug) is the beginner’s version of this chapter: the three kinds of problem, how to read an error message, the off-by-one error and a method for finding bugs. Read it first if tracebacks still look like noise.",
+       "line": 1
+      }
+     ],
+     "line": 14
+    },
+    {
+     "t": "callout",
      "kind": "try",
      "title": "Keep a scratch file open",
      "blocks": [
@@ -71903,6 +71999,19 @@
     {
      "t": "p",
      "text": "So far your programs have been functions acting on lists and dicts. That works until the same facts travel together everywhere: an IP address, a name, a set of scan results, the rules for what counts as valid. A **class** bundles that data with the functions that understand it, and Python's special method names let your objects plug into `for` loops, `len()`, `in`, `sorted()` and `with` like the built-in types do. This chapter teaches classes from the ground up, then the idioms that make Python code short: dataclasses, enums, generators, decorators and context managers. You will model hosts, ports, subnets and an inventory, which become the core of `netkit`.",
+     "line": 15
+    },
+    {
+     "t": "callout",
+     "kind": "tip",
+     "title": "The gentle version",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "[Blueprints: Objects and Classes](#code-objects) explains classes, `self`, methods and many objects from one blueprint, with pictures, in Python and JavaScript. Start there if this chapter moves too fast.",
+       "line": 1
+      }
+     ],
      "line": 15
     },
     {
@@ -85540,6 +85649,19 @@
     {
      "t": "p",
      "text": "JavaScript is the one language every browser runs, and with Node.js it runs on servers and in your Terminal too. In this chapter you will learn its core: how values and types work (including the ones that surprise Python programmers), how to declare variables safely, how operators convert between types, and how to shape strings, arrays, objects and JSON with built-in methods chained like a shell pipeline. You already program in Python, so the chapter moves quickly over familiar ideas and slows down wherever JavaScript behaves differently. The data is the book's home LAN: the router at 192.168.1.1, the Raspberry Pi at .50, the NAS at .60 that is always offline.",
+     "line": 13
+    },
+    {
+     "t": "callout",
+     "kind": "tip",
+     "title": "If JavaScript is your first language",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "[Learn to Code](#code-hello) teaches the same ideas (variables, decisions, loops, functions, arrays, objects and classes) in JavaScript and Python side by side, with a stepper and a robot, before you meet the details here.",
+       "line": 1
+      }
+     ],
      "line": 13
     },
     {
